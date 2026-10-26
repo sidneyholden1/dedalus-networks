@@ -61,7 +61,7 @@ napoleon_use_param = False
 napoleon_use_keyword = False
 napoleon_use_ivar = True
 
-extlinks = {'repo': ('https://github.com/sidneyholden1/dedalus-network/tree/main/%s', None)}
+extlinks = {'repo': ('https://github.com/sidneyholden1/dedalus-networks/tree/main/%s', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

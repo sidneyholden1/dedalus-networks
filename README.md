@@ -1,4 +1,4 @@
-# Dedalus network PDEs
+# Dedalus on Networks
 
 A research fork of [Dedalus](https://github.com/DedalusProject/dedalus) for
 solving partial differential equations on networks. The extension represents

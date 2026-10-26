@@ -3,8 +3,8 @@
 ## Get the source
 
 ```sh
-git clone https://github.com/sidneyholden1/dedalus-network.git
-cd dedalus-network
+git clone https://github.com/sidneyholden1/dedalus-networks.git
+cd dedalus-networks
 conda env create -f environment-network-pdes.yml
 conda activate dedalus-network-pdes
 ```
