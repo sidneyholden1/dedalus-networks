@@ -12,7 +12,14 @@ import hashlib
 from math import prod
 
 from .future import FutureField, FutureLockedField
-from .field import Field, LockedField
+from .field import (
+    Field,
+    LockedField,
+    _network_basis_metadata,
+    _network_basis_metadata_group_errors,
+    synchronize_network_vertex_inputs,
+)
+from .network import _encode_network_ids
 from .operators import Copy
 from ..tools.cache import CachedAttribute
 from ..tools.general import OrderedSet
@@ -26,6 +33,177 @@ FILEHANDLER_TOUCH_TMPFILE = config['analysis'].getboolean('FILEHANDLER_TOUCH_TMP
 
 import logging
 logger = logging.getLogger(__name__.split('.')[-1])
+
+
+def _write_string_attribute(attributes, name, values):
+    """Write a UTF-8 scalar or sequence attribute without ASCII coercion."""
+    dtype = h5py.string_dtype(encoding="utf-8")
+    if isinstance(values, str):
+        attributes.create(name, values, dtype=dtype)
+    else:
+        attributes.create(name, np.asarray(tuple(values), dtype=object), dtype=dtype)
+
+
+def _setup_network_metadata(file, network):
+    """Write the canonical, partition-independent Network description."""
+    group = file.create_group("network")
+    group.attrs["schema"] = "dedalus.network"
+    group.attrs["schema_version"] = 1
+    _write_string_attribute(group.attrs, "coordinate_names", network.names)
+    group.attrs["num_vertices"] = network.num_vertices
+    group.attrs["num_edges"] = network.num_edges
+    group.attrs["num_ports"] = network.num_ports
+    group.attrs["edge_axis_semantics"] = "canonical_edge_index"
+    group.attrs["reference_bounds"] = (0.0, 1.0)
+    group.attrs["edge_orientation"] = "tail_to_head"
+    group.attrs["position_semantics"] = "normalized_reference_from_tail"
+    group.attrs["stored_position_scale"] = "normalized_reference_from_tail"
+    group.attrs["position_map"] = "length_times_reference"
+    group.attrs["port_order"] = "edge_major_tail_head"
+    group.attrs["outward_signs"] = (-1.0, 1.0)
+
+    vertex_index = group.create_dataset(
+        "vertex_index",
+        data=np.arange(network.num_vertices, dtype=np.int64),
+    )
+    edge_index = group.create_dataset(
+        "edge_index",
+        data=np.arange(network.num_edges, dtype=np.int64),
+    )
+    string_dtype = h5py.string_dtype(encoding="utf-8")
+    endpoint_slot = group.create_dataset(
+        "endpoint_slot",
+        data=np.asarray(("tail", "head"), dtype=object),
+        dtype=string_dtype,
+    )
+    vertex_index.make_scale("vertex")
+    edge_index.make_scale("edge")
+    endpoint_slot.make_scale("endpoint")
+
+    endpoints = group.create_dataset(
+        "endpoints",
+        data=np.asarray(network.endpoints, dtype=np.int64),
+    )
+    lengths = group.create_dataset(
+        "lengths",
+        data=np.asarray(network.lengths, dtype=np.float64),
+    )
+    endpoints.dims[0].label = "edge"
+    endpoints.dims[0].attach_scale(edge_index)
+    endpoints.dims[1].label = "endpoint"
+    endpoints.dims[1].attach_scale(endpoint_slot)
+    lengths.dims[0].label = "edge"
+    lengths.dims[0].attach_scale(edge_index)
+
+    for kind, values, index_scale in (
+        ("vertex", network.vertex_ids, vertex_index),
+        ("edge", network.edge_ids, edge_index),
+    ):
+        encoded = _encode_network_ids(values)
+        attribute = f"{kind}_ids_encoding"
+        if encoded is None:
+            group.attrs[attribute] = "canonical-index-only"
+            continue
+        group.attrs[attribute] = "json-v1"
+        ids = group.create_dataset(
+            f"{kind}_ids",
+            data=np.asarray(encoded, dtype=object),
+            dtype=string_dtype,
+        )
+        ids.attrs["encoding"] = "json-v1"
+        ids.dims[0].label = kind
+        ids.dims[0].attach_scale(index_scale)
+
+
+def _setup_network_basis_metadata(file, domain):
+    """Create or content-check one hashed Network discretization record."""
+    metadata = _network_basis_metadata(domain)
+    if metadata is None:
+        return None
+    descriptor, encoded, digest = metadata
+
+    network_group = file["network"]
+    if "discretizations" in network_group:
+        discretizations = network_group["discretizations"]
+        if not isinstance(discretizations, h5py.Group):
+            raise RuntimeError(
+                "/network/discretizations exists but is not an HDF5 group."
+            )
+    else:
+        discretizations = network_group.create_group("discretizations")
+        discretizations.attrs["schema"] = "dedalus.network.discretizations"
+        discretizations.attrs["schema_version"] = 1
+
+    if digest in discretizations:
+        group = discretizations[digest]
+        errors = _network_basis_metadata_group_errors(
+            group,
+            expected_descriptor=descriptor,
+            expected_digest=digest,
+        )
+        if errors:
+            raise RuntimeError(
+                "Network discretization digest collision or content mismatch "
+                f"for {digest}: {'; '.join(errors)}."
+            )
+        return group.name
+
+    group = discretizations.create_group(digest)
+    group.attrs["schema"] = descriptor["schema"]
+    group.attrs["schema_version"] = descriptor["schema_version"]
+    group.attrs["digest"] = digest
+    group.attrs["role"] = descriptor["role"]
+    group.attrs["cardinal_size"] = descriptor["cardinal_size"]
+    _write_string_attribute(group.attrs, "descriptor_json", encoded)
+    group.create_dataset(
+        "edge_indices",
+        data=np.asarray(descriptor["edge_indices"], dtype=np.int64),
+    )
+    group.create_dataset(
+        "canonical_elements",
+        data=np.asarray(descriptor["canonical_elements"], dtype=np.int64),
+    )
+
+    errors = _network_basis_metadata_group_errors(
+        group,
+        expected_descriptor=descriptor,
+        expected_digest=digest,
+    )
+    if errors:
+        raise RuntimeError(
+            "New Network discretization metadata failed its content check: "
+            + "; ".join(errors)
+        )
+    return group.name
+
+
+def _hashed_scale_name(name, data):
+    """Hash a dimension scale with shape and dtype collision protection."""
+    data = np.ascontiguousarray(data)
+    digest = hashlib.sha1()
+    digest.update(data.dtype.str.encode("ascii"))
+    digest.update(np.asarray(data.shape, dtype=np.int64).tobytes())
+    digest.update(data.tobytes())
+    return f"{name}_hash_{digest.hexdigest()}"
+
+
+def _network_axis_roles(dist, domain):
+    """Describe Network storage semantics independently of hashed scales."""
+    network = getattr(dist, "network", None)
+    if network is None:
+        return None
+    roles = []
+    for axis, basis in enumerate(domain.full_bases):
+        if basis is None:
+            role = "constant"
+        else:
+            role = getattr(basis, "_network_role", None)
+            if role is None and dist.coords[axis] is network.position_coord:
+                role = "position"
+            elif role is None:
+                role = "other"
+        roles.append(role)
+    return tuple(roles)
 
 
 class Evaluator:
@@ -59,6 +237,26 @@ class Evaluator:
 
     def add_file_handler(self, filename, parallel=None, **kw):
         """Create a file handler and add to evaluator."""
+        network_comm = getattr(self.dist, "network_comm", None)
+        if self.dist.distributed_network:
+            if parallel is None:
+                # Whole-edge Network ownership is generally noncontiguous, so
+                # the slice-based virtual and MPIO handlers cannot write it
+                # correctly.  The gather handler uses Field.gather_data, which
+                # assembles Network fields by their global indices.
+                parallel = 'gather'
+            elif parallel != 'gather':
+                raise NotImplementedError(
+                    "Distributed Network file output supports only "
+                    "parallel='gather'; the virtual and MPIO handlers "
+                    "require contiguous local slices."
+                )
+        elif network_comm is not None and network_comm.size > 1:
+            raise NotImplementedError(
+                "File handlers are not yet supported by the replicated-symbolic "
+                "network backend.  Write replicated network fields from MPI "
+                "rank zero explicitly."
+            )
         if parallel is None:
             if self.dist.comm.size == 1:
                 parallel = 'gather'
@@ -94,6 +292,15 @@ class Evaluator:
 
     def evaluate_handlers(self, handlers, id=None, **kw):
         """Evaluate a collection of handlers."""
+
+        tasks = [t for h in handlers for t in h.tasks]
+        fields = self.get_fields(tasks)
+        synchronize_network_vertex_inputs(self.dist, fields)
+        with self.dist.network_evaluation(fields):
+            return self._evaluate_handlers(handlers, id=id, **kw)
+
+    def _evaluate_handlers(self, handlers, id=None, **kw):
+        """Evaluate handlers inside the Distributor evaluation context."""
 
         # Default to uuid to cache within evaluation, but not across evaluations
         if id is None:
@@ -413,7 +620,7 @@ class H5FileHandlerBase(Handler):
                 set_nums = []
                 if sets:
                     for set in sets:
-                        m = re.match("{}_s(\d+)$".format(base_path.stem), set.stem)
+                        m = re.match(r"{}_s(\d+)$".format(base_path.stem), set.stem)
                         if m:
                             set_nums.append(int(m.groups()[0]))
                     max_set = max(set_nums)
@@ -525,6 +732,12 @@ class H5FileHandlerBase(Handler):
         for name in ['iteration', 'write_number']:
             file['scales'].create_dataset(name=name, shape=(0,), maxshape=(self.max_writes,), dtype=int) # shape[0] = 0 to chunk across writes
             file['scales'][name].make_scale(name)
+        # Network topology and metric geometry.  This is deliberately
+        # partition-independent so a gathered file remains portable across
+        # MPI sizes and partition choices.
+        network = getattr(self.dist, "network", None)
+        if network is not None:
+            _setup_network_metadata(file, network)
         # Tasks
         file.create_group('tasks')
         for task in self.tasks:
@@ -536,6 +749,22 @@ class H5FileHandlerBase(Handler):
             dset.attrs['constant'] = op.domain.constant
             dset.attrs['grid_space'] = layout.grid_space
             dset.attrs['scales'] = scales
+            network_roles = _network_axis_roles(self.dist, op.domain)
+            if network_roles is not None:
+                dset.attrs['network_metadata'] = '/network'
+                _write_string_attribute(
+                    dset.attrs,
+                    'network_axis_roles',
+                    network_roles,
+                )
+                network_basis_metadata = _setup_network_basis_metadata(
+                    file,
+                    op.domain,
+                )
+                if network_basis_metadata is not None:
+                    dset.attrs[
+                        'network_basis_metadata'
+                    ] = network_basis_metadata
             # Time scales
             dset.dims[0].label = 't'
             for sn in ['sim_time', 'wall_time', 'timestep', 'iteration', 'write_number']:
@@ -547,18 +776,43 @@ class H5FileHandlerBase(Handler):
                 if basis is None:
                     sn = lookup = 'constant'
                 else:
-                    subaxis = axis - self.dist.get_basis_axis(basis)
-                    if layout.grid_space[axis]:
-                        sn = basis.coordsys.coords[subaxis].name
-                        data = basis.global_grids(self.dist, scales)[subaxis].ravel()
+                    role = (
+                        None if network_roles is None else network_roles[axis]
+                    )
+                    if role in ("edges", "vertices", "ports"):
+                        sn = {
+                            "edges": "edge",
+                            "vertices": "vertex",
+                            "ports": "port",
+                        }[role]
+                        data = np.asarray(
+                            basis._network_elements,
+                            dtype=np.int64,
+                        )
                     else:
-                        sn = 'k' + basis.coordsys.coords[subaxis].name
-                        data = layout.global_group_arrays(op.domain, scales)[subaxis]
-                    scale_hash = hashlib.sha1(data).hexdigest()
-                    lookup = f"{sn}_hash_{scale_hash}"
+                        subaxis = axis - self.dist.get_basis_axis(basis)
+                        if layout.grid_space[axis]:
+                            sn = basis.coordsys.coords[subaxis].name
+                            data = basis.global_grids(
+                                self.dist,
+                                scales,
+                            )[subaxis].ravel()
+                        else:
+                            sn = 'k' + basis.coordsys.coords[subaxis].name
+                            data = layout.global_group_arrays(
+                                op.domain,
+                                scales,
+                            )[subaxis]
+                    data = np.asarray(data).ravel()
+                    lookup = _hashed_scale_name(sn, data)
                     if lookup not in file['scales']:
                         file['scales'].create_dataset(name=lookup, data=data)
                         file['scales'][lookup].make_scale(sn)
+                    elif not np.array_equal(file['scales'][lookup][...], data):
+                        raise RuntimeError(
+                            "Dimension-scale digest collision for "
+                            f"{lookup!r}."
+                        )
                 scale = file['scales'][lookup]
                 dset.dims[1 + rank + axis].label = sn
                 dset.dims[1 + rank + axis].attach_scale(scale)
@@ -862,4 +1116,3 @@ class H5VirtualFileHandler(H5FileHandlerBase):
         if overwrite:
             del file['tasks'][task_name]
             file['tasks'].move(new_name, task_name)
-

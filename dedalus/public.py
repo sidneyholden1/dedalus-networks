@@ -6,6 +6,7 @@ from .core.basis import *
 from .core.coords import *
 from .core.distributor import *
 from .core.field import *
+from .core.network import *
 from .core.operators import *
 from .core.problems import *
 from .core.timesteppers import *

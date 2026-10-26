@@ -3,9 +3,9 @@
 from collections import deque, OrderedDict
 import numpy as np
 from scipy.linalg import blas
+from mpi4py import MPI
 
 from .system import CoeffSystem
-from ..tools.array import apply_sparse
 
 
 # Public interface
@@ -97,7 +97,15 @@ class MultistepIMEX:
 
         # Solver references
         solver = self.solver
-        subproblems = [sp for sp in solver.subproblems if sp.size] # Skip empty subproblems
+        if (
+            solver.dist.distributed_network
+            and solver.dist.network_vertex_storage == "owned_ghost"
+        ):
+            # Idle Network ranks carry zero-sized placeholder subproblems so
+            # every rank enters resident interface collectives in lockstep.
+            subproblems = solver.subproblems
+        else:
+            subproblems = [sp for sp in solver.subproblems if sp.size]
         evaluator = solver.evaluator
         state_fields = solver.state
         F_fields = solver.F
@@ -143,14 +151,27 @@ class MultistepIMEX:
         evaluator.require_coeff_space(state_fields)
         for sp in subproblems:
             spX = sp.gather_inputs(state_fields)
-            apply_sparse(sp.M_min, spX, axis=0, out=MX0.get_subdata(sp))
-            apply_sparse(sp.L_min, spX, axis=0, out=LX0.get_subdata(sp))
+            solver.apply_subproblem_matrix(
+                sp.M_min,
+                spX,
+                axis=0,
+                out=MX0.get_subdata(sp),
+                subproblem=sp,
+            )
+            solver.apply_subproblem_matrix(
+                sp.L_min,
+                spX,
+                axis=0,
+                out=LX0.get_subdata(sp),
+                subproblem=sp,
+            )
 
         # Evaluate F(X0)
         evaluator.evaluate_scheduled(iteration=iteration, wall_time=wall_time, sim_time=sim_time, timestep=dt)
         evaluator.require_coeff_space(F_fields)
         for sp in subproblems:
-            sp.gather_outputs(F_fields, out=F0.get_subdata(sp))
+            if sp.size:
+                sp.gather_outputs(F_fields, out=F0.get_subdata(sp))
 
         # Build RHS
         if RHS.data.size:
@@ -174,14 +195,16 @@ class MultistepIMEX:
                 if STORE_EXPANDED_MATRICES:
                     # sp.LHS.data[:] = a0*sp.M_exp.data + b0*sp.L_exp.data
                     np.multiply(a0, sp.M_exp.data, out=sp.LHS.data)
-                    axpy(a=b0, x=sp.L_exp.data, y=sp.LHS.data)
+                    if sp.LHS.data.size:
+                        axpy(a=b0, x=sp.L_exp.data, y=sp.LHS.data)
                 else:
                     sp.LHS = (a0*sp.M_min + b0*sp.L_min)  # CREATES TEMPORARY
-                sp.LHS_solver = solver.matsolver(sp.LHS, solver)
+                sp.LHS_solver = solver.build_subproblem_solver(sp, sp.LHS)
             # Slice out valid subdata, skipping invalid components
             spRHS = RHS.get_subdata(sp)
             spX = sp.LHS_solver.solve(spRHS)  # CREATES TEMPORARY
-            sp.scatter_inputs(spX, state_fields)
+            if sp.size:
+                sp.scatter_inputs(spX, state_fields)
 
         # Update solver
         solver.sim_time += dt
@@ -554,7 +577,14 @@ class RungeKuttaIMEX:
 
         # Solver references
         solver = self.solver
-        subproblems = [sp for sp in solver.subproblems if sp.size] # Skip empty subproblems
+        if (
+            solver.dist.distributed_network
+            and solver.dist.network_vertex_storage == "owned_ghost"
+        ):
+            # Keep the collective Network placeholders on idle ranks.
+            subproblems = solver.subproblems
+        else:
+            subproblems = [sp for sp in solver.subproblems if sp.size]
         evaluator = solver.evaluator
         state_fields = solver.state
         F_fields = solver.F
@@ -582,13 +612,33 @@ class RungeKuttaIMEX:
             for sp in subproblems:
                 sp.LHS_solvers = [None] * (self.stages+1)
 
+        # RK schemes often have repeated implicit diagonal coefficients.
+        # Share only byte-identical assembled Network matrices within this
+        # construction pass. Across-rank agreement keeps factor collectives in
+        # lockstep even when an operator changes on only one active rank.
+        share_factors = (update_LHS and solver.dist.distributed_network
+                         and getattr(solver, "network_solver", None) == "dtn")
+        stage_factors = {sp: {} for sp in subproblems} if share_factors else None
+
         # Compute M.X(n,0) and L.X(n,0)
         # Ensure coeff space before subsystem gathers
         evaluator.require_coeff_space(state_fields)
         for sp in subproblems:
             spX = sp.gather_inputs(state_fields)
-            apply_sparse(sp.M_min, spX, axis=0, out=MX0.get_subdata(sp))
-            apply_sparse(sp.L_min, spX, axis=0, out=LX0.get_subdata(sp))
+            solver.apply_subproblem_matrix(
+                sp.M_min,
+                spX,
+                axis=0,
+                out=MX0.get_subdata(sp),
+                subproblem=sp,
+            )
+            solver.apply_subproblem_matrix(
+                sp.L_min,
+                spX,
+                axis=0,
+                out=LX0.get_subdata(sp),
+                subproblem=sp,
+            )
 
         # Compute stages
         # (M + k Hii L).X(n,i) = M.X(n,0) + k Aij F(n,j) - k Hij L.X(n,j)
@@ -601,7 +651,13 @@ class RungeKuttaIMEX:
                 evaluator.require_coeff_space(state_fields)
                 for sp in subproblems:
                     spX = sp.gather_inputs(state_fields)
-                    apply_sparse(sp.L_min, spX, axis=0, out=LXi.get_subdata(sp))
+                    solver.apply_subproblem_matrix(
+                        sp.L_min,
+                        spX,
+                        axis=0,
+                        out=LXi.get_subdata(sp),
+                        subproblem=sp,
+                    )
 
             # Compute F(n,i-1), only doing output on first evaluation
             if i == 1:
@@ -611,7 +667,8 @@ class RungeKuttaIMEX:
             Fi = F[i-1]
             for sp in subproblems:
                 # F fields should be in coeff space from evaluator
-                sp.gather_outputs(F_fields, out=Fi.get_subdata(sp))
+                if sp.size:
+                    sp.gather_outputs(F_fields, out=Fi.get_subdata(sp))
 
             # Construct RHS(n,i)
             if RHS.data.size:
@@ -633,14 +690,36 @@ class RungeKuttaIMEX:
                     if STORE_EXPANDED_MATRICES:
                         # sp.LHS.data[:] = sp.M_exp.data + k_Hii*sp.L_exp.data
                         np.copyto(sp.LHS.data, sp.M_exp.data)
-                        axpy(a=k_Hii, x=sp.L_exp.data, y=sp.LHS.data)
+                        if sp.LHS.data.size:
+                            axpy(a=k_Hii, x=sp.L_exp.data, y=sp.LHS.data)
                     else:
                         sp.LHS = (sp.M_min + k_Hii*sp.L_min)  # CREATES TEMPORARY
-                    sp.LHS_solvers[i] = solver.matsolver(sp.LHS, solver)
+                    if share_factors:
+                        matrix = sp.LHS.tocsr()
+                        key = (matrix.shape, matrix.dtype.str,
+                               matrix.indptr.tobytes(), matrix.indices.tobytes(),
+                               matrix.data.tobytes())
+                        cache = stage_factors[sp]
+                        matching = cache.get(key, {})
+                        # A local matrix (especially an idle rank's empty one)
+                        # can belong to several globally different factors.
+                        # Intersect stage identities, not merely local hits.
+                        mask = sum(1 << stage for stage in matching)
+                        common = solver.dist.network_comm.allreduce(mask, op=MPI.BAND)
+                        if common:
+                            stage = (common & -common).bit_length() - 1
+                            sp.LHS_solvers[i] = matching[stage]
+                        else:
+                            factor = solver.build_subproblem_solver(sp, sp.LHS)
+                            sp.LHS_solvers[i] = factor
+                            cache.setdefault(key, {})[i] = factor
+                    else:
+                        sp.LHS_solvers[i] = solver.build_subproblem_solver(sp, sp.LHS)
                 # Slice out valid subdata, skipping invalid components
                 spRHS = RHS.get_subdata(sp)
                 spX = sp.LHS_solvers[i].solve(spRHS)  # CREATES TEMPORARY
-                sp.scatter_inputs(spX, state_fields)
+                if sp.size:
+                    sp.scatter_inputs(spX, state_fields)
             solver.sim_time = sim_time_0 + k*c[i]
 
 
@@ -738,4 +817,3 @@ class RKGFY(RungeKuttaIMEX):
     H = np.array([[0   , 0  ,   0],
                   [0.5 , 0.5,   0],
                   [0.5 , 0  , 0.5]])
-

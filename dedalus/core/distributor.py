@@ -4,8 +4,11 @@ Distributor, Layout, Transform, and Transpose class definitions.
 
 import logging
 from mpi4py import MPI
+from .network_storage import take_elements, CanonicalIndices
+
 import numpy as np
 import itertools
+from contextlib import contextmanager
 from collections import OrderedDict
 from math import prod
 import numbers
@@ -16,6 +19,7 @@ from ..tools.array import reshape_vector
 from ..tools.cache import CachedMethod, CachedAttribute
 from ..tools.config import config
 from ..tools.general import OrderedSet
+from ..tools.collective_metadata import CollectiveMetadata
 
 logger = logging.getLogger(__name__.split('.')[-1])
 GROUP_TRANSFORMS = config['transforms'].getboolean('GROUP_TRANSFORMS')
@@ -39,12 +43,28 @@ class Distributor:
 
     Parameters
     ----------
-    dim : int
-        Dimension
+    coordsystems : CoordinateSystem or sequence of CoordinateSystem
+        Coordinate system or systems defining the field dimensions.  A
+        :class:`~dedalus.core.network.Network` may be supplied directly.
     comm : MPI communicator, optional
         MPI communicator (default: comm world)
     mesh : tuple of ints, optional
         Process mesh for parallelization (default: 1-D mesh of available processes)
+    dtype : dtype-like, optional
+        Scalar data type for distributed fields.
+    network_partition : optional
+        Whole-edge ownership for a Network coordinate system.  Accepts
+        ``"connected"``, ``"balanced_edges"``, an edge-ID mapping, an owner
+        array, a callable, or a
+        :class:`~dedalus.core.network.NetworkPartition`.  When provided, edge
+        and port fields are stored only on their owning MPI rank.  Omitting it
+        selects replicated compatibility storage.
+    network_vertex_storage : {"replicated", "owned_ghost", "auto"}, optional
+        Storage for vertex-basis fields when ``network_partition`` is present.
+        ``"owned_ghost"`` stores authoritative vertices and locally incident
+        endpoint ghosts.  ``"auto"`` selects owned/ghost storage when a
+        partition is supplied and replicated storage otherwise.  The default
+        remains ``"replicated"`` for compatibility.
 
     Attributes
     ----------
@@ -74,9 +94,196 @@ class Distributor:
     states) and the paths between them (D transforms and R transposes).
     """
 
-    def __init__(self, coordsystems, comm=None, mesh=None, dtype=None):
+    def __init__(
+        self,
+        coordsystems,
+        comm=None,
+        mesh=None,
+        dtype=None,
+        network_partition=None,
+        network_vertex_storage=None,
+    ):
+        if comm is None:
+            comm = MPI.COMM_WORLD
+        # Network PDEs use one of two explicit storage modes.  The compatibility
+        # mode keeps complete symbolic fields on every process while retaining
+        # the user communicator for distributed DtN factorizations.  Supplying
+        # a partition opts into whole-edge field storage on that communicator.
+        replicated_network = getattr(
+            coordsystems,
+            "_dedalus_replicated_distributor",
+            False,
+        )
+        local_input = bool(getattr(coordsystems, '_local_input', False))
+        if network_vertex_storage is None:
+            network_vertex_storage = 'auto' if local_input else 'replicated'
+        if replicated_network:
+            local_modes = comm.allgather(local_input)
+            if any(mode != local_modes[0] for mode in local_modes):
+                raise RuntimeError('All ranks must use the same Network input mode')
+        if local_input:
+            if MPI.Comm.Compare(comm, coordsystems._input_comm) not in (MPI.IDENT, MPI.CONGRUENT):
+                raise ValueError('Local Network communicator must preserve its input rank order')
+            if network_partition is not None and network_partition is not coordsystems._local_partition:
+                raise ValueError('Local Network input already supplies its partition')
+            network_partition = coordsystems._local_partition
+            if network_vertex_storage == 'replicated':
+                raise ValueError("Local Network input requires network_vertex_storage='owned_ghost' or 'auto'")
+        if replicated_network and comm.size > 1:
+            storage_signatures = comm.allgather(
+                (
+                    isinstance(network_vertex_storage, str),
+                    network_vertex_storage
+                    if isinstance(network_vertex_storage, str)
+                    else repr(network_vertex_storage),
+                )
+            )
+            if any(
+                signature != storage_signatures[0]
+                for signature in storage_signatures[1:]
+            ):
+                raise RuntimeError(
+                    "Network Distributor construction requires the same "
+                    "network_vertex_storage option on every MPI rank."
+                )
+        valid_vertex_storage = {"replicated", "owned_ghost", "auto"}
+        if (
+            not isinstance(network_vertex_storage, str)
+            or network_vertex_storage not in valid_vertex_storage
+        ):
+            raise ValueError(
+                "network_vertex_storage must be 'replicated', "
+                "'owned_ghost', or 'auto'."
+            )
+        if not replicated_network and network_vertex_storage != "replicated":
+            raise ValueError(
+                "network_vertex_storage is only valid for a Network "
+                "distributor."
+            )
+        requested_network_vertex_storage = network_vertex_storage
+        # Auto selects the scalable vertex layout only when whole-edge
+        # ownership has also been requested.  Keep the explicit default
+        # replicated so existing distributed scripts retain their field
+        # shapes unless they opt into this policy.
+        if network_vertex_storage == "auto":
+            network_vertex_storage = (
+                "owned_ghost"
+                if network_partition is not None
+                else "replicated"
+            )
+        if not replicated_network and network_partition is not None:
+            raise ValueError(
+                "network_partition is only valid for a Network distributor."
+            )
+        if replicated_network and comm.size > 1:
+            partition_modes = comm.allgather(network_partition is not None)
+            if any(mode != partition_modes[0] for mode in partition_modes[1:]):
+                raise RuntimeError(
+                    "Network Distributor construction must either provide "
+                    "network_partition on every MPI rank or omit it on every "
+                    "rank."
+                )
+        distributed_network = (
+            replicated_network and network_partition is not None
+        )
+        if network_vertex_storage == "owned_ghost" and not distributed_network:
+            raise ValueError(
+                "network_vertex_storage='owned_ghost' requires a "
+                "network_partition."
+            )
+        network = coordsystems if replicated_network else None
+        if replicated_network:
+            if mesh is not None:
+                raise ValueError(
+                    "Network distributors do not accept a Dedalus process mesh."
+                )
+            network_comm = comm
+            if comm.size > 1 and not local_input:
+                from .network import (
+                    _array_signature,
+                    _network_id_signature,
+                    _network_vertex_groups_signature,
+                    _validate_collective_signature,
+                )
+
+                network_signature = (
+                    network.num_vertices,
+                    network.num_edges,
+                    tuple(network.names),
+                    _array_signature(network.endpoints),
+                    _array_signature(network.lengths),
+                    _network_id_signature(network.vertex_ids),
+                    _network_id_signature(network.edge_ids),
+                    _network_vertex_groups_signature(network.vertex_groups),
+                )
+                validation_stage = (
+                    "Distributed Network topology validation"
+                    if distributed_network
+                    else "Network topology validation"
+                )
+                _validate_collective_signature(
+                    comm,
+                    network_signature,
+                    validation_stage,
+                )
+
+            if local_input:
+                resolved_network_partition = network._local_partition
+                layout_comm = comm
+            elif distributed_network:
+                from .network import NetworkPartition, _resolve_partition
+
+                if comm.rank == 0:
+                    try:
+                        resolved_partition = _resolve_partition(
+                            network,
+                            network_partition,
+                            comm.size,
+                            np.ones(network.num_edges),
+                        )
+                        partition_payload = (
+                            np.asarray(resolved_partition.edge_owners),
+                            None,
+                        )
+                    except Exception as error:
+                        partition_payload = (
+                            None,
+                            f"{type(error).__name__}: {error}",
+                        )
+                else:
+                    partition_payload = None
+                edge_owners, partition_error = comm.bcast(
+                    partition_payload,
+                    root=0,
+                )
+                if partition_error is not None:
+                    raise ValueError(
+                        "Failed to construct the distributed Network layout: "
+                        f"{partition_error}"
+                    )
+                # Root already validated and built this exact owner table.
+                # Other ranks build their local copy after the broadcast.
+                resolved_network_partition = (
+                    resolved_partition if comm.rank == 0 else NetworkPartition(
+                        network,
+                        edge_owners,
+                        num_parts=comm.size,
+                    )
+                )
+                layout_comm = comm
+            else:
+                resolved_network_partition = None
+                layout_comm = MPI.COMM_SELF
+        else:
+            network_comm = None
+            resolved_network_partition = None
+            layout_comm = comm
+        # A Network is a public coordinate container, while its replicated
+        # symbolic layouts still operate on the two scalar coordinates.
+        if replicated_network:
+            coordsystems = tuple(coordsystems.coords)
         # Accept single coordsys in place of tuple/list
-        if not isinstance(coordsystems, (tuple, list)):
+        elif not isinstance(coordsystems, (tuple, list)):
             coordsystems = (coordsystems,)
         # Note if only a single coordsys for simplicity
         if len(coordsystems) == 1:
@@ -87,10 +294,8 @@ class Distributor:
         self.coords = sum((cs.coords for cs in coordsystems), ())
         self.coordsystems = coordsystems
         # Defaults
-        if comm is None:
-            comm = MPI.COMM_WORLD
         if mesh is None:
-            mesh = np.array([comm.size], dtype=int)
+            mesh = np.array([layout_comm.size], dtype=int)
         else:
             if isinstance(mesh, list) or isinstance(mesh, tuple):
                 mesh = np.array(mesh, dtype=int)
@@ -99,20 +304,47 @@ class Distributor:
         self.dim = dim = len(self.coords)
 #        self.dim = dim = sum(coordsys.dim for coordsys in coordsystems)
         self.comm = comm
+        self.network_comm = network_comm
+        self.network = network
+        self.network_partition = resolved_network_partition
+        self.distributed_network = distributed_network
+        self.requested_network_vertex_storage = (
+            requested_network_vertex_storage
+        )
+        self.network_vertex_storage = network_vertex_storage
+        if network_vertex_storage == "owned_ghost":
+            from .network import NetworkVertexExchangePlan
+
+            self.network_vertex_exchange_plan = NetworkVertexExchangePlan(
+                resolved_network_partition,
+                layout_comm,
+            )
+        else:
+            self.network_vertex_exchange_plan = None
         self.mesh = mesh = np.array(mesh)
         # Check mesh compatibility
         logger.debug('Mesh: %s' %str(mesh))
         if mesh.size >= dim:
             raise ValueError("Mesh (%s) must have lower dimension than distributor (%i)" %(mesh, dim))
-        if prod(mesh) != comm.size:
-            raise ValueError("Wrong number of processes (%i) for specified mesh (%s)" %(comm.size, mesh))
+        if prod(mesh) != layout_comm.size:
+            raise ValueError("Wrong number of processes (%i) for specified mesh (%s)" %(layout_comm.size, mesh))
         self.dtype = dtype
+        self.layout_comm = layout_comm
+        # Replicated Network inputs are synchronized once at the outer edge of
+        # each expression evaluation.  The depth counter keeps recursive
+        # Future evaluation from broadcasting derived intermediate fields.
+        self._network_evaluation_depth = 0
+        self._network_replica_metadata = CollectiveMetadata()
+        self._network_vertex_metadata = CollectiveMetadata()
         # Create cartesian communicator, ignoring axes with m=1
         reduced_mesh = [m for m in mesh if m > 1]
-        self.comm_cart = comm.Create_cart(reduced_mesh)
+        self.comm_cart = layout_comm.Create_cart(reduced_mesh)
         self.comm_coords = np.array(self.comm_cart.coords, dtype=int)
         # Build layout objects
-        self._build_layouts()
+        if distributed_network:
+            self._build_network_layouts()
+        else:
+            self._build_layouts()
         # Keep set of weak field references
         self.fields = WeakSet()
 
@@ -173,6 +405,337 @@ class Distributor:
         # Allow string references to coefficient and grid space layouts
         self.layout_references = {'c': self.coeff_layout,
                                   'g': self.grid_layout}
+
+    def _build_network_layouts(self):
+        """Build whole-edge layouts without distributed transposes."""
+        if self.dim != 2:
+            raise ValueError("Distributed Network layouts require two axes.")
+        edge_axis_local = self.layout_comm.size == 1
+        local = np.array([edge_axis_local, True], dtype=bool)
+
+        coeff_layout = Layout(self, local, (False, False))
+        coeff_layout.index = 0
+        interval_layout = Layout(self, local, (False, True))
+        interval_layout.index = 1
+        grid_layout = Layout(self, local, (True, True))
+        grid_layout.index = 2
+
+        interval_transform = Transform(coeff_layout, interval_layout, 1)
+        cardinal_transform = Transform(interval_layout, grid_layout, 0)
+        self.layouts = [coeff_layout, interval_layout, grid_layout]
+        self.paths = [interval_transform, cardinal_transform]
+        self.transforms = [cardinal_transform, interval_transform]
+        self.coeff_layout = coeff_layout
+        self.grid_layout = grid_layout
+        self.layout_references = {
+            'c': self.coeff_layout,
+            'g': self.grid_layout,
+        }
+
+    def network_local_elements(
+        self,
+        layout,
+        domain,
+        scales,
+        rank=None,
+        broadcast=False,
+    ):
+        """Return logical elements under whole-edge Network ownership."""
+        if not self.distributed_network:
+            raise ValueError("Distributor does not use distributed Network layouts.")
+        if rank is None:
+            rank = self.layout_comm.rank
+        if rank < 0 or rank >= self.layout_comm.size:
+            raise ValueError("Network layout rank is outside the communicator.")
+        global_shape = layout.global_shape(domain, scales)
+        elements = []
+        for axis, (axis_size, basis) in enumerate(
+            zip(global_shape, domain.full_bases)
+        ):
+            if axis != 0:
+                elements.append(np.arange(axis_size))
+                continue
+            if basis is None:
+                # Domains with no Network cardinal basis are replicated on
+                # the Network axis.  This includes full-network scalars and
+                # position-only intermediates produced by reducing over
+                # edges.  The latter must remain present on every rank so a
+                # subsequent interval reduction retains every rank's local
+                # matrix contribution.
+                elements.append(np.arange(axis_size))
+                continue
+            network_basis = getattr(basis, "_network_basis", None)
+            basis_network = getattr(basis, "_network", None)
+            if basis_network is None and network_basis is not None:
+                basis_network = network_basis.network
+            if (
+                basis_network is None
+                or basis_network is not self.network
+            ):
+                raise ValueError(
+                    "Distributed Network fields require bases belonging to "
+                    "the Distributor's Network."
+                )
+            axis_elements = self._network_axis_elements(
+                basis, rank, self.network_partition,
+                self.network_vertex_storage, axis_size,
+            )
+            # Preserve the public result's independent, writable-array behavior.
+            elements.append(axis_elements.copy())
+        return tuple(elements)
+
+    @CachedMethod
+    def _network_axis_elements(self, basis, rank, partition, storage, axis_size):
+        """Cache immutable cardinal selections independently of interval scales."""
+        role = getattr(basis, "_network_role", None)
+        if isinstance(basis._network_elements, CanonicalIndices):
+            if role == 'edges':
+                axis_elements = partition.edges[rank].copy()
+            elif role == 'ports':
+                edges = partition.edges[rank]
+                axis_elements = np.column_stack((2*edges, 2*edges+1)).ravel()
+            elif role == 'vertices' and storage == 'owned_ghost':
+                axis_elements = partition.resident_vertices[rank].copy()
+            else:
+                axis_elements = np.arange(axis_size)
+            axis_elements.setflags(write=False)
+            return axis_elements
+        if role == "edges":
+            canonical_edges = np.asarray(
+                basis._network_elements,
+                dtype=int,
+            )
+            axis_elements = np.flatnonzero(
+                partition.edge_owners[canonical_edges]
+                == rank
+            )
+        elif role == "ports":
+            canonical_ports = np.asarray(
+                basis._network_elements,
+                dtype=int,
+            )
+            port_owners = partition.edge_owners[
+                (canonical_ports // 2)
+            ]
+            axis_elements = np.flatnonzero(port_owners == rank)
+        elif role == "vertices":
+            if storage == "owned_ghost":
+                canonical_vertices = np.asarray(
+                    basis._network_elements,
+                    dtype=int,
+                )
+                resident_vertices = (
+                    partition.resident_vertices[rank]
+                )
+                axis_elements = np.flatnonzero(
+                    np.isin(
+                        canonical_vertices,
+                        resident_vertices,
+                        assume_unique=True,
+                    )
+                )
+            else:
+                axis_elements = np.arange(axis_size)
+        else:
+            raise ValueError(
+                "Distributed Network fields require an edge, port, or "
+                "vertex basis on the network axis."
+            )
+        axis_elements = np.asarray(axis_elements, dtype=int)
+        axis_elements.setflags(write=False)
+        return axis_elements
+
+    def network_axis_role(self, domain):
+        """Return the storage role of a distributed Network field."""
+        if not self.distributed_network:
+            return None
+        basis = domain.full_bases[0]
+        if basis is None:
+            return None
+        network_basis = getattr(basis, "_network_basis", None)
+        basis_network = getattr(basis, "_network", None)
+        if basis_network is None and network_basis is not None:
+            basis_network = network_basis.network
+        if basis_network is None or basis_network is not self.network:
+            raise ValueError(
+                "Distributed Network fields require bases belonging to the "
+                "Distributor's Network."
+            )
+        return getattr(basis, "_network_role", None)
+
+    def network_axis_is_replicated(self, domain):
+        """Whether a Network domain is complete on every Network rank."""
+        if not self.distributed_network:
+            return False
+        basis = domain.full_bases[0]
+        if basis is None:
+            return True
+        return (
+            self.network_axis_role(domain) == "vertices"
+            and self.network_vertex_storage == "replicated"
+        )
+
+    def network_axis_uses_owned_ghost(self, domain):
+        """Whether a domain uses resident owned/ghost vertex storage."""
+        return (
+            self.distributed_network
+            and self.network_vertex_storage == "owned_ghost"
+            and self.network_axis_role(domain) == "vertices"
+        )
+
+    def network_vertex_canonical_elements(self, domain, rank=None):
+        """Return canonical vertices represented by a local vertex domain."""
+        if not self.network_axis_uses_owned_ghost(domain):
+            raise ValueError(
+                "Domain does not use owned/ghost Network vertex storage."
+            )
+        if rank is None:
+            rank = self.layout_comm.rank
+        basis = domain.full_bases[0]
+        logical_elements = self.coeff_layout.local_elements(
+            domain,
+            scales=1,
+            rank=rank,
+        )[0]
+        return take_elements(basis._network_elements, logical_elements)
+
+    def synchronize_network_vertex_ghosts(self, field):
+        """Refresh the ghost values of one resident vertex field in place."""
+        if not self.network_axis_uses_owned_ghost(field.domain):
+            return field
+        canonical = self.network_vertex_canonical_elements(field.domain)
+        if not np.array_equal(
+            canonical,
+            self.network_vertex_exchange_plan.resident,
+        ):
+            raise NotImplementedError(
+                "Owned/ghost exchange currently requires the canonical full "
+                "Network vertex basis."
+            )
+        data_axis = len(field.tensorsig)
+        self.network_vertex_exchange_plan.forward(
+            field.data,
+            axis=data_axis,
+        )
+        return field
+
+    def _network_replica_signature(self, field):
+        """Return rank-independent metadata for one replicated input field."""
+        basis_signature = []
+        for basis in field.domain.full_bases:
+            if basis is None:
+                basis_signature.append(None)
+            else:
+                basis_signature.append(
+                    (
+                        type(basis).__module__,
+                        type(basis).__qualname__,
+                        getattr(basis, "_network_role", None),
+                        tuple(basis.shape),
+                    )
+                )
+        return (
+            None if field.name is None else str(field.name),
+            tuple(coordsys.dim for coordsys in field.tensorsig),
+            np.dtype(field.dtype).str,
+            tuple(basis_signature),
+            tuple(self.coeff_layout.global_shape(field.domain, scales=1)),
+        )
+
+    def synchronize_network_replicas(self, fields):
+        """Broadcast replicated Network input fields from authoritative rank 0.
+
+        ``fields`` must have deterministic expression-tree order on every
+        rank.  A single collective signature check runs before any field-wise
+        broadcasts so divergent task trees fail collectively instead of
+        entering mismatched broadcasts.  Rank zero's layout and scales are
+        propagated with its data, allowing a previous idle-rank evaluation to
+        have left replicas in different layouts.
+        """
+        if not self.distributed_network or self.layout_comm.size == 1:
+            return
+
+        replicas = OrderedSet()
+        for field in fields:
+            role = None
+            if field.dist is self:
+                role = self.network_axis_role(field.domain)
+            # Anonymous, position-only fields are Dedalus's evaluation-local
+            # polynomial/additive intermediates (for example the two Jacobi
+            # lift polynomials).  They are constructed independently on every
+            # rank and must not be overwritten as authoritative user inputs.
+            # A user-supplied position-only input can opt into synchronization
+            # simply by giving the field a semantic name.
+            position_only_input = (
+                role is None
+                and bool(field.domain.bases)
+                and field.name is not None
+            )
+            if (
+                field.dist is self
+                and self.network_axis_is_replicated(field.domain)
+                and (
+                    role == "vertices"
+                    or not field.domain.bases
+                    or position_only_input
+                )
+            ):
+                replicas.add(field)
+        signatures = tuple(
+            self._network_replica_signature(field) for field in replicas
+        )
+        self._network_replica_metadata.check(
+            self.layout_comm, signatures,
+            "Distributed Network evaluation received inconsistent replicated input fields",
+        )
+        if len(signatures) != len(set(signatures)):
+            raise ValueError(
+                "A distributed Network expression must give unique names "
+                "to otherwise indistinguishable replicated fields."
+            )
+
+        if not replicas:
+            return
+        root = 0
+        metadata = None
+        if self.layout_comm.rank == root:
+            metadata = [(field.layout.index, tuple(field.scales)) for field in replicas]
+        metadata = self.layout_comm.bcast(metadata, root=root)
+        groups = {}
+        for field, (layout_index, scales) in zip(replicas, metadata):
+            if self.layout_comm.rank != root:
+                field.preset_scales(scales)
+                field.preset_layout(self.layouts[layout_index])
+            groups.setdefault(np.dtype(field.data.dtype).str, []).append(field)
+        for group in groups.values():
+            if len(group) == 1:
+                self.layout_comm.Bcast(group[0].data, root=root)
+                continue
+            sizes = [field.data.size for field in group]
+            buffer = np.empty(sum(sizes), dtype=group[0].data.dtype)
+            offset = 0
+            for field, size in zip(group, sizes):
+                if self.layout_comm.rank == root:
+                    buffer[offset:offset+size] = field.data.ravel()
+                offset += size
+            self.layout_comm.Bcast(buffer, root=root)
+            if self.layout_comm.rank != root:
+                offset = 0
+                for field, size in zip(group, sizes):
+                    field.data[...] = buffer[offset:offset+size].reshape(field.data.shape)
+                    offset += size
+
+    @contextmanager
+    def network_evaluation(self, fields):
+        """Synchronize Network inputs once around recursive evaluation."""
+        outermost = self._network_evaluation_depth == 0
+        self._network_evaluation_depth += 1
+        try:
+            if outermost:
+                self.synchronize_network_replicas(fields)
+            yield
+        finally:
+            self._network_evaluation_depth -= 1
 
     def get_layout_object(self, input):
         """Dereference layout identifiers."""
@@ -342,6 +905,16 @@ class Layout:
         global_shape = domain.global_shape(self, scales)
         return tuple(global_shape)
 
+    def axis_is_local(self, domain, axis):
+        """Whether an axis is complete for a particular field domain."""
+        if (
+            self.dist.distributed_network
+            and axis == 0
+            and self.dist.network_axis_is_replicated(domain)
+        ):
+            return True
+        return bool(self.local[axis])
+
     def chunk_shape(self, domain):
         """Chunk shape."""
         #scales = self.dist.remedy_scales(scales)
@@ -356,6 +929,19 @@ class Layout:
 
     def local_chunks(self, domain, scales, rank=None, broadcast=False):
         """Local chunk indices by axis."""
+        if self.dist.distributed_network:
+            elements = self.dist.network_local_elements(
+                self,
+                domain,
+                scales,
+                rank=rank,
+                broadcast=broadcast,
+            )
+            chunk_shape = self.chunk_shape(domain)
+            return tuple(
+                np.unique(axis_elements // chunk_size)
+                for axis_elements, chunk_size in zip(elements, chunk_shape)
+            )
         global_shape = self.global_shape(domain, scales)
         chunk_shape = self.chunk_shape(domain)
         chunk_nums = -(-np.array(global_shape) // np.array(chunk_shape))  # ceil
@@ -392,6 +978,14 @@ class Layout:
 
     def local_elements(self, domain, scales, rank=None, broadcast=False):
         """Local element indices by axis."""
+        if self.dist.distributed_network:
+            return self.dist.network_local_elements(
+                self,
+                domain,
+                scales,
+                rank=rank,
+                broadcast=broadcast,
+            )
         chunk_shape = self.chunk_shape(domain)
         local_chunks = self.local_chunks(domain, scales, rank=rank, broadcast=broadcast)
         indices = []
@@ -499,6 +1093,17 @@ class Layout:
         slices = []
         for LE in local_elements:
             if LE.size:
+                if (
+                    self.dist.distributed_network
+                    and not np.array_equal(
+                        LE,
+                        np.arange(LE[0], LE[0] + LE.size),
+                    )
+                ):
+                    raise NotImplementedError(
+                        "A noncontiguous distributed Network layout cannot be "
+                        "represented by slices; use local_elements instead."
+                    )
                 slices.append(slice(LE.min(), LE.max()+1))
             else:
                 slices.append(slice(0, 0))

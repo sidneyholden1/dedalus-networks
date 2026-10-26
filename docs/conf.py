@@ -61,7 +61,7 @@ napoleon_use_param = False
 napoleon_use_keyword = False
 napoleon_use_ivar = True
 
-extlinks = {'repo': ('https://github.com/DedalusProject/dedalus/tree/master/%s', None)}
+extlinks = {'repo': ('https://github.com/sidneyholden1/dedalus-network/tree/main/%s', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -194,5 +194,6 @@ nbsphinx_thumbnails = {
     'pages/examples/ivp_shell_convection': '_images/shell_convection.png',
     'pages/examples/ivp_sphere_shallow_water': '_images/shallow_water.png',
     'pages/examples/lbvp_2d_poisson': '_images/poisson.png',
+    'pages/examples/lbvp_network_poisson': '_images/network_poisson.png',
     'pages/examples/nlbvp_ball_lane_emden': '_images/lane_emden.png',
 }

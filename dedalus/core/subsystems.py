@@ -22,6 +22,28 @@ import logging
 logger = logging.getLogger(__name__.split('.')[-1])
 
 
+class _DistributedNetworkAssemblyError(RuntimeError):
+    """An assembly failure already synchronized across Network ranks."""
+
+
+def _raise_distributed_network_assembly_error(solver, error, stage):
+    """Synchronize a rank-local assembly error before the next collective."""
+    from .network import _raise_collective_error
+
+    try:
+        _raise_collective_error(
+            solver.dist.network_comm,
+            error,
+            stage,
+        )
+    except RuntimeError as collective_error:
+        # Mark synchronized failures so outer assembly boundaries do not wrap
+        # them a second time.  This remains a RuntimeError for callers.
+        raise _DistributedNetworkAssemblyError(
+            str(collective_error)
+        ) from collective_error
+
+
 # for axis in range(domain.dim):
 #     if separable[axis]:
 #         if len(domain.bases[axis]) > 1:
@@ -49,6 +71,21 @@ def build_subsystems(solver):
             if not ((set(lgs1) <= set(lgs2)) or (set(lgs1) >= set(lgs2))):
                 raise ValueError("Incompatible group distributions. Are distributed dimensions the same size?")
         local_groupsets.update(lgs1)
+    if (
+        solver.dist.distributed_network
+        and solver.dist.network_vertex_storage == "owned_ghost"
+    ):
+        # A rank with neither an owned edge nor a resident vertex naturally
+        # has no local groupset.  It must nevertheless build zero-sized
+        # placeholder subsystems so that every Network rank enters matrix
+        # assembly and the collective DtN solve in the same group order.
+        gathered_groupsets = solver.dist.network_comm.allgather(
+            tuple(local_groupsets)
+        )
+        global_groupsets = OrderedSet()
+        for rank_groupsets in gathered_groupsets:
+            global_groupsets.update(rank_groupsets)
+        local_groupsets = global_groupsets
     # Build subsystem for each local groupset
     return tuple(Subsystem(solver, groupset) for groupset in local_groupsets)
 
@@ -69,16 +106,231 @@ def build_subproblems(solver, subsystems, build_matrices=None):
         build_subproblem_matrices(solver, subproblems, build_matrices)
     return subproblems
 
+
+def _distributed_network_cardinal_map_error(solver, matrices):
+    """Describe implicit CardinalMap entries that cross edge ownership."""
+    from .basis import ApplyCardinalMap
+
+    dist = solver.dist
+    partition = dist.network_partition
+    network = dist.network
+
+    def element_owners(basis):
+        role = getattr(basis, "_network_role", None)
+        if role == "edges":
+            canonical_edges = np.asarray(
+                basis._network_elements,
+                dtype=int,
+            )
+            return role, partition.edge_owners[canonical_edges]
+        if role == "ports":
+            canonical_ports = np.asarray(
+                basis._network_elements,
+                dtype=int,
+            )
+            return role, partition.edge_owners[
+                (canonical_ports // 2)
+            ]
+        return role, None
+
+    seen_nodes = set()
+    seen_maps = set()
+    violations = []
+    for equation_index, equation in enumerate(solver.problem.eqs):
+        for matrix_name in matrices:
+            expression = equation[matrix_name]
+            if not expression:
+                continue
+            pending = [expression]
+            while pending:
+                node = pending.pop()
+                node_id = id(node)
+                if node_id in seen_nodes:
+                    continue
+                seen_nodes.add(node_id)
+                pending.extend(getattr(node, "args", ()))
+                if not isinstance(node, ApplyCardinalMap):
+                    continue
+                if not node.has(*solver.problem.LHS_variables):
+                    # A map applied only to a known coefficient is evaluated
+                    # collectively while gathering NCC data; it does not
+                    # couple unknowns in the implicit matrix.
+                    continue
+                cardinal_map = node.cardinal_map
+                map_id = id(cardinal_map)
+                if map_id in seen_maps:
+                    continue
+                seen_maps.add(map_id)
+                if getattr(cardinal_map, '_network_topology_local', False):
+                    continue
+                source_role, source_owners = element_owners(cardinal_map.source)
+                target_role, target_owners = element_owners(cardinal_map.target)
+
+                if (
+                    dist.network_vertex_storage == "owned_ghost"
+                    and "vertices" in (source_role, target_role)
+                ):
+                    if not node._owned_ghost_map_is_local(
+                        source_role,
+                        target_role,
+                    ):
+                        violations.append(
+                            f"CardinalMap {cardinal_map.name!r} in equation "
+                            f"{equation_index} matrix {matrix_name!r} "
+                            "requires a source vertex outside the canonical "
+                            "owner's resident endpoint halo."
+                        )
+                    continue
+
+                if source_owners is None or target_owners is None:
+                    continue
+
+                entries = cardinal_map.matrix.tocoo(copy=False)
+                active = entries.data != 0
+                cross_owner = active & (
+                    target_owners[entries.row] != source_owners[entries.col]
+                )
+                if not np.any(cross_owner):
+                    continue
+                entry = int(np.flatnonzero(cross_owner)[0])
+                source = int(entries.col[entry])
+                target = int(entries.row[entry])
+                source_owner = int(source_owners[source])
+                target_owner = int(target_owners[target])
+                violations.append(
+                    f"CardinalMap {cardinal_map.name!r} in equation "
+                    f"{equation_index} matrix {matrix_name!r} maps "
+                    f"{source_role}[{source}] owned by rank {source_owner} to "
+                    f"{target_role}[{target}] owned by rank {target_owner}."
+                )
+
+    if not violations:
+        return None
+    return (
+        "Implicit CardinalMap coupling crosses Network owners or is otherwise "
+        "incompatible with the partition. Edge/port maps must preserve "
+        "ownership, and owned/ghost vertex maps must fit inside the canonical "
+        "resident endpoint halo. "
+        + " ".join(violations)
+    )
+
+
+def _validate_distributed_network_cardinal_maps(solver, matrices):
+    """Collectively reject unsupported implicit cross-owner map entries."""
+    validation_error = None
+    try:
+        validation_error = _distributed_network_cardinal_map_error(
+            solver,
+            matrices,
+        )
+    except Exception as error:
+        validation_error = f"{type(error).__name__}: {error}"
+
+    # Every rank performs this single collective before any rank can skip a
+    # locally empty equation block during numerical matrix construction.
+    from .network import _raise_collective_error
+    _raise_collective_error(
+        solver.dist.network_comm,
+        validation_error,
+        "Distributed Network CardinalMap ownership validation",
+    )
+
+
+def _gather_distributed_network_ncc_coeffs(solver, matrices):
+    """Gather each NCC behind a collective rank-local error boundary."""
+    for equation_index, equation in enumerate(solver.problem.eqs):
+        for matrix_name in matrices:
+            expression = equation[matrix_name]
+            if not expression:
+                continue
+            gather_error = None
+            try:
+                expression.gather_ncc_coeffs()
+            except Exception as error:
+                gather_error = f"{type(error).__name__}: {error}"
+            _raise_distributed_network_assembly_error(
+                solver,
+                gather_error,
+                "Distributed Network NCC gathering for equation "
+                f"{equation_index} matrix {matrix_name!r}",
+            )
+
+
 def build_subproblem_matrices(solver, subproblems, matrices):
-    # Setup NCCs
-    for eq in solver.problem.eqs:
-        for matrix in matrices:
-            expr = eq[matrix]
-            if expr:
-                expr.gather_ncc_coeffs()
-    # Build matrices
-    for subproblem in log_progress(subproblems, logger, 'info', desc='Building subproblem matrices', iter=np.inf, frac=0.1, dt=10):
-         subproblem.build_matrices(matrices)
+    matrices = tuple(matrices)
+    if solver.dist.distributed_network:
+        _validate_distributed_network_cardinal_maps(solver, matrices)
+        _gather_distributed_network_ncc_coeffs(solver, matrices)
+        matrix_progress = log_progress(
+            subproblems,
+            logger,
+            'info',
+            desc='Building subproblem matrices',
+            iter=np.inf,
+            frac=0.1,
+            dt=10,
+        )
+        for subproblem in matrix_progress:
+            finalization_error = None
+            try:
+                subproblem.build_matrices(matrices, assemble=True)
+            except _DistributedNetworkAssemblyError:
+                # The failing stage has already synchronized every rank.
+                raise
+            except Exception as error:
+                finalization_error = f"{type(error).__name__}: {error}"
+            _raise_distributed_network_assembly_error(
+                solver,
+                finalization_error,
+                "Distributed Network subproblem matrix finalization for "
+                f"group {subproblem.group!r}",
+            )
+        return
+    assembly_root = getattr(solver, "matrix_assembly_root", None)
+    if assembly_root is None:
+        assemble = True
+        comm = None
+    else:
+        comm = getattr(solver.dist, "network_comm", None)
+        if comm is None:
+            raise ValueError(
+                "Root-only matrix assembly requires a network communicator."
+            )
+        assemble = comm.rank == assembly_root
+    assembly_error = None
+    try:
+        # Setup NCCs
+        if assemble:
+            for eq in solver.problem.eqs:
+                for matrix in matrices:
+                    expr = eq[matrix]
+                    if expr:
+                        expr.gather_ncc_coeffs()
+        # Build numerical matrices on the root and structural placeholders
+        # elsewhere so every rank retains identical preconditioners.
+        matrix_progress = log_progress(
+            subproblems,
+            logger,
+            'info',
+            desc='Building subproblem matrices',
+            iter=np.inf,
+            frac=0.1,
+            dt=10,
+        )
+        for subproblem in matrix_progress:
+            subproblem.build_matrices(matrices, assemble=assemble)
+    except Exception as error:
+        if assembly_root is None:
+            raise
+        assembly_error = f"{type(error).__name__}: {error}"
+    if assembly_root is not None:
+        errors = comm.allgather(assembly_error)
+        for rank, rank_error in enumerate(errors):
+            if rank_error is not None:
+                raise RuntimeError(
+                    "Root-only matrix assembly failed on network rank "
+                    f"{rank}: {rank_error}"
+                )
 
 # def rebuild_subproblem_matrices(problem, subsystems, matrices):
     # """Rebuild subproblem matrices with progress logger."""
@@ -494,7 +746,7 @@ class Subproblem:
     def check_condition(self, eqn):
         return eval(eqn['condition'], self.group_dict)
 
-    def build_matrices(self, names):
+    def build_matrices(self, names, assemble=True):
         """Build problem matrices."""
 
         solver = self.solver
@@ -506,35 +758,93 @@ class Subproblem:
         I = sum(eqn_sizes)
         J = sum(var_sizes)
         dtype = self.dtype
+        distributed_network = solver.dist.distributed_network
 
         # Construct subsystem matrices
         # Include all equations and group entries
         matrices = {}
         for name in names:
-            # Collect entries
-            data, rows, cols = [], [], []
-            i0 = 0
-            for eqn, eqn_size, eqn_cond in zip(eqns, eqn_sizes, eqn_conditions):
-                if eqn_size and eqn_cond and (eqn[name] != 0):
-                    # Build matrix and append data
-                    eqn_blocks = eqn[name].expression_matrices(subproblem=self, vars=vars, ncc_cutoff=solver.ncc_cutoff, max_ncc_terms=solver.max_ncc_terms)
-                    j0 = 0
-                    for var, var_size in zip(vars, var_sizes):
-                        if var_size and (var in eqn_blocks):
-                            block = sparse.coo_matrix(eqn_blocks[var])
-                            data.append(block.data)
-                            rows.append(i0 + block.row)
-                            cols.append(j0 + block.col)
-                        j0 += var_size
-                i0 += eqn_size
-            # Build sparse matrix
-            if data:
-                data = np.concatenate(data)
-                rows = np.concatenate(rows)
-                cols = np.concatenate(cols)
-                # Filter entries
-                data[np.abs(data) < solver.entry_cutoff] = 0
-            matrices[name] = sparse.coo_matrix((data, (rows, cols)), shape=(I, J), dtype=dtype).tocsr()
+            construction_error = None
+            try:
+                # Collect entries
+                if distributed_network:
+                    entries = {
+                        "replicated": ([], [], []),
+                        "additive": ([], [], []),
+                    }
+                else:
+                    entries = {"matrix": ([], [], [])}
+                if assemble:
+                    i0 = 0
+                    for eqn, eqn_size, eqn_cond in zip(eqns, eqn_sizes, eqn_conditions):
+                        if eqn_size and eqn_cond and (eqn[name] != 0):
+                            # Build matrix and append data
+                            eqn_blocks = eqn[name].expression_matrices(
+                                subproblem=self,
+                                vars=vars,
+                                ncc_cutoff=solver.ncc_cutoff,
+                                max_ncc_terms=solver.max_ncc_terms,
+                                _network_matrix_parts=distributed_network,
+                            )
+                            j0 = 0
+                            for var, var_size in zip(vars, var_sizes):
+                                if var_size and (var in eqn_blocks):
+                                    if distributed_network:
+                                        from .network_matrix import NetworkMatrixParts
+                                        parts = eqn_blocks[var]
+                                        if not isinstance(parts, NetworkMatrixParts):
+                                            raise TypeError(
+                                                "Distributed Network expression matrix "
+                                                "lost its ownership provenance."
+                                            )
+                                        blocks = {
+                                            "replicated": parts.replicated,
+                                            "additive": parts.additive,
+                                        }
+                                    else:
+                                        blocks = {"matrix": eqn_blocks[var]}
+                                    for kind, values in blocks.items():
+                                        block = sparse.coo_matrix(values)
+                                        data, rows, cols = entries[kind]
+                                        data.append(block.data)
+                                        rows.append(i0 + block.row)
+                                        cols.append(j0 + block.col)
+                                j0 += var_size
+                        i0 += eqn_size
+                # Build sparse matrix or ownership-separated matrix pair.
+                built = {}
+                for kind, (data, rows, cols) in entries.items():
+                    if data:
+                        data = np.concatenate(data)
+                        rows = np.concatenate(rows)
+                        cols = np.concatenate(cols)
+                        # Filter entries
+                        data[np.abs(data) < solver.entry_cutoff] = 0
+                    built[kind] = sparse.coo_matrix(
+                        (data, (rows, cols)),
+                        shape=(I, J),
+                        dtype=dtype,
+                    ).tocsr()
+            except Exception as error:
+                if not distributed_network:
+                    raise
+                construction_error = f"{type(error).__name__}: {error}"
+            if distributed_network:
+                _raise_distributed_network_assembly_error(
+                    solver,
+                    construction_error,
+                    "Distributed Network expression-matrix construction "
+                    f"for {name!r}",
+                )
+                from .network import assemble_distributed_network_matrix
+                matrices[name] = assemble_distributed_network_matrix(
+                    built["replicated"],
+                    built["additive"],
+                    solver,
+                    self,
+                )
+            else:
+                matrices[name] = built["matrix"]
 
         # Valid modes
         valid_eqn = [self.valid_modes(eqn['eqn'], eqn['valid_modes']) for eqn in eqns]

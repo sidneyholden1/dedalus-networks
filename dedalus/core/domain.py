@@ -28,6 +28,73 @@ class Domain(metaclass=CachedClass):
 
     @classmethod
     def _preprocess_args(cls, dist, bases):
+        # Network bases carry topology and geometry in addition to ordinary
+        # coordinate names.  Coordinate equality alone is therefore not
+        # sufficient to decide whether they belong to a Distributor: two
+        # different Networks may both expose coordinates named ``e`` and
+        # ``x``.  Reject that mismatch before the public NetworkBasis bundle
+        # is expanded into its internal cardinal and interval bases.
+        for basis in bases:
+            if getattr(basis, "_dedalus_network_basis_set", False):
+                raise TypeError(
+                    "NetworkBasisSet is a collection of heterogeneous edge "
+                    "buckets, not a single Field basis; select one bucket "
+                    "such as bases['fine']."
+                )
+            network_basis = getattr(basis, "_network_basis", None)
+            basis_network = getattr(basis, "_network", None)
+            if (
+                network_basis is None
+                and hasattr(basis, "__dedalus_bases__")
+                and hasattr(basis, "network")
+            ):
+                network_basis = basis
+            if basis_network is None and network_basis is not None:
+                basis_network = network_basis.network
+            if (
+                basis_network is not None
+                and getattr(dist, "network", None) is not basis_network
+            ):
+                raise ValueError(
+                    "Network bases must belong to the Network used to "
+                    "construct the Distributor."
+                )
+        # Expand public bundles of compatible one-dimensional bases.  This
+        # keeps compound interfaces out of tuple-subclass tricks while Domain
+        # continues to operate on ordinary Basis objects internally.
+        expanded_bases = []
+        for basis in bases:
+            protocol = getattr(basis, "__dedalus_bases__", None)
+            if protocol is None:
+                expanded_bases.append(basis)
+            else:
+                expanded_bases.extend(protocol())
+        bases = expanded_bases
+        # Scalar coordinates compare by name in Dedalus.  For a Network this
+        # is too weak: an interval basis from another Network can otherwise be
+        # mixed with the local edge basis merely because both coordinates are
+        # named ``x``.  Derivative bases remain valid because they retain the
+        # exact position-coordinate object owned by the Distributor's Network.
+        network = getattr(dist, "network", None)
+        if network is not None:
+            for basis in bases:
+                if basis is None:
+                    continue
+                basis_coords = getattr(
+                    getattr(basis, "coordsys", None),
+                    "coords",
+                    (),
+                )
+                for basis_coord in basis_coords:
+                    for network_coord in network.coords:
+                        if (
+                            basis_coord == network_coord
+                            and basis_coord is not network_coord
+                        ):
+                            raise ValueError(
+                                "Network bases must belong to the Network used "
+                                "to construct the Distributor."
+                            )
         # Drop None bases
         bases = [b for b in bases if b is not None]
         # Drop duplicate bases

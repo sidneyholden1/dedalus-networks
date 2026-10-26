@@ -47,3 +47,12 @@ Curvilinear examples
     /pages/examples/*sphere*
     /pages/examples/*shell*
     /pages/examples/*ball*
+
+Network examples
+----------------
+
+.. nbgallery::
+    :name: network-example-gallery
+    :glob:
+
+    /pages/examples/*network*

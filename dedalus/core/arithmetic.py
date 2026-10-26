@@ -179,11 +179,12 @@ class Add(Future, metaclass=MultiClass):
 
     def expression_matrices(self, subproblem, vars, **kw):
         """Build expression matrices for a specific subproblem and variables."""
+        from .network_matrix import network_identity_matrix
         # Intercept calls to compute matrices over expressions
         if self in vars:
             size = subproblem.field_size(self)
             matrix = sparse.identity(size, format='csr')
-            return {self: matrix}
+            return {self: network_identity_matrix(matrix, self.domain, kw)}
         matrices = {}
         # Iteratively add argument expression matrices
         for arg in self.args:
@@ -377,10 +378,40 @@ class Product(Future):
             ncc = ncc.evaluate()
         # Allgather NCC coefficients
         if isinstance(ncc, Field):
+            if (
+                ncc.dist.distributed_network
+                and ncc.dist.network_axis_uses_owned_ghost(ncc.domain)
+            ):
+                ncc.change_scales(ncc.domain.dealias)
             ncc.require_coeff_space()
-            self._ncc_data = ncc.allgather_data()
+            role = ncc.dist.network_axis_role(ncc.domain)
+            if ncc.dist.distributed_network and role in ("edges", "ports"):
+                self._ncc_data = np.array(ncc.data, copy=True)
+                self._ncc_data_is_local = True
+                self._ncc_matrix_is_additive = True
+            elif (
+                ncc.dist.distributed_network
+                and role == "vertices"
+                and ncc.dist.network_vertex_storage == "owned_ghost"
+            ):
+                # A resident vertex NCC has the same owner/ghost layout as
+                # the vertex operand.  Keep it local so Cardinal products are
+                # built with the rank-local shape, but do not mark the matrix
+                # contribution additive: pointwise vertex coefficients are
+                # direct data and their equation rows are retained only on
+                # the canonical vertex owner during Network assembly.
+                ncc.dist.synchronize_network_vertex_ghosts(ncc)
+                self._ncc_data = np.array(ncc.data, copy=True)
+                self._ncc_data_is_local = True
+                self._ncc_matrix_is_additive = False
+            else:
+                self._ncc_data = ncc.allgather_data()
+                self._ncc_data_is_local = False
+                self._ncc_matrix_is_additive = False
         else:
             self._ncc_data = ncc
+            self._ncc_data_is_local = False
+            self._ncc_matrix_is_additive = False
 
     def store_ncc_matrices(self, vars, subproblems, **kw):
         self.prep_nccs(vars)
@@ -503,18 +534,37 @@ class Product(Future):
 
     def expression_matrices(self, subproblem, vars, **kw):
         """Build expression matrices for a specific subproblem and variables."""
+        from .network_matrix import (
+            network_identity_matrix,
+            network_left_apply,
+        )
         # Intercept calls to compute matrices over expressions
         if self in vars:
             size = subproblem.field_size(self)
             matrix = sparse.identity(size, format='csr')
-            return {self: matrix}
+            return {self: network_identity_matrix(matrix, self.domain, kw)}
         # Check vars vs. NCC prep
         if vars != self._ncc_vars:
             raise SymbolicParsingError("Must build NCC matrices with same variables.")
         # Apply NCC matrix to operand matrices
         operand_mats = self.operand.expression_matrices(subproblem, vars, **kw)
-        ncc_mat = self.build_ncc_matrix(subproblem, **kw)
-        return {var: ncc_mat @ operand_mats[var] for var in operand_mats}
+        matrix_kw = {
+            key: value
+            for key, value in kw.items()
+            if key != "_network_matrix_parts"
+        }
+        ncc_mat = self.build_ncc_matrix(subproblem, **matrix_kw)
+        promote = getattr(self, "_ncc_matrix_is_additive", False)
+        return {
+            var: network_left_apply(
+                ncc_mat,
+                operand_mats[var],
+                self,
+                kw,
+                promote=promote,
+            )
+            for var in operand_mats
+        }
         # # Modify NCC matrix for subproblem
         # # Build projection matrix dropping constant-groups as necessary
         # group_shape = subproblem.coeff_shape(self.subdomain)
@@ -953,15 +1003,18 @@ class MultiplyNumberField(Multiply, FutureField):
 
     def expression_matrices(self, subproblem, vars, **kw):
         """Build expression matrices for a specific subproblem and variables."""
+        from .network_matrix import network_identity_matrix
         # Intercept calls to compute matrices over expressions
         if self in vars:
             size = subproblem.field_size(self)
             matrix = sparse.identity(size, format='csr')
-            return {self: matrix}
+            return {self: network_identity_matrix(matrix, self.domain, kw)}
         arg0, arg1 = self.args
         # Build field matrices
         arg1_mats = arg1.expression_matrices(subproblem, vars, **kw)
         # Multiply field matrices
+        if kw.get("_network_matrix_parts", False):
+            return {var: arg1_mats[var].scale(arg0) for var in arg1_mats}
         return {var: arg0 * arg1_mats[var] for var in arg1_mats}
 
     def build_ncc_matrices(self, separability, vars, **kw):
@@ -986,4 +1039,3 @@ for key, value in aliases.items():
 
 # Export aliases
 __all__.extend(aliases.keys())
-

@@ -84,6 +84,56 @@ def prefix(*names):
     return register_op
 
 
+@alias("dtrace")
+def network_dirichlet_trace(operand):
+    """Evaluate a Network edge field at its oriented endpoints.
+
+    Parameters
+    ----------
+    operand : Operand
+        Dedalus field or deferred expression using a
+        :class:`~dedalus.core.network.NetworkBasis` edge basis.
+
+    Returns
+    -------
+    Operand
+        Endpoint values on the port basis, ordered
+        ``(edge 0 left, edge 0 right, ...)``.
+
+    Notes
+    -----
+    This operator is exported from :mod:`dedalus.public` as ``dtrace``.
+    """
+    from .network import dirichlet_trace
+    return dirichlet_trace(operand)
+
+
+@alias("ntrace")
+def network_neumann_trace(operand):
+    """Evaluate the outward physical derivative at every Network port.
+
+    Parameters
+    ----------
+    operand : Operand
+        Dedalus edge field or deferred expression.
+
+    Returns
+    -------
+    Operand
+        ``-du/dx`` at each oriented edge tail and ``+du/dx`` at each head,
+        ordered ``(edge 0 left, edge 0 right, ...)``.
+
+    Notes
+    -----
+    This operator is exported from :mod:`dedalus.public` as ``ntrace``.  It
+    differentiates with respect to physical arclength.  For an edge diffusion
+    field ``kappa``, form the port flux as
+    ``dtrace(kappa) * ntrace(operand)``.
+    """
+    from .network import neumann_trace
+    return neumann_trace(operand)
+
+
 # class Cast(FutureField, metaclass=MultiClass):
 #     """
 #     Cast to field.
@@ -777,20 +827,36 @@ class LinearOperator(FutureField):
 
     def expression_matrices(self, subproblem, vars, **kw):
         """Build expression matrices for a specific subproblem and variables."""
+        from .network_matrix import network_identity_matrix, network_left_apply
         # Intercept calls to compute matrices over expressions
         if self in vars:
             size = subproblem.field_size(self)
             matrix = sparse.identity(size, format='csr')
-            return {self: matrix}
+            return {self: network_identity_matrix(matrix, self.domain, kw)}
         # Intercept subproblems without data
         size = subproblem.field_size(self)
         if size == 0:
-            return {var: sparse.csr_matrix((size, subproblem.field_size(var))) for var in vars}
+            return {
+                var: network_identity_matrix(
+                    sparse.csr_matrix((size, subproblem.field_size(var))),
+                    self.domain,
+                    kw,
+                )
+                for var in vars
+            }
         # Build operand matrices
         operand_mats = self.operand.expression_matrices(subproblem, vars, **kw)
         # Apply operator matrix
         operator_mat = self.subproblem_matrix(subproblem)
-        out = {var: operator_mat @ operand_mats[var] for var in operand_mats}
+        out = {
+            var: network_left_apply(
+                operator_mat,
+                operand_mats[var],
+                self,
+                kw,
+            )
+            for var in operand_mats
+        }
         return out
 
     def subproblem_matrix(self, subproblem):
@@ -890,7 +956,7 @@ class SpectralOperator(LinearOperator):
         arg0 = self.args[0]
         last_axis = self.last_axis
         is_coeff = not arg0.layout.grid_space[last_axis]
-        is_local = arg0.layout.local[last_axis]
+        is_local = arg0.layout.axis_is_local(arg0.domain, last_axis)
         # Require coefficient space along last axis
         # Require locality along last axis if non-separable
         if not self.subaxis_coupling[-1]:
@@ -938,6 +1004,10 @@ class SpectralOperator1D(SpectralOperator):
 
     def subproblem_matrix(self, subproblem):
         """Build operator matrix for a specific subproblem."""
+        output_size = subproblem.field_size(self)
+        input_size = subproblem.field_size(self.operand)
+        if output_size == 0 or input_size == 0:
+            return sparse.csr_matrix((output_size, input_size))
         axis = self.last_axis
         group = subproblem.group[axis]
         # Track sizes for previous and subsequent axes
@@ -1155,6 +1225,27 @@ class Interpolate(SpectralOperator, metaclass=MultiClass):
         return prod([self.new_operand(arg) for arg in operand.args])
 
 
+def _default_reduction_coords(operand):
+    """Choose all-basis reduction coordinates, preserving Network locality."""
+    bases = operand.domain.bases
+    edge_network_basis = next(
+        (
+            getattr(basis, "_network_basis", None)
+            for basis in bases
+            if getattr(basis, "_network_role", None) == "edges"
+        ),
+        None,
+    )
+    if edge_network_basis is not None and any(
+        getattr(basis, "coordsys", None)
+        is edge_network_basis.network.position_coord
+        for basis in bases
+    ):
+        # Network supplies the MPI-safe interval-then-edge reduction order.
+        return edge_network_basis.network
+    return [basis.coordsys for basis in bases]
+
+
 @alias("integ")
 class Integrate(LinearOperator, metaclass=MultiClass):
     """
@@ -1176,13 +1267,16 @@ class Integrate(LinearOperator, metaclass=MultiClass):
             raise SkipDispatchException(output=0)
         # Integrate over all operand bases by default
         if coord is None:
-            coord = [basis.coordsys for basis in operand.domain.bases]
+            coord = _default_reduction_coords(operand)
         # Split Cartesian coordinates
         if isinstance(coord, coords.CartesianCoordinates):
             coord = coord.coords
         # Split DirectProduct coordinates
         if isinstance(coord, coords.DirectProduct):
             coord = coord.coordsystems
+        separable_coords = getattr(coord, "__dedalus_separable_coords__", None)
+        if separable_coords is not None:
+            coord = separable_coords()
         # Recurse over multiple coordinates
         if isinstance(coord, (tuple, list)):
             if len(coord) > 1:
@@ -1249,13 +1343,16 @@ class Average(LinearOperator, metaclass=MultiClass):
             raise SkipDispatchException(output=operand)
         # Average over all operand bases by default
         if coord is None:
-            coord = [basis.coordsys for basis in operand.domain.bases]
+            coord = _default_reduction_coords(operand)
         # Split Cartesian coordinates
         if isinstance(coord, coords.CartesianCoordinates):
             coord = coord.coords
         # Split DirectProduct coordinates
         if isinstance(coord, coords.DirectProduct):
             coord = coord.coordsystems
+        separable_coords = getattr(coord, "__dedalus_separable_coords__", None)
+        if separable_coords is not None:
+            coord = separable_coords()
         # Recurse over multiple coordinates
         if isinstance(coord, (tuple, list)):
             if len(coord) > 1:
@@ -1296,6 +1393,9 @@ class Average(LinearOperator, metaclass=MultiClass):
         self.domain = operand.domain.substitute_basis(self.input_basis, self.output_basis)
         self.tensorsig = operand.tensorsig
         self.dtype = operand.dtype
+
+    def new_operand(self, operand, **kw):
+        return Average(operand, self.coord, **kw)
 
 
 # # CHECK NEW
@@ -1605,7 +1705,7 @@ class Convert(SpectralOperator, metaclass=MultiClass):
         arg0 = self.args[0]
         last_axis = self.last_axis
         last_is_coeff = not arg0.layout.grid_space[last_axis]
-        last_is_local = arg0.layout.local[last_axis]
+        last_is_local = arg0.layout.axis_is_local(arg0.domain, last_axis)
         # In coefficient space, require locality if coupled
         if last_is_coeff and self.subaxis_coupling[-1]:
             return last_is_local
@@ -1715,7 +1815,7 @@ class ConvertConstant(Convert):
         if self.output_basis.dim == 1:
             # Require coeff space or local
             last_is_coeff = not arg0.layout.grid_space[last_axis]
-            last_is_local = arg0.layout.local[last_axis]
+            last_is_local = arg0.layout.axis_is_local(arg0.domain, last_axis)
             return last_is_coeff or last_is_local
         else:
             # Require last axis in coeff space

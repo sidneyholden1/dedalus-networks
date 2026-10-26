@@ -6,7 +6,12 @@ Classes for future evaluation.
 import numpy as np
 from functools import partial
 
-from .field import Operand, Field, LockedField
+from .field import (
+    Operand,
+    Field,
+    LockedField,
+    synchronize_network_vertex_inputs,
+)
 from .domain import Domain
 #from .domain import Domain
 from ..tools.general import OrderedSet, unify_attributes
@@ -162,6 +167,22 @@ class Future(Operand):
 
     def evaluate(self, id=None, force=True):
         """Recursively evaluate operation."""
+        if (
+            self.dist is not None
+            and self.dist.distributed_network
+            and self.dist._network_evaluation_depth == 0
+        ):
+            # Synchronize only the leaf inputs of the complete expression.
+            # Recursive calls then run inside the same context, so replicated
+            # additive intermediates are never overwritten by rank zero.
+            fields = self.atoms(Field)
+            synchronize_network_vertex_inputs(self.dist, fields)
+            with self.dist.network_evaluation(fields):
+                return self._evaluate(id=id, force=force)
+        return self._evaluate(id=id, force=force)
+
+    def _evaluate(self, id=None, force=True):
+        """Implementation for evaluation inside any Network sync context."""
 
         # Check storage
         if self.store_last and (id is not None):

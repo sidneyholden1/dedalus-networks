@@ -87,3 +87,51 @@ def test_cardinal_average_constant(N, dtype):
     g = d3.Average(f, c).evaluate()
     assert np.allclose(g['g'], 7)
 
+
+@pytest.mark.parametrize('dtype', dtype_range)
+def test_weighted_cardinal_measure(dtype):
+    c = d3.Coordinate('n')
+    dist = d3.Distributor(c, dtype=dtype)
+    weights = np.array([1, 2, 4], dtype=float)
+    basis = d3.CardinalBasis(c, size=3, weights=weights)
+    f = dist.Field(bases=basis)
+    f['g'] = np.array([2, 3, 5], dtype=dtype)
+
+    integral = d3.Integrate(f, c).evaluate()
+    average = d3.Average(f, c).evaluate()
+    expected_integral = np.dot(weights, f['g'])
+
+    assert basis.volume == weights.sum()
+    assert np.allclose(integral['g'], expected_integral)
+    assert np.allclose(average['g'], expected_integral / weights.sum())
+    assert not basis.weights.flags.writeable
+
+
+@pytest.mark.parametrize(
+    'weights, message',
+    [
+        ([1, 2], 'shape'),
+        ([1, np.inf, 2], 'finite and nonnegative'),
+        ([1, -1, 2], 'finite and nonnegative'),
+        ([0, 0, 0], 'positive sum'),
+    ],
+)
+def test_cardinal_rejects_invalid_weights(weights, message):
+    coord = d3.Coordinate('n')
+    with pytest.raises(ValueError, match=message):
+        d3.CardinalBasis(coord, size=3, weights=weights)
+
+
+def test_cardinal_grid_shape_in_product_domain():
+    """Cardinal grids broadcast along their distributor axis."""
+    ncoord = d3.Coordinate("n")
+    xcoord = d3.Coordinate("x")
+    dist = d3.Distributor((ncoord, xcoord), dtype=np.float64)
+    nbasis = d3.CardinalBasis(ncoord, size=3)
+    xbasis = d3.Chebyshev(xcoord, size=4, bounds=(0, 1))
+
+    n, x = dist.local_grids(nbasis, xbasis)
+
+    assert n.shape == (3, 1)
+    assert x.shape == (1, 4)
+    assert np.array_equal(n.ravel(), np.arange(3))

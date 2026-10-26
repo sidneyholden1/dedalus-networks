@@ -3,8 +3,7 @@ name: Test Dedalus
 on:
   push:
     branches:
-      - master
-      - v2_master
+      - main
   workflow_dispatch:
 jobs:
   test_via_conda_forge:
@@ -41,6 +40,19 @@ jobs:
         run: |
           conda activate dedalus
           CC=mpicc pip install --no-cache --no-build-isolation .
+      - name: Test Network MPI support
+        if: runner.os == 'Linux'
+        shell: bash -l {0}
+        run: |
+          cd "$HOME"
+          conda activate dedalus
+          mpi_args=(-n 4)
+          mpi_vendor="$(python -c 'from mpi4py import MPI; print(MPI.get_vendor()[0])')"
+          if [[ "${mpi_vendor}" == "Open MPI" ]]; then
+            mpi_args+=(--oversubscribe)
+          fi
+          mpiexec "${mpi_args[@]}" python -m pytest -q \
+            "$GITHUB_WORKSPACE"/dedalus/tests_parallel/test_network_*.py
       - name: Test Dedalus
         shell: bash -l {0}
         run: |
@@ -57,4 +69,3 @@ jobs:
           name: Test report (${{ matrix.os }})
           path: dedalus-test-junit.xml
           reporter: java-junit
-

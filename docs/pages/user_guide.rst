@@ -7,6 +7,7 @@ General user guide:
     :maxdepth: 1
 
     problem_formulations
+    network_problems
     performance_tips
     configuration
     troubleshooting
@@ -21,4 +22,3 @@ Specific how-to's:
     tau_method
     half_dimensions
     general_functions
-

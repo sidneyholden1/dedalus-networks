@@ -1,5 +1,6 @@
 """Classes for representing systems of equations."""
 
+import hashlib
 import numpy as np
 from collections import ChainMap
 
@@ -31,13 +32,235 @@ parseables.update({name: getattr(operators, name) for name in operators.__all__}
 parseables.update({name: getattr(arithmetic, name) for name in arithmetic.__all__})
 
 
+def _network_hidden_vertex_name(edge_field):
+    """Build a restart-stable reserved name from a semantic field name."""
+    name = edge_field.name
+    if not isinstance(name, str) or not name:
+        raise ValueError(
+            "Automatically managed Network interface fields require a "
+            "nonempty edge-field name. Name the edge field or bind an "
+            "explicit vertex field with network_interfaces=[(u, U)]."
+        )
+    label = "".join(
+        character if character.isascii() and character.isalnum() else "_"
+        for character in name
+    ).strip("_")
+    if not label:
+        label = "field"
+    digest = hashlib.blake2b(
+        name.encode("utf-8"),
+        digest_size=8,
+    ).hexdigest()
+    return f"__network_vertex_{label[:32]}_{digest}"
+
+
 class ProblemBase:
     """Base class for all problem types."""
 
-    def __init__(self, variables, namespace=None):
+    def __init__(self, variables, namespace=None, network_interfaces=None):
+        user_variables = tuple(variables)
+        variables = list(user_variables)
+        interface_bindings = []
+        hidden_interface_fields = []
+        automatic_interface_names = set()
+
+        if network_interfaces is None:
+            interface_specs = ()
+        elif isinstance(network_interfaces, Field):
+            interface_specs = (network_interfaces,)
+        else:
+            try:
+                interface_specs = tuple(network_interfaces)
+            except TypeError as error:
+                raise TypeError(
+                    "network_interfaces must be a Field or an iterable of "
+                    "Fields and (edge_field, vertex_field) pairs."
+                ) from error
+
+        for interface_spec in interface_specs:
+            if isinstance(interface_spec, Field):
+                edge_field = interface_spec
+                vertex_field = None
+            elif (
+                isinstance(interface_spec, (tuple, list))
+                and len(interface_spec) == 2
+            ):
+                edge_field, vertex_field = interface_spec
+            else:
+                raise TypeError(
+                    "Each network interface must be an edge Field or an "
+                    "(edge_field, vertex_field) pair."
+                )
+
+            if not isinstance(edge_field, Field):
+                raise TypeError("Network interface edge variables must be Fields.")
+            if not any(edge_field is variable for variable in user_variables):
+                raise ValueError(
+                    "Network interface edge fields must be included in the "
+                    "problem variable list."
+                )
+            if any(
+                edge_field is bound_edge
+                for bound_edge, _, _ in interface_bindings
+            ):
+                raise ValueError(
+                    "Each Network edge field may be registered as an "
+                    "interface only once."
+                )
+            if edge_field.tensorsig:
+                raise UnsupportedEquationError(
+                    "Network interface fields must be scalar."
+                )
+
+            edge_bases = [
+                basis
+                for basis in edge_field.domain.bases
+                if getattr(basis, "_network_role", None) == "edges"
+            ]
+            if len(edge_bases) != 1:
+                raise ValueError(
+                    "Network interface fields must use the edge basis of "
+                    "exactly one NetworkBasis."
+                )
+            edge_basis = edge_bases[0]
+            network_basis = getattr(edge_basis, "_network_basis", None)
+            if network_basis is None or edge_basis is not network_basis.edges:
+                raise ValueError(
+                    "Network interface fields must use a canonical "
+                    "NetworkBasis edge basis."
+                )
+            if (
+                edge_field.domain.get_basis(
+                    network_basis.network.position_coord
+                )
+                is None
+            ):
+                raise ValueError(
+                    "Network interface fields must vary along the Network "
+                    "interval coordinate."
+                )
+
+            heterogeneous_bindings = [
+                (bound_vertex, bound_basis)
+                for _, bound_vertex, bound_basis in interface_bindings
+                if (
+                    bound_basis is not network_basis
+                    and bound_basis.network is network_basis.network
+                )
+            ]
+            if heterogeneous_bindings and (
+                vertex_field is None
+                or any(
+                    any(
+                        bound_vertex is hidden
+                        for hidden in hidden_interface_fields
+                    )
+                    for bound_vertex, _ in heterogeneous_bindings
+                )
+            ):
+                raise ValueError(
+                    "Automatic Network interfaces cannot infer one physical "
+                    "vertex field across heterogeneous NetworkBasis buckets. "
+                    "Create a shared U on basis_set.vertices and register "
+                    "each bucket explicitly, for example "
+                    "network_interfaces=[(u_coarse, U), (u_fine, U)]."
+                )
+
+            if vertex_field is None:
+                if edge_field.name in automatic_interface_names:
+                    raise ValueError(
+                        "Automatically managed Network interface edge fields "
+                        "must have unique names."
+                    )
+                automatic_interface_names.add(edge_field.name)
+                hidden_name = _network_hidden_vertex_name(edge_field)
+                if any(
+                    isinstance(variable.name, str)
+                    and variable.name.startswith("__network_vertex_")
+                    for variable in user_variables
+                ):
+                    raise ValueError(
+                        "Problem variable names beginning with "
+                        "'__network_vertex_' are reserved for automatic "
+                        "Network interface fields."
+                    )
+                if any(
+                    variable.name == hidden_name
+                    for variable in hidden_interface_fields
+                ):
+                    raise ValueError(
+                        "Automatically managed Network interface edge-field "
+                        "names produced the same reserved vertex-field name."
+                    )
+                vertex_field = Field(
+                    dist=edge_field.dist,
+                    bases=network_basis.vertices,
+                    name=hidden_name,
+                    dtype=edge_field.dtype,
+                )
+                variables.append(vertex_field)
+                hidden_interface_fields.append(vertex_field)
+            else:
+                if not isinstance(vertex_field, Field):
+                    raise TypeError(
+                        "Explicit Network interface variables must be Fields."
+                    )
+                if not any(
+                    vertex_field is variable for variable in user_variables
+                ):
+                    raise ValueError(
+                        "Explicit Network interface fields must be included "
+                        "in the problem variable list."
+                    )
+                if vertex_field.dist is not edge_field.dist:
+                    raise ValueError(
+                        "A Network edge field and its vertex interface field "
+                        "must use the same Distributor."
+                    )
+                if vertex_field.tensorsig:
+                    raise UnsupportedEquationError(
+                        "Network interface fields must be scalar."
+                    )
+                if (
+                    vertex_field.domain.bases
+                    != (network_basis.vertices,)
+                ):
+                    raise ValueError(
+                        "Explicit Network interface fields must use the "
+                        "matching NetworkBasis vertex basis."
+                    )
+            interface_bindings.append(
+                (edge_field, vertex_field, network_basis)
+            )
+
+        self.network_interfaces = tuple(
+            (edge_field, vertex_field)
+            for edge_field, vertex_field, _ in interface_bindings
+        )
+        self._network_interface_bindings = tuple(interface_bindings)
+        self._hidden_network_interface_fields = tuple(hidden_interface_fields)
         self.variables = variables
         self.LHS_variables = variables
         self.dist = unify_attributes(variables, 'dist')
+        if getattr(self.dist, "network", None) is not None:
+            tensor_variables = [
+                variable
+                for variable in variables
+                if variable.tensorsig
+            ]
+            if tensor_variables:
+                names = ", ".join(
+                    str(variable.name) if variable.name else "<unnamed>"
+                    for variable in tensor_variables
+                )
+                raise UnsupportedEquationError(
+                    "Tensor-valued Network PDE variables are not supported "
+                    f"yet: {names}. Network currently describes the (edge, s) "
+                    "storage axes, not a physical tensor coordinate system. "
+                    "Use scalar Fields, one per physical or system component. "
+                    "VectorField and TensorField remain available for data "
+                    "storage and I/O."
+                )
         self.equations = self.eqs = []
         # Build namespace via chainmap to react to upstream changes
         # Priority: local namespace, external namespace, parseables
@@ -45,10 +268,52 @@ class ProblemBase:
         for var in variables:
             if var.name:
                 self.local_namespace[var.name] = var
+        if interface_bindings:
+            for helper_name in ("continuity", "vertex_value"):
+                if any(variable.name == helper_name for variable in variables):
+                    raise ValueError(
+                        f"Problem variable name {helper_name!r} is reserved "
+                        "when using network_interfaces."
+                    )
+            self.local_namespace["continuity"] = self.continuity
+            self.local_namespace["vertex_value"] = self.vertex_value
         if namespace is None:
             self.namespace = ChainMap(self.local_namespace, parseables)
         else:
             self.namespace = ChainMap(self.local_namespace, namespace, parseables)
+
+    def _network_interface_binding(self, edge_field):
+        """Return the registered vertex field and basis for an edge field."""
+        if not isinstance(edge_field, Field):
+            raise TypeError(
+                "Network interface helpers require a registered edge Field."
+            )
+        for bound_edge, vertex_field, network_basis in (
+            self._network_interface_bindings
+        ):
+            if edge_field is bound_edge:
+                return vertex_field, network_basis
+        name = edge_field.name or "<unnamed>"
+        raise ValueError(
+            f"Field {name!r} is not registered in network_interfaces."
+        )
+
+    def vertex_field(self, edge_field):
+        """Return the vertex interface field registered for ``edge_field``."""
+        vertex_field, _ = self._network_interface_binding(edge_field)
+        return vertex_field
+
+    def vertex_value(self, edge_field):
+        """Return the common vertex-value unknown for ``edge_field``."""
+        return self.vertex_field(edge_field)
+
+    def continuity(self, edge_field):
+        """Return the port equation enforcing continuity of ``edge_field``."""
+        vertex_field, network_basis = self._network_interface_binding(edge_field)
+        return (
+            network_basis.dtrace(edge_field)
+            - network_basis.restriction @ vertex_field
+        )
 
     @property
     def matrix_dependence(self):
@@ -123,6 +388,10 @@ class LinearBoundaryValueProblem(ProblemBase):
     namespace : dict-like, optional
         Dictionary for namespace additions to use when parsing strings as equations
         (default: None). It is recommended to pass "locals()" from the user script.
+    network_interfaces : iterable, optional
+        Network edge fields whose common vertex-value fields should be managed
+        by the problem.  Entries may also be ``(edge_field, vertex_field)``
+        pairs binding an existing explicit vertex field.
 
     Notes
     -----
@@ -134,7 +403,7 @@ class LinearBoundaryValueProblem(ProblemBase):
     Solution procedure:
         - Form L
         - Evaluate F
-        - Solve X = L \ F
+        - Solve X from L.X = F
     """
 
     solver_class = solvers.LinearBoundaryValueSolver
@@ -196,6 +465,10 @@ class NonlinearBoundaryValueProblem(ProblemBase):
     namespace : dict-like, optional
         Dictionary for namespace additions to use when parsing strings as equations
         (default: None). It is recommended to pass "locals()" from the user script.
+    network_interfaces : iterable, optional
+        Network edge fields whose common vertex-value fields should be managed
+        by the problem.  Entries may also be ``(edge_field, vertex_field)``
+        pairs binding an existing explicit vertex field.
 
     Notes
     -----
@@ -215,7 +488,7 @@ class NonlinearBoundaryValueProblem(ProblemBase):
     Iteration procedure:
         - Form dF(X[n])
         - Evaluate F(X[n])
-        - Solve dX = - dF(X[n]) \ F(X[n])
+        - Solve dF(X[n]).dX = -F(X[n])
         - Update X[n+1] = X[n] + dX
     """
 
@@ -279,6 +552,10 @@ class InitialValueProblem(ProblemBase):
     namespace : dict-like, optional
         Dictionary for namespace additions to use when parsing strings as equations
         (default: None). It is recommended to pass "locals()" from the user script.
+    network_interfaces : iterable, optional
+        Network edge fields whose common vertex-value fields should be managed
+        by the problem.  Entries may also be ``(edge_field, vertex_field)``
+        pairs binding an existing explicit vertex field.
 
     Notes
     -----
@@ -375,6 +652,9 @@ class InitialValueProblem(ProblemBase):
             Background fields for linearizing the RHS. Default: the IVP variables.
         perturbations : list of Fields, optional
             Perturbation fields for the EVP. Default: copies of IVP variables.
+            When the IVP manages hidden Network vertex fields, provide only
+            the exposed perturbation fields; the hidden vertex perturbations
+            and their interface bindings are recreated automatically.
 
         Notes
         -----
@@ -384,18 +664,94 @@ class InitialValueProblem(ProblemBase):
             λ*M.X1 + L.X1 - F'(X0).X1 = 0.
         If backgrounds (X0) are not specified, the IVP variables (X) are used.
         """
-        # Create eigenvalue problem for perturbations
-        variables = self.variables
+        # Create eigenvalue problem for perturbations.  Problem-managed vertex
+        # fields are implementation details of a hidden Network interface, so
+        # recreate them through the EVP constructor instead of turning their
+        # copies into unrelated explicit variables.  This preserves the
+        # interface bindings, helper namespace, and hidden-field metadata.
+        variables = tuple(self.variables)
+        hidden_variable_ids = {
+            id(variable)
+            for variable in self._hidden_network_interface_fields
+        }
+        exposed_variables = tuple(
+            variable
+            for variable in variables
+            if id(variable) not in hidden_variable_ids
+        )
         if eigenvalue is None:
             eigenvalue = self.dist.Field(name='λ')
         if perturbations is None:
-            perturbations = [var.copy() for var in variables]
-            for pert, var in zip(perturbations, variables):
+            exposed_perturbations = [
+                var.copy()
+                for var in exposed_variables
+            ]
+            for pert, var in zip(exposed_perturbations, exposed_variables):
                 if var.name:
                     pert.name = 'δ'+var.name
+        else:
+            exposed_perturbations = list(perturbations)
+            if len(exposed_perturbations) != len(exposed_variables):
+                if hidden_variable_ids:
+                    detail = (
+                        "; omit problem-managed hidden vertex fields because "
+                        "build_EVP recreates them automatically"
+                    )
+                else:
+                    detail = ""
+                raise ValueError(
+                    "perturbations must provide one Field for each exposed "
+                    f"IVP variable ({len(exposed_variables)} expected{detail})."
+                )
+
+        perturbation_by_variable_id = {
+            id(var): pert
+            for var, pert in zip(exposed_variables, exposed_perturbations)
+        }
+        interface_specs = []
+        for edge_field, vertex_field in self.network_interfaces:
+            edge_perturbation = perturbation_by_variable_id[id(edge_field)]
+            if id(vertex_field) in hidden_variable_ids:
+                interface_specs.append(edge_perturbation)
+            else:
+                interface_specs.append(
+                    (
+                        edge_perturbation,
+                        perturbation_by_variable_id[id(vertex_field)],
+                    )
+                )
+
+        if self.network_interfaces:
+            if "network_interfaces" in kw:
+                raise ValueError(
+                    "build_EVP preserves the IVP network_interfaces "
+                    "automatically; do not pass a replacement binding."
+                )
+            kw["network_interfaces"] = interface_specs
+        EVP = EigenvalueProblem(exposed_perturbations, eigenvalue, **kw)
+
+        for edge_field, vertex_field in self.network_interfaces:
+            if id(vertex_field) in hidden_variable_ids:
+                edge_perturbation = perturbation_by_variable_id[id(edge_field)]
+                perturbation_by_variable_id[id(vertex_field)] = (
+                    EVP.vertex_field(edge_perturbation)
+                )
+        perturbations = [
+            perturbation_by_variable_id[id(variable)]
+            for variable in variables
+        ]
         for pert, var in zip(perturbations, variables):
             pert.valid_modes[:] = var.valid_modes
-        EVP = EigenvalueProblem(perturbations, eigenvalue, **kw)
+
+        if backgrounds is None:
+            backgrounds = variables
+        else:
+            backgrounds = tuple(backgrounds)
+            if len(backgrounds) != len(variables):
+                raise ValueError(
+                    "backgrounds must provide one Field for each IVP "
+                    f"variable ({len(variables)} expected)."
+                )
         # Convert equations from IVP
         for eqn in self.equations:
             # Extract IVP expressions
@@ -422,7 +778,8 @@ class InitialValueProblem(ProblemBase):
             evp_eqn['valid_modes'][:] = eqn['valid_modes']
         # Add backgrounds to EVP namespace
         for var in backgrounds:
-            EVP.local_namespace[var.name] = var
+            if var.name:
+                EVP.local_namespace[var.name] = var
         return EVP
 
 
@@ -439,6 +796,10 @@ class EigenvalueProblem(ProblemBase):
     namespace : dict-like, optional
         Dictionary for namespace additions to use when parsing strings as equations
         (default: None). It is recommended to pass "locals()" from the user script.
+    network_interfaces : iterable, optional
+        Network edge fields whose common vertex-value fields should be managed
+        by the problem.  Entries may also be ``(edge_field, vertex_field)``
+        pairs binding an existing explicit vertex field.
 
     Notes
     -----
@@ -505,4 +866,3 @@ IVP = InitialValueProblem
 LBVP = LinearBoundaryValueProblem
 NLBVP = NonlinearBoundaryValueProblem
 EVP = EigenvalueProblem
-

@@ -1,3 +1,50 @@
+# Dedalus network PDEs
+
+A research fork of [Dedalus](https://github.com/DedalusProject/dedalus) by
+Sidney Holden for solving partial differential equations on metric networks.
+The extension represents edges with spectral bases and couples them through
+vertex values and flux conditions. It includes whole-edge MPI distribution and
+Dirichlet-to-Neumann solvers.
+
+This is an experimental extension, maintained separately from upstream Dedalus.
+The Python package remains `dedalus`; install this fork in its own environment.
+
+## Start here
+
+1. Follow [installation and development instructions](NETWORK_DEVELOPMENT.md).
+2. Run the [three-edge Poisson example](examples/lbvp_network_poisson/poisson.py).
+   Its built-in analytic check gives the central vertex value `6/13`.
+3. Read the [network API and solver guide](docs/pages/network_problems.rst).
+4. Try the [heterogeneous heat example](examples/ivp_network_heterogeneous_heat/heat.py)
+   for time evolution on edges with different lengths and resolutions.
+
+The implementation includes linear and nonlinear boundary-value problems,
+initial-value problems, selected eigenvalue problems, dynamic vertex storage,
+constraints, and restart support. See the guide for the precise supported cases.
+Current network fields are scalar; the distributed eigenvalue path is restricted
+to selected right eigenmodes, and network file output uses gathering.
+
+## Development and review
+
+Network tests live in `dedalus/tests/test_network*.py` and
+`dedalus/tests_parallel/test_network*.py`. The development guide gives serial
+and MPI commands. The documented scaling harness is included under `benchmarks/`.
+
+This public branch consolidates the network implementation onto upstream commit
+`2a2ad15108f2cd2d24d0b103f8167962562b5cbc`. Library source, tests, examples, and
+the scaling harness match development snapshot `e6050873e952678d0d879764e12a4bd510835fc8`.
+Research archives, cluster administration, and simulation outputs are maintained
+separately. This initial publication is for use and architectural feedback;
+it does not claim upstream acceptance or a new performance validation.
+
+## Attribution and license
+
+Dedalus is developed by the Dedalus collaboration, whose original project
+information follows below. The existing [license](LICENSE.txt) and
+[citation metadata](CITATION.cff) are retained.
+
+---
+
 <!-- Title -->
 <h1 align="center">
   Dedalus Project

@@ -3,9 +3,13 @@ Class for data fields.
 
 """
 
+import hashlib
+import json
 import weakref
 from functools import partial, reduce
 from collections import defaultdict
+from .network_storage import take_elements, elements_signature
+
 import numpy as np
 from mpi4py import MPI
 from scipy import sparse
@@ -24,7 +28,7 @@ from ..tools.exceptions import SymbolicParsingError
 from ..tools.exceptions import NonlinearOperatorError
 from ..tools.exceptions import DependentOperatorError
 from ..tools.general import unify, unify_attributes, DeferredTuple, OrderedSet
-from ..tools.random_arrays import ChunkedRandomArray
+from ..tools.random_arrays import ChunkedRandomArray, rng_elements
 
 import logging
 logger = logging.getLogger(__name__.split('.')[-1])
@@ -35,6 +39,894 @@ __all__ = ['Field',
            'VectorField',
            'TensorField',
            'LockedField']
+
+
+def _local_data_index(tensor_rank, elements):
+    """Build an indexed spatial selection after any tensor dimensions."""
+    return (slice(None),) * tensor_rank + np.ix_(*elements)
+
+
+def _owned_network_vertex_data(field):
+    """Return owner-only elements and data for an owned/ghost vertex field.
+
+    Resident vertex buffers deliberately contain a second copy of separator
+    values on ranks incident to an edge.  Global assembly and reductions must
+    therefore select the unique authoritative owner entries rather than
+    summing every resident copy.
+    """
+    dist = field.dist
+    if not dist.network_axis_uses_owned_ghost(field.domain):
+        return None
+
+    elements = tuple(
+        np.asarray(axis_elements, dtype=int)
+        for axis_elements in field.layout.local_elements(
+            field.domain,
+            field.scales,
+        )
+    )
+    basis = field.domain.full_bases[0]
+    logical_vertices = elements[0]
+    canonical_vertices = take_elements(basis._network_elements, logical_vertices)
+    owner_mask = (
+        dist.network_partition.vertex_equation_owners[canonical_vertices]
+        == dist.layout_comm.rank
+    )
+
+    owned_elements = list(elements)
+    owned_elements[0] = logical_vertices[owner_mask]
+    local_index = (
+        (slice(None),) * len(field.tensorsig)
+        + (owner_mask,)
+        + (slice(None),) * (dist.dim - 1)
+    )
+    return tuple(owned_elements), field.data[local_index]
+
+
+def _network_vertex_input_signature(field):
+    """Build rank-independent identity for one owned/ghost input field."""
+    from .network import _array_signature
+
+    bases = []
+    for basis in field.domain.full_bases:
+        if basis is None:
+            bases.append(None)
+        else:
+            bases.append(
+                (
+                    type(basis).__module__,
+                    type(basis).__qualname__,
+                    getattr(basis, "_network_role", None),
+                    tuple(basis.shape),
+                    elements_signature(getattr(basis, "_network_elements", ())),
+                )
+            )
+    vertex_axis = len(field.tensorsig)
+    block_shape = (
+        tuple(field.data.shape[:vertex_axis])
+        + tuple(field.data.shape[vertex_axis + 1 :])
+    )
+    return (
+        None if field.name is None else str(field.name),
+        tuple(coordsys.dim for coordsys in field.tensorsig),
+        np.dtype(field.dtype).str,
+        tuple(bases),
+        tuple(bool(value) for value in field.layout.grid_space),
+        tuple(float(value) for value in field.scales),
+        block_shape,
+    )
+
+
+def synchronize_network_vertex_inputs(dist, fields):
+    """Refresh owned/ghost vertex leaves once at an evaluation boundary.
+
+    The collective signature check precedes every field-wise exchange.  A
+    divergent expression tree therefore fails collectively instead of
+    stranding ranks in mismatched ``Alltoallv`` calls.
+    """
+    if (
+        not dist.distributed_network
+        or dist.network_vertex_storage != "owned_ghost"
+        or dist.layout_comm.size == 1
+    ):
+        return
+
+    vertex_fields = OrderedSet()
+    for field in fields:
+        if (
+            field.dist is dist
+            and dist.network_axis_uses_owned_ghost(field.domain)
+        ):
+            vertex_fields.add(field)
+
+    # Future evaluation normalizes leaf fields to their dealias scales before
+    # applying operators.  Do that before the owner/ghost exchange as well,
+    # and use coefficient layout as a deterministic common representation.
+    # Without this normalization, differing rank-local layouts can produce
+    # unequal per-vertex MPI block sizes and an unsafe Alltoallv call.
+    for field in vertex_fields:
+        field.change_scales(field.domain.dealias)
+        field.require_coeff_space()
+
+    signatures = tuple(
+        _network_vertex_input_signature(field)
+        for field in vertex_fields
+    )
+    dist._network_vertex_metadata.check(
+        dist.layout_comm, signatures,
+        "Distributed Network evaluation received inconsistent owned/ghost vertex input fields",
+    )
+
+    if len(signatures) != len(set(signatures)):
+        raise ValueError(
+            "A distributed Network expression must give unique names to "
+            "otherwise indistinguishable owned/ghost vertex fields."
+        )
+
+    # Compatible fields share one owner/ghost exchange. Data are refreshed
+    # every time, even when callers mutate field buffers directly.
+    groups = {}
+    for field in vertex_fields:
+        groups.setdefault(np.dtype(field.data.dtype).str, []).append(field)
+    for group in groups.values():
+        if len(group) == 1:
+            dist.synchronize_network_vertex_ghosts(group[0])
+            continue
+        for field in group:
+            canonical = dist.network_vertex_canonical_elements(field.domain)
+            if not np.array_equal(canonical, dist.network_vertex_exchange_plan.resident):
+                raise NotImplementedError(
+                    "Owned/ghost exchange currently requires the canonical full "
+                    "Network vertex basis."
+                )
+        views = [np.moveaxis(field.data, len(field.tensorsig), 0) for field in group]
+        widths = [int(np.prod(view.shape[1:])) for view in views]
+        resident = dist.network_vertex_exchange_plan.resident.size
+        packed = np.empty((resident, sum(widths)), dtype=group[0].data.dtype)
+        offset = 0
+        for view, width in zip(views, widths):
+            packed[:, offset:offset+width] = view.reshape(resident, width)
+            offset += width
+        dist.network_vertex_exchange_plan.forward(packed)
+        offset = 0
+        for view, width in zip(views, widths):
+            view[...] = packed[:, offset:offset+width].reshape(view.shape)
+            offset += width
+
+
+def _read_indexed_global_data(
+    global_data,
+    pre_slices,
+    tensor_shape,
+    spatial_elements,
+    spatial_shape,
+):
+    """Read an indexed local block from an array-like global dataset.
+
+    HDF5 supports at most one advanced index in a selection.  Whole-edge
+    Network layouts only distribute their first spatial axis, so represent all
+    contiguous axes by slices and reserve the single advanced index for the
+    (potentially noncontiguous) edge or port elements.
+    """
+    local_spatial_shape = tuple(elements.size for elements in spatial_elements)
+    local_shape = tuple(tensor_shape) + local_spatial_shape
+    if any(size == 0 for size in local_spatial_shape):
+        return np.empty(local_shape, dtype=global_data.dtype)
+
+    spatial_selection = []
+    indexed_axes = 0
+    for elements, axis_size in zip(spatial_elements, spatial_shape):
+        elements = np.asarray(elements, dtype=int)
+        if np.array_equal(elements, np.arange(axis_size)):
+            selection = slice(None)
+        elif np.array_equal(
+            elements,
+            np.arange(elements[0], elements[0] + elements.size),
+        ):
+            selection = slice(int(elements[0]), int(elements[-1]) + 1)
+        else:
+            selection = elements
+            indexed_axes += 1
+        spatial_selection.append(selection)
+    if indexed_axes > 1:
+        raise NotImplementedError(
+            "Indexed HDF5 loading currently supports one noncontiguous "
+            "spatial axis."
+        )
+
+    component_slices = (slice(None),) * len(tensor_shape)
+    selection = pre_slices + component_slices + tuple(spatial_selection)
+    data = np.asarray(global_data[selection])
+    if data.shape != local_shape:
+        raise ValueError(
+            "Indexed global data selection produced shape "
+            f"{data.shape}, expected {local_shape}."
+        )
+    return data
+
+
+def _hdf5_strings(value):
+    """Normalize an HDF5 string attribute to a tuple of Python strings."""
+    return tuple(
+        item.decode("utf-8") if isinstance(item, bytes) else str(item)
+        for item in np.atleast_1d(value)
+    )
+
+
+_NETWORK_DISCRETIZATION_SCHEMA = "dedalus.network.discretization"
+_NETWORK_DISCRETIZATION_VERSION = 1
+
+
+def _network_json_value(value):
+    """Convert a basis option to a deterministic JSON scalar/container."""
+    if isinstance(value, np.generic):
+        value = value.item()
+    if value is None or isinstance(value, (bool, int, str)):
+        return value
+    if isinstance(value, float):
+        if not np.isfinite(value):
+            raise ValueError(
+                "Network basis metadata cannot encode non-finite options."
+            )
+        return value
+    if isinstance(value, (tuple, list, np.ndarray)):
+        return [_network_json_value(item) for item in value]
+    raise TypeError(
+        "Network basis metadata cannot encode option value "
+        f"{value!r} of type {type(value).__qualname__}."
+    )
+
+
+def _network_interval_descriptor(basis):
+    """Describe the realized interval family and its restart-relevant options."""
+    if basis is None:
+        return None
+    options = {}
+    for name in (
+        "size",
+        "bounds",
+        "dealias",
+        "library",
+        "a",
+        "b",
+        "a0",
+        "b0",
+    ):
+        if hasattr(basis, name):
+            options[name] = _network_json_value(getattr(basis, name))
+    return {
+        "module": type(basis).__module__,
+        "qualname": type(basis).__qualname__,
+        "options": options,
+    }
+
+
+def _network_basis_descriptor(domain):
+    """Build partition-independent metadata for one Network task domain.
+
+    Cardinal edge and port bases identify their bucket directly.  The shared
+    vertex basis deliberately has no parent bucket and therefore describes
+    the full Network.  When a task has a differentiated position basis, that
+    realized basis takes precedence over the bucket's parent interval.
+    """
+    network = getattr(domain.dist, "network", None)
+    if network is None:
+        return None
+
+    cardinal = None
+    role = None
+    for basis in domain.full_bases:
+        basis_role = getattr(basis, "_network_role", None)
+        if basis_role in ("edges", "vertices", "ports"):
+            if cardinal is not None and basis is not cardinal:
+                raise ValueError(
+                    "A Network task domain cannot contain multiple cardinal "
+                    "Network bases."
+                )
+            cardinal = basis
+            role = basis_role
+    if cardinal is None:
+        return None
+
+    canonical_elements = np.asarray(
+        getattr(cardinal, "_network_elements", ()),
+        dtype=np.int64,
+    )
+    if canonical_elements.shape != (cardinal.size,):
+        raise ValueError(
+            f"Network {role} basis metadata has canonical element shape "
+            f"{canonical_elements.shape}, expected {(cardinal.size,)}."
+        )
+
+    parent = getattr(cardinal, "_network_basis", None)
+    if parent is not None:
+        edge_indices = np.asarray(parent.edge_indices, dtype=np.int64)
+        interval = parent.interval
+    else:
+        # The one shared vertex basis represents the complete graph, not an
+        # arbitrary discretization bucket.
+        edge_indices = np.arange(network.num_edges, dtype=np.int64)
+        interval = None
+
+    for basis in domain.full_bases:
+        if basis is None:
+            continue
+        basis_coords = getattr(getattr(basis, "coordsys", None), "coords", ())
+        if (
+            getattr(basis, "_network_role", None) == "position"
+            or any(coord is network.position_coord for coord in basis_coords)
+        ):
+            interval = basis
+            break
+
+    return {
+        "schema": _NETWORK_DISCRETIZATION_SCHEMA,
+        "schema_version": _NETWORK_DISCRETIZATION_VERSION,
+        "role": role,
+        "edge_indices": [int(index) for index in edge_indices],
+        "canonical_elements": [int(index) for index in canonical_elements],
+        "cardinal_size": int(cardinal.size),
+        "interval": _network_interval_descriptor(interval),
+    }
+
+
+def _network_basis_metadata(domain):
+    """Return ``(descriptor, canonical_json, sha256_digest)`` for a domain."""
+    descriptor = _network_basis_descriptor(domain)
+    if descriptor is None:
+        return None
+    encoded = json.dumps(
+        descriptor,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    )
+    digest = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+    return descriptor, encoded, digest
+
+
+def _network_basis_metadata_group_errors(
+    group,
+    *,
+    expected_descriptor=None,
+    expected_digest=None,
+):
+    """Return structural, digest, and optional content-comparison errors."""
+    errors = []
+    if not isinstance(group, h5py.Group):
+        return ["referenced discretization object is not an HDF5 group"]
+
+    descriptor = None
+    if "descriptor_json" not in group.attrs:
+        errors.append("discretization is missing attribute 'descriptor_json'")
+    else:
+        try:
+            strings = _hdf5_strings(group.attrs["descriptor_json"])
+            if len(strings) != 1:
+                raise ValueError("expected one string")
+            descriptor = json.loads(strings[0])
+            if not isinstance(descriptor, dict):
+                raise ValueError("expected a JSON object")
+        except Exception as error:
+            errors.append(
+                "discretization descriptor_json is invalid "
+                f"({type(error).__name__}: {error})"
+            )
+
+    saved_digest = None
+    if descriptor is not None:
+        try:
+            encoded = json.dumps(
+                descriptor,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            )
+            saved_digest = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+        except Exception as error:
+            errors.append(
+                "discretization descriptor cannot be canonicalized "
+                f"({type(error).__name__}: {error})"
+            )
+
+    string_attributes = {
+        "schema": _NETWORK_DISCRETIZATION_SCHEMA,
+        "role": None if descriptor is None else descriptor.get("role"),
+        "digest": saved_digest,
+    }
+    for name, expected in string_attributes.items():
+        if name not in group.attrs:
+            errors.append(f"discretization is missing attribute {name!r}")
+            continue
+        try:
+            values = _hdf5_strings(group.attrs[name])
+        except Exception as error:
+            errors.append(
+                f"discretization attribute {name!r} cannot be decoded "
+                f"({type(error).__name__}: {error})"
+            )
+            continue
+        if len(values) != 1 or expected is None or values[0] != expected:
+            errors.append(f"discretization attribute {name!r} differs")
+
+    scalar_attributes = {
+        "schema_version": _NETWORK_DISCRETIZATION_VERSION,
+        "cardinal_size": (
+            None if descriptor is None else descriptor.get("cardinal_size")
+        ),
+    }
+    for name, expected in scalar_attributes.items():
+        if name not in group.attrs:
+            errors.append(f"discretization is missing attribute {name!r}")
+            continue
+        actual = np.asarray(group.attrs[name])
+        if (
+            expected is None
+            or actual.shape != ()
+            or actual.item() != expected
+        ):
+            errors.append(f"discretization attribute {name!r} differs")
+
+    for name in ("edge_indices", "canonical_elements"):
+        expected = None if descriptor is None else descriptor.get(name)
+        if name not in group:
+            errors.append(f"discretization is missing dataset {name!r}")
+        elif not isinstance(group[name], h5py.Dataset):
+            errors.append(f"discretization object {name!r} is not a dataset")
+        elif expected is None or not np.array_equal(
+            group[name][...],
+            np.asarray(expected, dtype=np.int64),
+        ):
+            errors.append(f"discretization dataset {name!r} differs")
+
+    if saved_digest is not None and group.name.rsplit("/", 1)[-1] != saved_digest:
+        errors.append("discretization group name does not match its digest")
+    if expected_digest is not None and saved_digest != expected_digest:
+        errors.append("discretization digest differs")
+    if expected_descriptor is not None and descriptor is not None:
+        for name in (
+            "schema",
+            "schema_version",
+            "role",
+            "edge_indices",
+            "canonical_elements",
+            "cardinal_size",
+            "interval",
+        ):
+            if descriptor.get(name) != expected_descriptor.get(name):
+                errors.append(f"discretization descriptor {name!r} differs")
+    return errors
+
+
+def _validate_network_restart_ids(metadata, network, errors):
+    """Validate optional semantic IDs without weakening canonical fallback."""
+    from .network import (
+        _canonicalize_network_id_json,
+        _encode_network_ids,
+    )
+
+    for kind, values in (
+        ("vertex", network.vertex_ids),
+        ("edge", network.edge_ids),
+    ):
+        encoding_name = f"{kind}_ids_encoding"
+        dataset_name = f"{kind}_ids"
+        if encoding_name not in metadata.attrs:
+            errors.append(
+                f"/network is missing attribute {encoding_name!r}"
+            )
+            continue
+        try:
+            encodings = _hdf5_strings(metadata.attrs[encoding_name])
+        except Exception as error:
+            errors.append(
+                f"/network attribute {encoding_name!r} cannot be decoded "
+                f"({type(error).__name__}: {error})"
+            )
+            continue
+        if len(encodings) != 1:
+            errors.append(
+                f"/network attribute {encoding_name!r} is invalid"
+            )
+            continue
+        encoding, = encodings
+
+        try:
+            has_id_object = dataset_name in metadata
+        except Exception as error:
+            errors.append(
+                f"/network object {dataset_name!r} cannot be inspected "
+                f"({type(error).__name__}: {error})"
+            )
+            continue
+
+        if encoding == "canonical-index-only":
+            if has_id_object:
+                errors.append(
+                    f"/network attribute {encoding_name!r} declares "
+                    f"canonical-index-only but object {dataset_name!r} exists"
+                )
+            continue
+        if encoding != "json-v1":
+            errors.append(
+                f"/network attribute {encoding_name!r} is unsupported"
+            )
+            continue
+        if not has_id_object:
+            errors.append(
+                f"/network is missing dataset {dataset_name!r}"
+            )
+            continue
+
+        try:
+            saved_ids = metadata[dataset_name]
+        except Exception as error:
+            errors.append(
+                f"/network object {dataset_name!r} cannot be opened "
+                f"({type(error).__name__}: {error})"
+            )
+            continue
+        if not isinstance(saved_ids, h5py.Dataset):
+            errors.append(
+                f"/network object {dataset_name!r} is not an HDF5 dataset"
+            )
+            continue
+
+        expected_shape = (len(values),)
+        shape_valid = saved_ids.shape == expected_shape
+        if not shape_valid:
+            errors.append(
+                f"/network dataset {dataset_name!r} has shape "
+                f"{saved_ids.shape}, expected {expected_shape}"
+            )
+
+        try:
+            dataset_encodings = _hdf5_strings(
+                saved_ids.attrs["encoding"]
+            )
+        except KeyError:
+            errors.append(
+                f"/network dataset {dataset_name!r} is missing its "
+                "encoding attribute"
+            )
+        except Exception as error:
+            errors.append(
+                f"/network dataset {dataset_name!r} encoding cannot be "
+                f"decoded ({type(error).__name__}: {error})"
+            )
+        else:
+            if dataset_encodings != ("json-v1",):
+                errors.append(
+                    f"/network dataset {dataset_name!r} has invalid encoding"
+                )
+
+        string_dtype = h5py.check_string_dtype(saved_ids.dtype)
+        if string_dtype is None:
+            errors.append(
+                f"/network dataset {dataset_name!r} must contain strings"
+            )
+            continue
+        if not shape_valid:
+            continue
+
+        try:
+            encoded_ids = tuple(saved_ids.asstr()[...])
+        except Exception as error:
+            errors.append(
+                f"/network dataset {dataset_name!r} cannot be read as "
+                f"strings ({type(error).__name__}: {error})"
+            )
+            continue
+
+        canonical_ids = []
+        json_valid = True
+        for index, encoded_id in enumerate(encoded_ids):
+            try:
+                canonical_ids.append(
+                    _canonicalize_network_id_json(encoded_id)
+                )
+            except Exception as error:
+                errors.append(
+                    f"/network dataset {dataset_name!r} entry {index} is "
+                    f"not valid json-v1 ({type(error).__name__}: {error})"
+                )
+                json_valid = False
+        expected_ids = _encode_network_ids(values)
+        if expected_ids is None:
+            errors.append(
+                f"active Network {kind}_ids are not JSON-portable"
+            )
+        elif json_valid and tuple(canonical_ids) != expected_ids:
+            errors.append(
+                f"/network dataset {dataset_name!r} differs"
+            )
+
+
+def _network_axis_roles(field):
+    """Describe the Network storage role of each spatial axis."""
+    network = getattr(field.dist, "network", None)
+    if network is None:
+        return None
+    roles = []
+    for axis, basis in enumerate(field.domain.full_bases):
+        if basis is None:
+            role = "constant"
+        else:
+            role = getattr(basis, "_network_role", None)
+            if role is None and field.dist.coords[axis] is network.position_coord:
+                role = "position"
+            elif role is None:
+                role = "other"
+        roles.append(role)
+    return tuple(roles)
+
+
+def _validate_network_restart_metadata(file, dset, field):
+    """Validate a saved Network description against the active Distributor."""
+    network = getattr(field.dist, "network", None)
+    if network is None:
+        return
+
+    errors = []
+    if "network_metadata" not in dset.attrs:
+        metadata_path = None
+        errors.append("task is missing its network_metadata reference")
+    else:
+        paths = _hdf5_strings(dset.attrs["network_metadata"])
+        metadata_path = paths[0] if len(paths) == 1 else None
+        if metadata_path != "/network":
+            errors.append(
+                "task network_metadata must reference '/network'"
+            )
+
+    if "/network" not in file:
+        errors.append("file is missing the /network metadata group")
+        metadata = None
+    else:
+        metadata = file["/network"]
+        if not isinstance(metadata, h5py.Group):
+            errors.append("/network is not an HDF5 group")
+            metadata = None
+
+    if metadata is not None:
+        string_attributes = {
+            "schema": ("dedalus.network",),
+            "coordinate_names": tuple(network.names),
+            "edge_axis_semantics": ("canonical_edge_index",),
+            "edge_orientation": ("tail_to_head",),
+            "position_semantics": ("normalized_reference_from_tail",),
+            "stored_position_scale": ("normalized_reference_from_tail",),
+            "position_map": ("length_times_reference",),
+            "port_order": ("edge_major_tail_head",),
+        }
+        for name, expected in string_attributes.items():
+            if name not in metadata.attrs:
+                errors.append(f"/network is missing attribute {name!r}")
+            elif _hdf5_strings(metadata.attrs[name]) != expected:
+                errors.append(f"/network attribute {name!r} differs")
+
+        scalar_attributes = {
+            "schema_version": 1,
+            "num_vertices": network.num_vertices,
+            "num_edges": network.num_edges,
+            "num_ports": network.num_ports,
+        }
+        for name, expected in scalar_attributes.items():
+            if name not in metadata.attrs:
+                errors.append(f"/network is missing attribute {name!r}")
+                continue
+            actual = np.asarray(metadata.attrs[name])
+            if actual.shape != () or actual.item() != expected:
+                errors.append(f"/network attribute {name!r} differs")
+
+        array_attributes = {
+            "reference_bounds": np.asarray((0.0, 1.0)),
+            "outward_signs": np.asarray((-1.0, 1.0)),
+        }
+        for name, expected in array_attributes.items():
+            if name not in metadata.attrs:
+                errors.append(f"/network is missing attribute {name!r}")
+            elif not np.array_equal(
+                np.asarray(metadata.attrs[name]),
+                expected,
+            ):
+                errors.append(f"/network attribute {name!r} differs")
+
+        datasets = {
+            "vertex_index": np.arange(network.num_vertices, dtype=np.int64),
+            "edge_index": np.arange(network.num_edges, dtype=np.int64),
+            "endpoints": np.asarray(network.endpoints, dtype=np.int64),
+            "lengths": np.asarray(network.lengths, dtype=np.float64),
+        }
+        for name, expected in datasets.items():
+            if name not in metadata:
+                errors.append(f"/network is missing dataset {name!r}")
+            elif not np.array_equal(metadata[name][...], expected):
+                errors.append(f"/network dataset {name!r} differs")
+        if "endpoint_slot" not in metadata:
+            errors.append("/network is missing dataset 'endpoint_slot'")
+        elif _hdf5_strings(metadata["endpoint_slot"][:]) != ("tail", "head"):
+            errors.append("/network dataset 'endpoint_slot' differs")
+
+        _validate_network_restart_ids(metadata, network, errors)
+
+    if errors:
+        details = "; ".join(errors)
+        raise ValueError(
+            "Network restart metadata validation failed for task "
+            f"{dset.name!r}: {details}."
+        )
+
+
+def _validate_network_restart_discretization(file, dset, field):
+    """Validate a task's bucket, cardinal labels, and interval family."""
+    metadata = _network_basis_metadata(field.domain)
+    if metadata is None:
+        if "network_basis_metadata" in dset.attrs:
+            raise ValueError(
+                "Network restart discretization validation failed for task "
+                f"{dset.name!r}: task unexpectedly references a cardinal "
+                "Network discretization."
+            )
+        return
+
+    descriptor, _, digest = metadata
+    if "network_basis_metadata" not in dset.attrs:
+        # Files produced before bucket metadata existed remain usable only
+        # when the active cardinal basis covers the complete edge table.  A
+        # subset cannot be identified safely from legacy task dimensions.
+        full_edges = list(range(field.dist.network.num_edges))
+        if descriptor["edge_indices"] == full_edges:
+            return
+        raise ValueError(
+            "Network restart discretization validation failed for task "
+            f"{dset.name!r}: legacy task is missing network_basis_metadata; "
+            "legacy Network restart is supported only for a full-edge basis."
+        )
+
+    errors = []
+    try:
+        paths = _hdf5_strings(dset.attrs["network_basis_metadata"])
+    except Exception as error:
+        paths = ()
+        errors.append(
+            "task network_basis_metadata cannot be decoded "
+            f"({type(error).__name__}: {error})"
+        )
+    if len(paths) != 1:
+        metadata_path = None
+        errors.append("task network_basis_metadata must contain one path")
+    else:
+        metadata_path, = paths
+        if not metadata_path.startswith("/network/discretizations/"):
+            errors.append(
+                "task network_basis_metadata must reference "
+                "'/network/discretizations/<digest>'"
+            )
+
+    group = None
+    if metadata_path is not None:
+        try:
+            group = file[metadata_path]
+        except KeyError:
+            errors.append(
+                f"file is missing referenced discretization {metadata_path!r}"
+            )
+        except Exception as error:
+            errors.append(
+                f"referenced discretization {metadata_path!r} cannot be "
+                f"opened ({type(error).__name__}: {error})"
+            )
+    if group is not None:
+        errors.extend(
+            _network_basis_metadata_group_errors(
+                group,
+                expected_descriptor=descriptor,
+                expected_digest=digest,
+            )
+        )
+
+    if errors:
+        details = "; ".join(errors)
+        raise ValueError(
+            "Network restart discretization validation failed for task "
+            f"{dset.name!r}: {details}."
+        )
+
+
+def _validate_network_restart_task(dset, field):
+    """Reject incompatible tensor and Network-cardinal task axes."""
+    roles = _network_axis_roles(field)
+    if roles is None:
+        return
+
+    errors = []
+    if "network_axis_roles" not in dset.attrs:
+        saved_roles = None
+        errors.append("task is missing network_axis_roles")
+    else:
+        saved_roles = _hdf5_strings(dset.attrs["network_axis_roles"])
+        if saved_roles != roles:
+            errors.append(
+                f"saved Network axis roles {saved_roles!r} do not match "
+                f"field roles {roles!r}"
+            )
+
+    tensor_shape = tuple(coordsys.dim for coordsys in field.tensorsig)
+    expected_ndim = 1 + len(tensor_shape) + field.dist.dim
+    if dset.ndim != expected_ndim:
+        errors.append(
+            f"task rank {dset.ndim} does not match expected rank "
+            f"{expected_ndim}"
+        )
+    else:
+        saved_tensor_shape = dset.shape[1:1 + len(tensor_shape)]
+        if saved_tensor_shape != tensor_shape:
+            errors.append(
+                f"saved tensor shape {saved_tensor_shape!r} does not match "
+                f"field tensor shape {tensor_shape!r}"
+            )
+        spatial_shape = dset.shape[-field.dist.dim:]
+        for axis, (role, saved_size, basis) in enumerate(
+            zip(roles, spatial_shape, field.domain.full_bases)
+        ):
+            if role in ("edges", "vertices", "ports"):
+                expected_size = basis.size
+            elif role == "constant":
+                expected_size = 1
+            else:
+                expected_size = None
+            if expected_size is not None and saved_size != expected_size:
+                errors.append(
+                    f"saved {role} axis {axis} has size {saved_size}, "
+                    f"expected {expected_size}"
+                )
+
+    if errors:
+        details = "; ".join(errors)
+        raise ValueError(
+            "Network restart task validation failed for task "
+            f"{dset.name!r}: {details}."
+        )
+
+
+def _collective_network_restart_validation(file, task, field, comm):
+    """Validate one Network task and preserve expected error categories."""
+    validation_error = None
+    try:
+        dset = file['tasks'][task]
+        _validate_network_restart_metadata(file, dset, field)
+        _validate_network_restart_task(dset, field)
+        _validate_network_restart_discretization(file, dset, field)
+    except KeyError as error:
+        validation_error = ("KeyError", str(error))
+    except ValueError as error:
+        validation_error = ("ValueError", str(error))
+    except OSError as error:
+        validation_error = ("OSError", str(error))
+    except Exception as error:
+        validation_error = (
+            "RuntimeError",
+            f"{type(error).__name__}: {error}",
+        )
+
+    validation_errors = comm.allgather(validation_error)
+    error_types = {
+        "KeyError": KeyError,
+        "ValueError": ValueError,
+        "OSError": OSError,
+        "RuntimeError": RuntimeError,
+    }
+    for rank, rank_error in enumerate(validation_errors):
+        if rank_error is not None:
+            error_name, details = rank_error
+            raise error_types[error_name](
+                "Parallel Network restart validation failed on "
+                f"rank {rank}: {details}"
+            )
+    return dset
 
 
 class Operand:
@@ -458,7 +1350,8 @@ class Current(Operand):
         #size = self.domain.bases[0].field_radial_size(self, subproblem.ell)
         size = subproblem.field_size(self)
         matrix = sparse.identity(size, format='csr')
-        return {self: matrix}
+        from .network_matrix import network_identity_matrix
+        return {self: network_identity_matrix(matrix, self.domain, kw)}
 
     # def setup_operator_matrix(self, separability, vars, **kw):
     #     """Setup operator matrix components."""
@@ -633,7 +1526,10 @@ class Field(Current):
 
     def set_global_data(self, global_data):
         elements = self.layout.local_elements(self.domain, self.scales)
-        self.set_local_data(global_data[np.ix_(*elements)])
+        index = _local_data_index(len(self.tensorsig), elements)
+        self.set_local_data(global_data[index])
+        if self.dist.network_axis_uses_owned_ghost(self.domain):
+            self.dist.synchronize_network_vertex_ghosts(self)
 
     def set_local_data(self, local_data):
         copyto(self.data, local_data)
@@ -701,12 +1597,21 @@ class Field(Current):
 
     def require_local(self, axis):
         """Require an axis to be local."""
+        if (
+            self.dist.distributed_network
+            and not self.layout.axis_is_local(self.domain, axis)
+        ):
+            raise NotImplementedError(
+                "This operation requires a complete distributed Network axis; "
+                "only ownership-aware Network operators can act on edge and "
+                "port fields."
+            )
         # Move towards transform path, since the surrounding layouts are local
         if self.layout.grid_space[axis]:
-            while not self.layout.local[axis]:
+            while not self.layout.axis_is_local(self.domain, axis):
                 self.towards_coeff_space()
         else:
-            while not self.layout.local[axis]:
+            while not self.layout.axis_is_local(self.domain, axis):
                 self.towards_grid_space()
 
     # @classmethod
@@ -745,7 +1650,19 @@ class Field(Current):
         """Load grid data from an hdf5 file. Task corresponds to field name by default."""
         if task is None:
             task = self.name
-        dset = file['tasks'][task]
+        network_comm = getattr(self.dist, "network_comm", None)
+        if network_comm is not None and network_comm.size > 1:
+            dset = _collective_network_restart_validation(
+                file,
+                task,
+                self,
+                network_comm,
+            )
+        else:
+            dset = file['tasks'][task]
+            _validate_network_restart_metadata(file, dset, self)
+            _validate_network_restart_task(dset, self)
+            _validate_network_restart_discretization(file, dset, self)
         if np.all(dset.attrs['grid_space']):
             self.load_from_global_grid_data(dset, pre_slices=(index,), func=func)
         elif np.all(~dset.attrs['grid_space']):
@@ -763,13 +1680,27 @@ class Field(Current):
         if data_shape != self_shape:
             raise ValueError("Cannot change global shape when loading coeff data.")
         # Extract local data from global data
-        component_slices = tuple(slice(None) for cs in self.tensorsig)
-        spatial_slices = layout.slices(self.domain, scales=1)
-        local_slices = pre_slices + component_slices + spatial_slices
-        if func is None:
-            self[layout] = global_data[local_slices]
+        if self.dist.distributed_network:
+            tensor_shape = tuple(cs.dim for cs in self.tensorsig)
+            spatial_elements = layout.local_elements(self.domain, scales=1)
+            local_data = _read_indexed_global_data(
+                global_data,
+                pre_slices,
+                tensor_shape,
+                spatial_elements,
+                self_shape,
+            )
         else:
-            self[layout] = func(global_data[local_slices])
+            component_slices = tuple(slice(None) for cs in self.tensorsig)
+            spatial_slices = layout.slices(self.domain, scales=1)
+            local_slices = pre_slices + component_slices + spatial_slices
+            local_data = global_data[local_slices]
+        if func is None:
+            self[layout] = local_data
+        else:
+            self[layout] = func(local_data)
+        if self.dist.network_axis_uses_owned_ghost(self.domain):
+            self.dist.synchronize_network_vertex_ghosts(self)
 
     def load_from_global_grid_data(self, global_data, pre_slices=tuple(), func=None):
         """Load local grid data from array-like global grid data."""
@@ -779,15 +1710,30 @@ class Field(Current):
         scales = np.array(global_data.shape[-dim:]) / np.array(layout.global_shape(self.domain, scales=1))
         self.preset_scales(scales)
         # Extract local data from global data
-        component_slices = tuple(slice(None) for cs in self.tensorsig)
-        spatial_slices = layout.slices(self.domain, scales)
-        local_slices = pre_slices + component_slices + spatial_slices
-        if func is None:
-            self[layout] = global_data[local_slices]
+        self_shape = layout.global_shape(self.domain, scales)
+        if self.dist.distributed_network:
+            tensor_shape = tuple(cs.dim for cs in self.tensorsig)
+            spatial_elements = layout.local_elements(self.domain, scales)
+            local_data = _read_indexed_global_data(
+                global_data,
+                pre_slices,
+                tensor_shape,
+                spatial_elements,
+                self_shape,
+            )
         else:
-            self[layout] = func(global_data[local_slices])
+            component_slices = tuple(slice(None) for cs in self.tensorsig)
+            spatial_slices = layout.slices(self.domain, scales)
+            local_slices = pre_slices + component_slices + spatial_slices
+            local_data = global_data[local_slices]
+        if func is None:
+            self[layout] = local_data
+        else:
+            self[layout] = func(local_data)
         # Change scales back to dealias scales
         self.change_scales(self.domain.dealias)
+        if self.dist.network_axis_uses_owned_ghost(self.domain):
+            self.dist.synchronize_network_vertex_ghosts(self)
 
     def allgather_data(self, layout=None):
         """Build global data on all processes."""
@@ -795,8 +1741,33 @@ class Field(Current):
         if layout is not None:
             self.change_layout(layout)
         # Shortcut for serial execution
-        if self.dist.comm.size == 1:
+        if self.dist.layout_comm.size == 1:
             return self.data.copy()
+        if self.dist.distributed_network:
+            comm = self.dist.layout_comm
+            if self.dist.network_axis_is_replicated(self.domain):
+                authoritative_data = self.data.copy() if comm.rank == 0 else None
+                return comm.bcast(authoritative_data, root=0)
+            tensor_shape = tuple(cs.dim for cs in self.tensorsig)
+            global_shape = tensor_shape + self.layout.global_shape(
+                self.domain,
+                self.scales,
+            )
+            owned_vertex_data = _owned_network_vertex_data(self)
+            if owned_vertex_data is None:
+                elements = self.layout.local_elements(
+                    self.domain,
+                    self.scales,
+                )
+                local_data = self.data
+            else:
+                elements, local_data = owned_vertex_data
+            local_index = _local_data_index(len(self.tensorsig), elements)
+            send_buff = np.zeros(shape=global_shape, dtype=self.dtype)
+            recv_buff = np.empty_like(send_buff)
+            send_buff[local_index] = local_data
+            comm.Allreduce(send_buff, recv_buff, op=MPI.SUM)
+            return recv_buff
         # Build global buffers
         tensor_shape = tuple(cs.dim for cs in self.tensorsig)
         global_shape = tensor_shape + self.layout.global_shape(self.domain, self.scales)
@@ -806,7 +1777,7 @@ class Field(Current):
         # Combine data via allreduce -- easy but not communication-optimal
         # Should be optimized using Allgatherv if this is used past startup
         send_buff[local_slices] = self.data
-        self.dist.comm.Allreduce(send_buff, recv_buff, op=MPI.SUM)
+        self.dist.layout_comm.Allreduce(send_buff, recv_buff, op=MPI.SUM)
         return recv_buff
 
     def gather_data(self, root=0, layout=None):
@@ -814,14 +1785,55 @@ class Field(Current):
         if layout is not None:
             self.change_layout(layout)
         # Shortcut for serial execution
-        if self.dist.comm.size == 1:
+        if self.dist.layout_comm.size == 1:
             return self.data.copy()
+        if self.dist.distributed_network:
+            comm = self.dist.layout_comm
+            if self.dist.network_axis_is_replicated(self.domain):
+                # Replicated Network fields use rank zero as the authoritative
+                # copy.  Forward it when another gather root is requested
+                # instead of returning the target rank's replica.
+                authoritative_data = (
+                    self.data.copy() if comm.rank == 0 else None
+                )
+                pieces = comm.gather(authoritative_data, root=root)
+                if comm.rank == root:
+                    return pieces[0]
+                return None
+            owned_vertex_data = _owned_network_vertex_data(self)
+            if owned_vertex_data is None:
+                elements = self.layout.local_elements(
+                    self.domain,
+                    self.scales,
+                )
+                local_data = self.data
+            else:
+                elements, local_data = owned_vertex_data
+            pieces = comm.gather(
+                (elements, local_data.copy()),
+                root=root,
+            )
+            if comm.rank == root:
+                tensor_shape = tuple(cs.dim for cs in self.tensorsig)
+                global_shape = tensor_shape + self.layout.global_shape(
+                    self.domain,
+                    self.scales,
+                )
+                combined = np.zeros(shape=global_shape, dtype=self.dtype)
+                for piece_elements, piece_data in pieces:
+                    piece_index = _local_data_index(
+                        len(self.tensorsig),
+                        piece_elements,
+                    )
+                    combined[piece_index] = piece_data
+                return combined
+            return None
         # TODO: Shortcut this for constant fields
         # Gather data
         # Should be optimized via Gatherv eventually
-        pieces = self.dist.comm.gather(self.data, root=root)
+        pieces = self.dist.layout_comm.gather(self.data, root=root)
         # Assemble on root node
-        if self.dist.comm.rank == root:
+        if self.dist.layout_comm.rank == root:
             ext_mesh = self.layout.ext_mesh
             combined = np.zeros(prod(ext_mesh), dtype=object)
             combined[:] = pieces
@@ -832,19 +1844,42 @@ class Field(Current):
         if layout is not None:
             self.change_layout(layout)
         # Compute local data
-        if self.data.size == 0:
+        owned_vertex_data = _owned_network_vertex_data(self)
+        if owned_vertex_data is None:
+            local_data = self.data
+        else:
+            _, local_data = owned_vertex_data
+        if local_data.size == 0:
             norm = 0
         elif order == np.inf:
-            norm = np.max(np.abs(self.data))
+            norm = np.max(np.abs(local_data))
         else:
-            norm = np.sum(np.abs(self.data)**order)
+            norm = np.sum(np.abs(local_data)**order)
         # Reduce
         if order == np.inf:
-            if self.dist.comm.size > 1:
-                norm = self.dist.comm.allreduce(norm, op=MPI.MAX)
+            if self.dist.layout_comm.size > 1:
+                if (
+                    self.dist.distributed_network
+                    and self.dist.network_axis_is_replicated(self.domain)
+                ):
+                    norm = self.dist.layout_comm.bcast(
+                        norm if self.dist.layout_comm.rank == 0 else None,
+                        root=0,
+                    )
+                else:
+                    norm = self.dist.layout_comm.allreduce(norm, op=MPI.MAX)
         else:
-            if self.dist.comm.size > 1:
-                norm = self.dist.comm.allreduce(norm, op=MPI.SUM)
+            if self.dist.layout_comm.size > 1:
+                if (
+                    self.dist.distributed_network
+                    and self.dist.network_axis_is_replicated(self.domain)
+                ):
+                    norm = self.dist.layout_comm.bcast(
+                        norm if self.dist.layout_comm.rank == 0 else None,
+                        root=0,
+                    )
+                else:
+                    norm = self.dist.layout_comm.allreduce(norm, op=MPI.SUM)
             norm = norm ** (1 / order)
         return norm
 
@@ -940,12 +1975,47 @@ class Field(Current):
         shape = tuple(cs.dim for cs in self.tensorsig) + self.global_shape
         if self.is_complex:
             shape = shape + (2,)
-        global_data = ChunkedRandomArray(shape, seed, chunk_size, distribution, **kw)
-        # Extract local data
-        component_slices = tuple(slice(None) for cs in self.tensorsig)
-        spatial_slices = self.layout.slices(self.domain, self.scales)
-        local_slices = component_slices + spatial_slices
-        local_data = global_data[local_slices]
+        if self.dist.distributed_network:
+            # Whole-edge ownership is generally noncontiguous.  Generate the
+            # same canonical global random stream as ordinary layouts, but
+            # select it by explicit tensor and spatial element indices.
+            tensor_elements = tuple(
+                np.arange(cs.dim)
+                for cs in self.tensorsig
+            )
+            spatial_elements = self.layout.local_elements(
+                self.domain,
+                self.scales,
+            )
+            local_elements = tensor_elements + spatial_elements
+            if self.is_complex:
+                local_elements = local_elements + (np.arange(2),)
+            local_shape = tuple(elements.size for elements in local_elements)
+            if any(size == 0 for size in local_shape):
+                flat_indices = np.empty(local_shape, dtype=np.int64)
+            else:
+                index_grids = np.ix_(*local_elements)
+                flat_indices = np.ravel_multi_index(index_grids, shape)
+            local_data = rng_elements(
+                flat_indices,
+                seed,
+                chunk_size,
+                distribution,
+                **kw,
+            )
+        else:
+            global_data = ChunkedRandomArray(
+                shape,
+                seed,
+                chunk_size,
+                distribution,
+                **kw,
+            )
+            # Extract local data
+            component_slices = tuple(slice(None) for cs in self.tensorsig)
+            spatial_slices = self.layout.slices(self.domain, self.scales)
+            local_slices = component_slices + spatial_slices
+            local_data = global_data[local_slices]
         if self.is_real:
             self.data[:] = local_data
         else:
@@ -1050,4 +2120,3 @@ class LockedField(Field):
         field.preset_scales(self.scales)
         field[self.layout] = self.data
         return field
-

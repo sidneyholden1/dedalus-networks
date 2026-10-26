@@ -1,5 +1,7 @@
 """Abstract and built-in classes for spectral bases."""
 
+from .network_storage import take_elements, LocalGraphTable
+
 import numpy as np
 from scipy import sparse
 from functools import reduce
@@ -27,6 +29,7 @@ logger = logging.getLogger(__name__.split('.')[-1])
 
 # Public interface
 __all__ = ['CardinalBasis',
+           'CardinalMap',
            'Jacobi',
            'Legendre',
            'Ultraspherical',
@@ -286,8 +289,16 @@ class Basis:
         def enum_indices(tensorsig):
             shape = tuple(cs.dim for cs in tensorsig)
             return enumerate(np.ndindex(shape))
+        def local_axis_elements(domain, local_axis):
+            elements = product.dist.coeff_layout.local_elements(
+                domain,
+                scales=1,
+            )[local_axis]
+            local_slice = subproblem.coeff_slices(domain)[local_axis]
+            return elements[local_slice]
         operand = product.operand
         ncc = product.ncc
+        local_ncc_data = getattr(product, "_ncc_data_is_local", False)
         group = subproblem.group
         ncc_first = (ncc is product.args[0])
         ncc_group = tuple(0*g if g is not None else None for g in group)
@@ -309,11 +320,282 @@ class Basis:
                     G = Gamma[ia, ib, ic]
                     if abs(G) > ncc_cutoff:
                         if ncc_basis is None:
-                            if coeffs[ncc_comp].size != 1:
-                                raise NotImplementedError()
-                            matrix = coeffs[ncc_comp].ravel()[0] * sparse.eye(M, N)
+                            values = coeffs[ncc_comp].ravel()
+                            if values.size == 1:
+                                matrix = values[0] * sparse.eye(M, N)
+                            else:
+                                # An NCC can be constant along this final basis while
+                                # varying over earlier coupled Cardinal bases.  Since a
+                                # Cardinal basis is nodal, multiplication over those
+                                # dimensions is simply block-diagonal scaling.
+                                prior_ncc_axes = [
+                                    i
+                                    for i in range(axis)
+                                    if ncc.domain.nonconstant[i]
+                                ]
+                                if len(prior_ncc_axes) != 1:
+                                    raise NotImplementedError(
+                                        "NCCs constant along the final basis are only "
+                                        "implemented for one preceding Cardinal axis."
+                                    )
+                                cardinal_axis, = prior_ncc_axes
+                                ncc_cardinal = ncc.domain.get_basis(cardinal_axis)
+                                arg_cardinal = operand.domain.get_basis(cardinal_axis)
+                                out_cardinal = product.domain.get_basis(cardinal_axis)
+                                if not all(
+                                    isinstance(basis, CardinalBasis)
+                                    for basis in (
+                                        ncc_cardinal,
+                                        arg_cardinal,
+                                        out_cardinal,
+                                    )
+                                ):
+                                    raise NotImplementedError(
+                                        "The preceding NCC axis must use Cardinal bases."
+                                    )
+                                if not (
+                                    ncc_cardinal.size
+                                    == arg_cardinal.size
+                                    == out_cardinal.size
+                                ):
+                                    raise ValueError(
+                                        "Cardinal NCC data and operand bases have "
+                                        "incompatible sizes."
+                                    )
+                                local_cardinal_elements = local_axis_elements(
+                                    ncc.domain,
+                                    cardinal_axis,
+                                )
+                                if local_ncc_data:
+                                    if values.size != local_cardinal_elements.size:
+                                        raise ValueError(
+                                            "Local Cardinal NCC data does not match "
+                                            "the owned Network elements."
+                                        )
+                                elif values.size != ncc_cardinal.size:
+                                    raise ValueError(
+                                        "Cardinal NCC data and operand bases have "
+                                        "incompatible sizes."
+                                    )
+                                elif product.dist.distributed_network:
+                                    values = values[
+                                        local_cardinal_elements
+                                    ]
+                                out_shape = subproblem.coeff_shape(product.domain)
+                                arg_shape = subproblem.coeff_shape(operand.domain)
+                                before = sparse.eye(
+                                    prod(out_shape[:cardinal_axis]),
+                                    prod(arg_shape[:cardinal_axis]),
+                                    format='csr',
+                                )
+                                after = sparse.eye(
+                                    prod(out_shape[cardinal_axis + 1:axis + 1]),
+                                    prod(arg_shape[cardinal_axis + 1:axis + 1]),
+                                    format='csr',
+                                )
+                                matrix = sparse.kron(
+                                    before,
+                                    sparse.diags(values),
+                                    format='csr',
+                                )
+                                matrix = sparse.kron(matrix, after, format='csr')
                         else:
-                            matrix = cls._last_axis_component_ncc_matrix(subproblem, ncc_basis, arg_basis, out_basis, coeffs[ncc_comp].squeeze(), ncc_comp, arg_comp, out_comp, ncc.tensorsig, operand.tensorsig, product.tensorsig, cutoff=ncc_cutoff)
+                            component_coeffs = coeffs[ncc_comp].squeeze()
+                            prior_ncc_axes = [
+                                i
+                                for i in range(axis)
+                                if ncc.domain.nonconstant[i]
+                            ]
+                            if (
+                                product.dist.distributed_network
+                                and axis == 0
+                                and local_ncc_data
+                            ):
+                                if not all(
+                                    isinstance(basis, CardinalBasis)
+                                    for basis in (
+                                        ncc_basis,
+                                        arg_basis,
+                                        out_basis,
+                                    )
+                                ):
+                                    raise NotImplementedError(
+                                        "Local Network NCCs on the distributed "
+                                        "axis require Cardinal bases."
+                                    )
+                                local_size = subproblem.coeff_shape(
+                                    operand.domain
+                                )[axis]
+                                component_coeffs = np.asarray(
+                                    component_coeffs
+                                ).ravel()
+                                if component_coeffs.size != local_size:
+                                    raise ValueError(
+                                        "Local Cardinal NCC data does not match "
+                                        "the owned operand elements."
+                                    )
+                                matrix = sparse.diags(
+                                    component_coeffs,
+                                    format='csr',
+                                )
+                            elif prior_ncc_axes:
+                                if len(prior_ncc_axes) != 1:
+                                    raise NotImplementedError(
+                                        "Last-axis NCCs are only implemented for "
+                                        "one preceding nonconstant Cardinal axis."
+                                    )
+                                cardinal_axis, = prior_ncc_axes
+                                ncc_cardinal = ncc.domain.get_basis(cardinal_axis)
+                                arg_cardinal = operand.domain.get_basis(cardinal_axis)
+                                out_cardinal = product.domain.get_basis(cardinal_axis)
+                                if not all(
+                                    isinstance(basis, CardinalBasis)
+                                    for basis in (
+                                        ncc_cardinal,
+                                        arg_cardinal,
+                                        out_cardinal,
+                                    )
+                                ):
+                                    raise NotImplementedError(
+                                        "The preceding NCC axis must use Cardinal bases."
+                                    )
+                                if not (
+                                    ncc_cardinal.size
+                                    == arg_cardinal.size
+                                    == out_cardinal.size
+                                ):
+                                    raise ValueError(
+                                        "Cardinal NCC and operand bases have "
+                                        "incompatible sizes."
+                                    )
+                                local_cardinal_elements = local_axis_elements(
+                                    ncc.domain,
+                                    cardinal_axis,
+                                )
+                                if local_ncc_data:
+                                    cardinal_size = local_cardinal_elements.size
+                                    if cardinal_size:
+                                        if component_coeffs.size % cardinal_size:
+                                            raise ValueError(
+                                                "Local Cardinal NCC coefficient data "
+                                                "cannot be split by owned node."
+                                            )
+                                        cardinal_coeffs = np.asarray(
+                                            component_coeffs
+                                        ).reshape(cardinal_size, -1)
+                                    else:
+                                        if component_coeffs.size:
+                                            raise ValueError(
+                                                "An empty Network rank received local "
+                                                "Cardinal NCC coefficients."
+                                            )
+                                        cardinal_coeffs = np.empty(
+                                            (0, ncc_basis.size),
+                                            dtype=np.asarray(component_coeffs).dtype,
+                                        )
+                                else:
+                                    global_cardinal_size = ncc_cardinal.size
+                                    if component_coeffs.size % global_cardinal_size:
+                                        raise ValueError(
+                                            "Cardinal NCC coefficient data cannot be "
+                                            "split into one last-axis expansion per node."
+                                        )
+                                    cardinal_coeffs = np.asarray(
+                                        component_coeffs
+                                    ).reshape(global_cardinal_size, -1)
+                                    if product.dist.distributed_network:
+                                        cardinal_coeffs = cardinal_coeffs[
+                                            local_cardinal_elements
+                                        ]
+                                cardinal_size = cardinal_coeffs.shape[0]
+                                cardinal_matrices = [
+                                    cls._last_axis_component_ncc_matrix(
+                                        subproblem,
+                                        ncc_basis,
+                                        arg_basis,
+                                        out_basis,
+                                        cardinal_coeffs[i],
+                                        ncc_comp,
+                                        arg_comp,
+                                        out_comp,
+                                        ncc.tensorsig,
+                                        operand.tensorsig,
+                                        product.tensorsig,
+                                        cutoff=ncc_cutoff,
+                                    )
+                                    for i in range(cardinal_size)
+                                ]
+
+                                out_shape = subproblem.coeff_shape(product.domain)
+                                arg_shape = subproblem.coeff_shape(operand.domain)
+                                out_before = prod(out_shape[:cardinal_axis])
+                                arg_before = prod(arg_shape[:cardinal_axis])
+                                out_after = prod(
+                                    out_shape[cardinal_axis + 1:axis]
+                                )
+                                arg_after = prod(
+                                    arg_shape[cardinal_axis + 1:axis]
+                                )
+                                if (
+                                    out_before != arg_before
+                                    or out_after != arg_after
+                                ):
+                                    raise ValueError(
+                                        "Cardinal NCC multiplication requires matching "
+                                        "prefix coefficient shapes."
+                                    )
+                                after = sparse.eye(
+                                    out_after,
+                                    arg_after,
+                                    format='csr',
+                                )
+                                cardinal_blocks = [
+                                    sparse.kron(
+                                        after,
+                                        local_matrix,
+                                        format='csr',
+                                    )
+                                    for local_matrix in cardinal_matrices
+                                ]
+                                if cardinal_blocks:
+                                    matrix = sparse.block_diag(
+                                        cardinal_blocks,
+                                        format='csr',
+                                    )
+                                else:
+                                    matrix = sparse.csr_matrix(
+                                        (0, 0),
+                                        dtype=product.dtype,
+                                    )
+                                before = sparse.eye(
+                                    out_before,
+                                    arg_before,
+                                    format='csr',
+                                )
+                                matrix = sparse.kron(
+                                    before,
+                                    matrix,
+                                    format='csr',
+                                )
+                            else:
+                                matrix = cls._last_axis_component_ncc_matrix(subproblem, ncc_basis, arg_basis, out_basis, component_coeffs, ncc_comp, arg_comp, out_comp, ncc.tensorsig, operand.tensorsig, product.tensorsig, cutoff=ncc_cutoff)
+                            if (
+                                product.dist.distributed_network
+                                and axis == 0
+                                and matrix.shape != (M, N)
+                            ):
+                                output_elements = local_axis_elements(
+                                    product.domain,
+                                    axis,
+                                )
+                                input_elements = local_axis_elements(
+                                    operand.domain,
+                                    axis,
+                                )
+                                matrix = matrix.tocsr()[output_elements][
+                                    :,
+                                    input_elements,
+                                ]
                             # Domains with real Fourier bases require kroneckering the Jacobi NCC matrix up to match the subsystem shape including the sin and cos parts of RealFourier data
                             # This fix assumes the Jacobi basis is on the last axis
                             if matrix.shape != (M,N):
@@ -342,12 +624,42 @@ class CardinalBasis(Basis):
     group_shape = (1,)
     subaxis_dependence = [False]
 
-    def __init__(self, coord, size):
+    def __init__(self, coord, size, weights=None):
+        if not isinstance(coord, Coordinate):
+            raise TypeError("CardinalBasis coord must be a Coordinate.")
+        size = int(size)
+        if size <= 0:
+            raise ValueError("CardinalBasis size must be positive.")
+        if weights is None:
+            # Unit cardinal weights need one scalar, not a global-size buffer.
+            weights = np.broadcast_to(np.array(1., dtype=np.float64), (size,))
+            volume = float(size)
+        elif isinstance(weights, LocalGraphTable):
+            if weights.shape != (size,) or weights.global_sum is None:
+                raise ValueError('Local cardinal weights require a global sum and matching size')
+            if np.any(~np.isfinite(weights.values)) or np.any(weights.values < 0):
+                raise ValueError('Local cardinal weights must be finite and nonnegative')
+            volume = float(weights.global_sum)
+        else:
+            weights = np.array(weights, dtype=np.float64, copy=True)
+            if np.any(~np.isfinite(weights)) or np.any(weights < 0):
+                raise ValueError(
+                    "CardinalBasis weights must be finite and nonnegative."
+                )
+            volume = float(weights.sum())
+        if weights.shape != (size,):
+            raise ValueError("CardinalBasis weights must have shape (size,).")
+        if volume <= 0:
+            raise ValueError("CardinalBasis weights must have a positive sum.")
+        if not isinstance(weights, LocalGraphTable):
+            weights.flags.writeable = False
         self.coord = coord
         self.coordsys = coord
         self.size = size
+        self.weights = weights
         self.shape = (size,)
         self.dealias = (1,)
+        self.volume = volume
         super().__init__(coord)
 
     def __add__(self, other):
@@ -365,6 +677,19 @@ class CardinalBasis(Basis):
         if other is None or other is self:
             return self
         return NotImplemented
+
+    def product_matrix(self, arg_basis, out_basis, i):
+        """Matrix for multiplication by one Cardinal basis element."""
+        if arg_basis is None:
+            return super().product_matrix(arg_basis, out_basis, i)
+        if arg_basis is not self or out_basis is not self:
+            raise NotImplementedError(
+                "Cardinal products require identical input and output bases."
+            )
+        return sparse.csr_matrix(
+            ([1], ([i], [i])),
+            shape=(self.size, self.size),
+        )
 
     def elements_to_groups(self, grid_space, elements):
         # No permutations
@@ -386,7 +711,11 @@ class CardinalBasis(Basis):
         """Global grid."""
         if scale != 1:
             raise NotImplementedError("Cardinal basis only supports scale=1.")
-        return np.arange(self.size)
+        return reshape_vector(
+            np.arange(self.size),
+            dim=dist.dim,
+            axis=dist.get_basis_axis(self),
+        )
 
     def local_grids(self, dist, scales):
         """Local grids."""
@@ -397,7 +726,12 @@ class CardinalBasis(Basis):
         if scale != 1:
             raise NotImplementedError("Cardinal basis only supports scale=1.")
         local_elements = dist.grid_layout.local_elements(self.domain(dist), scales=scale)
-        return np.arange(self.size)[local_elements[dist.get_basis_axis(self)]]
+        elements = local_elements[dist.get_basis_axis(self)]
+        return reshape_vector(
+            elements,
+            dim=dist.dim,
+            axis=dist.get_basis_axis(self),
+        )
 
     def local_modes(self, dist):
         """Local grid."""
@@ -419,6 +753,382 @@ class CardinalBasis(Basis):
         np.copyto(gdata, cdata)
 
 
+class CardinalMap:
+    """Sparse linear map between two Cardinal bases.
+
+    Cardinal maps are basis-aware symbolic objects.  Applying a map with ``@``
+    or by calling it returns a Dedalus linear operator, rather than immediately
+    multiplying field data.
+    """
+
+    __array_priority__ = 1000
+
+    def __init__(self, source, target, matrix, name=None):
+        if not isinstance(source, CardinalBasis):
+            raise TypeError("CardinalMap source must be a CardinalBasis.")
+        if not isinstance(target, CardinalBasis):
+            raise TypeError("CardinalMap target must be a CardinalBasis.")
+        if source.coord is not target.coord:
+            raise ValueError("CardinalMap bases must use the same coordinate.")
+        matrix = sparse.csr_matrix(matrix, copy=True)
+        expected_shape = (target.size, source.size)
+        if matrix.shape != expected_shape:
+            raise ValueError(
+                f"CardinalMap matrix has shape {matrix.shape}; "
+                f"expected {expected_shape}."
+            )
+        matrix.sum_duplicates()
+        matrix.sort_indices()
+        matrix.data.flags.writeable = False
+        matrix.indices.flags.writeable = False
+        matrix.indptr.flags.writeable = False
+        self.source = source
+        self.target = target
+        self.matrix = matrix
+        self.name = name or "CardinalMap"
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}(name={self.name!r}, "
+            f"shape={self.matrix.shape})"
+        )
+
+    @property
+    def matrix_dtype(self):
+        return self.matrix.dtype
+
+    def submatrix(self, rows, columns):
+        """Matrix on selected cardinal entries, in the requested order."""
+        return self.matrix[rows][:, columns]
+
+    def __call__(self, operand):
+        return ApplyCardinalMap(operand, self)
+
+    def __matmul__(self, operand):
+        if not isinstance(operand, Operand):
+            return NotImplemented
+        return self(operand)
+
+    @CachedAttribute
+    def T(self):
+        """Transpose map."""
+        return CardinalMap(
+            self.target,
+            self.source,
+            self.matrix.T,
+            name=f"{self.name}.T",
+        )
+
+    @CachedAttribute
+    def H(self):
+        """Hermitian-transpose map."""
+        return CardinalMap(
+            self.target,
+            self.source,
+            self.matrix.T.conjugate(),
+            name=f"{self.name}.H",
+        )
+
+
+class ApplyCardinalMap(operators.SpectralOperator1D):
+    """Deferred application of a :class:`CardinalMap`."""
+
+    subaxis_dependence = [True]
+    subaxis_coupling = [True]
+
+    def __init__(self, operand, cardinal_map, out=None):
+        if not isinstance(operand, Operand):
+            raise TypeError("CardinalMap operands must be Dedalus fields or operators.")
+        input_basis = operand.domain.get_basis(cardinal_map.source.coord)
+        if input_basis is not cardinal_map.source:
+            raise ValueError("CardinalMap operand does not use the map's source basis.")
+        super().__init__(operand, out=out)
+        # SpectralOperator requirements
+        self.coord = cardinal_map.source.coord
+        self.input_basis = cardinal_map.source
+        self.output_basis = cardinal_map.target
+        self.first_axis = self.dist.get_axis(self.coord)
+        self.last_axis = self.first_axis
+        self.axis = self.first_axis
+        # LinearOperator requirements
+        self.operand = operand
+        self.cardinal_map = cardinal_map
+        # FutureField requirements
+        self.domain = operand.domain.substitute_basis(
+            self.input_basis,
+            self.output_basis,
+        )
+        self.tensorsig = operand.tensorsig
+        self.dtype = np.result_type(operand.dtype, cardinal_map.matrix_dtype)
+        self.name = cardinal_map.name
+
+    def new_operand(self, operand, **kw):
+        if operand == 0:
+            return 0
+        return ApplyCardinalMap(operand, self.cardinal_map, **kw)
+
+    def subspace_matrix(self, layout):
+        if self.dist.distributed_network:
+            input_domain = self.input_basis.domain(self.dist)
+            output_domain = self.output_basis.domain(self.dist)
+            input_elements = layout.local_elements(
+                input_domain,
+                scales=1,
+            )[self.axis]
+            output_elements = layout.local_elements(
+                output_domain,
+                scales=1,
+            )[self.axis]
+            return self.cardinal_map.submatrix(output_elements, input_elements)
+        return self.cardinal_map.matrix
+
+    def group_matrix(self, group):
+        raise ValueError("CardinalMap axes must be fully coupled.")
+
+    def check_conditions(self):
+        if self.dist.distributed_network:
+            return not self.args[0].layout.grid_space[self.axis]
+        return super().check_conditions()
+
+    def enforce_conditions(self):
+        if self.dist.distributed_network:
+            self.args[0].require_coeff_space(self.axis)
+        else:
+            super().enforce_conditions()
+
+    def _network_element_owners(self, basis, role):
+        canonical = np.asarray(basis._network_elements, dtype=int)
+        partition = self.dist.network_partition
+        if role == "edges":
+            return partition.edge_owners[canonical]
+        if role == "ports":
+            return partition.edge_owners[
+                (canonical // 2)
+            ]
+        if role == "vertices":
+            return partition.vertex_equation_owners[canonical]
+        raise ValueError(
+            "Cardinal map ownership requires an edge, port, or vertex basis."
+        )
+
+    @CachedMethod
+    def _owned_ghost_map_is_local(self, source_role, target_role):
+        """Whether every nonzero is covered by the topology resident halo."""
+        if getattr(self.cardinal_map, '_network_topology_local', False):
+            return True
+        matrix = self.cardinal_map.matrix
+        rows, columns = matrix.nonzero()
+        if not rows.size:
+            return True
+        partition = self.dist.network_partition
+        source_elements = np.asarray(
+            self.input_basis._network_elements,
+            dtype=int,
+        )
+        target_elements = np.asarray(
+            self.output_basis._network_elements,
+            dtype=int,
+        )
+
+        if source_role == "vertices" and target_role in ("edges", "ports"):
+            source_vertices = source_elements[columns]
+            target_owners = self._network_element_owners(
+                self.output_basis,
+                target_role,
+            )[rows]
+            return partition._contains_resident_pairs(target_owners, source_vertices)
+
+        if target_role == "vertices" and source_role in ("edges", "ports"):
+            target_vertices = target_elements[rows]
+            source_owners = self._network_element_owners(
+                self.input_basis,
+                source_role,
+            )[columns]
+            return partition._contains_resident_pairs(source_owners, target_vertices)
+
+        if source_role == target_role == "vertices":
+            source_vertices = source_elements[columns]
+            target_vertices = target_elements[rows]
+            target_owners = partition.vertex_equation_owners[target_vertices]
+            return partition._contains_resident_pairs(target_owners, source_vertices)
+
+        return False
+
+    def _require_owned_ghost_map_locality(self, source_role, target_role):
+        if not self._owned_ghost_map_is_local(source_role, target_role):
+            raise NotImplementedError(
+                f"CardinalMap {self.cardinal_map.name!r} couples Network "
+                "vertices outside the partition's resident endpoint halo; "
+                "owned/ghost storage currently supports topology-local maps "
+                "such as R and R.T only."
+            )
+
+    def operate(self, out):
+        if not self.dist.distributed_network:
+            return super().operate(out)
+
+        arg = self.args[0]
+        layout = arg.layout
+        out.preset_layout(layout)
+        axis = self.axis
+        data_axis = axis + len(arg.tensorsig)
+        input_elements = layout.local_elements(
+            arg.domain,
+            arg.scales,
+        )[axis]
+        output_elements = layout.local_elements(
+            out.domain,
+            out.scales,
+        )[axis]
+        source_role = self.dist.network_axis_role(arg.domain)
+        target_role = self.dist.network_axis_role(out.domain)
+        owned_ghost = self.dist.network_vertex_storage == "owned_ghost"
+
+        if source_role == "vertices" and owned_ghost:
+            self._require_owned_ghost_map_locality(
+                source_role,
+                target_role,
+            )
+            # Evaluation boundaries refresh every owned/ghost leaf once in a
+            # deterministic order.  Derived vertex intermediates are likewise
+            # owner-forwarded by their producing operation, so inserting a
+            # second collective here would be redundant and could mismatch
+            # ranks traversing different local layout passes.
+            local_matrix = self.cardinal_map.submatrix(output_elements, input_elements)
+            if arg.data.size and out.data.size:
+                apply_matrix(
+                    local_matrix,
+                    arg.data,
+                    data_axis,
+                    out=out.data,
+                )
+            else:
+                out.data.fill(0)
+            if target_role == "vertices":
+                canonical_targets = take_elements(self.output_basis._network_elements, output_elements)
+                target_owned = (
+                    self.dist.network_partition.vertex_equation_owners[
+                        canonical_targets
+                    ]
+                    == self.dist.layout_comm.rank
+                )
+                output_view = np.moveaxis(out.data, data_axis, 0)
+                output_view[~target_owned] = 0
+                self.dist.network_vertex_exchange_plan.forward(
+                    out.data,
+                    axis=data_axis,
+                )
+            return
+
+        if target_role == "vertices" and owned_ghost:
+            self._require_owned_ghost_map_locality(
+                source_role,
+                target_role,
+            )
+            local_matrix = self.cardinal_map.submatrix(output_elements, input_elements)
+            if arg.data.size and out.data.size:
+                apply_matrix(
+                    local_matrix,
+                    arg.data,
+                    data_axis,
+                    out=out.data,
+                )
+            else:
+                out.data.fill(0)
+            self.dist.network_vertex_exchange_plan.reduce_add(
+                out.data,
+                axis=data_axis,
+            )
+            return
+
+        if (source_role != "vertices" and target_role != "vertices"
+                and getattr(self.cardinal_map, '_network_topology_local', False)):
+            local_matrix = self.cardinal_map.submatrix(output_elements, input_elements)
+            if arg.data.size and out.data.size:
+                apply_matrix(local_matrix, arg.data, data_axis, out=out.data)
+            else:
+                out.data.fill(0)
+            return
+
+        matrix = self.cardinal_map.matrix
+        if source_role == "vertices":
+            # Vertex fields are replicated.  Use the local replica here: an
+            # expression evaluator may reach different CardinalMap nodes in
+            # different layout passes on idle and active ranks, so inserting
+            # an otherwise unnecessary broadcast can mismatch a later
+            # collective map operation.  Distributed solvers synchronize
+            # vertex unknowns when scattering interface solutions.
+            global_data = arg.data
+            local_matrix = matrix[output_elements, :]
+            if global_data.size and out.data.size:
+                apply_matrix(
+                    local_matrix,
+                    global_data,
+                    data_axis,
+                    out=out.data,
+                )
+            else:
+                out.data.fill(0)
+            return
+
+        if target_role == "vertices":
+            # Each owned source row contributes to a complete vertex vector;
+            # summing those partial vectors produces the replicated result.
+            local_matrix = matrix[:, input_elements]
+            if arg.data.size and out.data.size:
+                apply_matrix(
+                    local_matrix,
+                    arg.data,
+                    data_axis,
+                    out=out.data,
+                )
+            else:
+                out.data.fill(0)
+            reduced = np.empty_like(out.data)
+            self.dist.layout_comm.Allreduce(out.data, reduced)
+            np.copyto(out.data, reduced)
+            return
+
+        local_rows = matrix[output_elements, :]
+        source_owners = self._network_element_owners(
+            self.input_basis,
+            source_role,
+        )
+        target_owners = self._network_element_owners(
+            self.output_basis,
+            target_role,
+        )
+        map_rows, map_columns = matrix.nonzero()
+        source_complete = np.all(
+            target_owners[map_rows] == source_owners[map_columns]
+        )
+        if source_complete:
+            # Network trace maps and edge-diagonal maps preserve ownership.
+            local_matrix = local_rows[:, input_elements]
+            if arg.data.size and out.data.size:
+                apply_matrix(
+                    local_matrix,
+                    arg.data,
+                    data_axis,
+                    out=out.data,
+                )
+            else:
+                out.data.fill(0)
+        else:
+            # Preserve generic CardinalMap semantics for a map that crosses
+            # partition boundaries, at the cost of gathering its source axis.
+            global_data = arg.allgather_data()
+            if global_data.size and out.data.size:
+                apply_matrix(
+                    local_rows,
+                    global_data,
+                    data_axis,
+                    out=out.data,
+                )
+            else:
+                out.data.fill(0)
+
+
 class ConvertConstantCardinal(operators.ConvertConstant, operators.SpectralOperator1D):
     """Convert constant to Cardinal basis."""
 
@@ -429,6 +1139,66 @@ class ConvertConstantCardinal(operators.ConvertConstant, operators.SpectralOpera
     @staticmethod
     def _full_matrix(input_basis, output_basis):
         return np.ones((output_basis.size, 1))
+
+    def subspace_matrix(self, layout):
+        """Expand onto only the Cardinal entries owned by this rank."""
+        if not self.dist.distributed_network:
+            return super().subspace_matrix(layout)
+        output_elements = layout.local_elements(
+            self.domain,
+            scales=1,
+        )[self.last_axis]
+        return np.ones((output_elements.size, 1))
+
+    def check_conditions(self):
+        """Accept any Network layout handled by the collective conversion."""
+        if self.dist.distributed_network:
+            return True
+        return super().check_conditions()
+
+    def enforce_conditions(self):
+        """Avoid requesting nonexistent local distributed Network layouts."""
+        if self.dist.distributed_network:
+            return
+        return super().enforce_conditions()
+
+    def operate(self, out):
+        """Broadcast constants before expanding onto owned Network entries."""
+        if not self.dist.distributed_network:
+            return super().operate(out)
+
+        arg = self.args[0]
+        layout = arg.layout
+        out.preset_layout(layout)
+        axis = self.last_axis
+        data_axis = axis + len(arg.tensorsig)
+        output_elements = layout.local_elements(
+            out.domain,
+            out.scales,
+        )[axis]
+
+        # Inputs with no Network-cardinal basis (full-network scalars and
+        # position-only profiles) are complete replicas.  The outer evaluation
+        # boundary synchronizes named user inputs once, while anonymous
+        # evaluation-local profiles are already constructed on every rank.
+        # Keep this operator collective-free so idle ranks may traverse it at
+        # different layout passes.
+        if self.dist.network_axis_is_replicated(arg.domain):
+            global_data = arg.data
+        else:
+            global_data = arg.allgather_data()
+        # Constant interpolation is one on every output element. Construct
+        # only the resident rows, including a zero-row matrix on idle ranks.
+        local_matrix = np.ones((output_elements.size, 1))
+        if global_data.size and out.data.size:
+            apply_matrix(
+                local_matrix,
+                global_data,
+                data_axis,
+                out=out.data,
+            )
+        else:
+            out.data.fill(0)
 
 
 class InterpolateCardinal(operators.Interpolate, operators.SpectralOperator1D):
@@ -454,6 +1224,184 @@ class InterpolateCardinal(operators.Interpolate, operators.SpectralOperator1D):
         interp_vector[position] = 1
         return interp_vector[None, :]
 
+    def subspace_matrix(self, layout):
+        """Select only the authoritative local copy of a Network element."""
+        if not self.dist.distributed_network or self.last_axis != 0:
+            return super().subspace_matrix(layout)
+        input_elements = layout.local_elements(
+            self.operand.domain,
+            scales=1,
+        )[self.last_axis]
+        if not -self.input_basis.size <= self.position < self.input_basis.size:
+            raise IndexError('Cardinal interpolation position out of range')
+        matrix = (input_elements == self.position % self.input_basis.size)[None, :].astype(float)
+        role = getattr(self.input_basis, "_network_role", None)
+        if (
+            role == "vertices"
+            and self.dist.network_vertex_storage == "owned_ghost"
+        ):
+            canonical_vertices = take_elements(self.input_basis._network_elements, input_elements)
+            ghost_columns = (
+                self.dist.network_partition.vertex_equation_owners[
+                    canonical_vertices
+                ]
+                != self.dist.layout_comm.rank
+            )
+            matrix[:, ghost_columns] = 0
+        return matrix
+
+    @property
+    def network_matrix_additive(self):
+        """Combine an owned vertex selection into its replicated scalar."""
+        return bool(
+            self.dist.network_vertex_storage == "owned_ghost"
+            and getattr(self.input_basis, "_network_role", None) == "vertices"
+        )
+
+    def check_conditions(self):
+        if self.dist.distributed_network and self.last_axis == 0:
+            return not self.args[0].layout.grid_space[self.last_axis]
+        return operators.SpectralOperator.check_conditions(self)
+
+    def enforce_conditions(self):
+        if self.dist.distributed_network and self.last_axis == 0:
+            self.args[0].require_coeff_space(self.last_axis)
+        else:
+            operators.SpectralOperator.enforce_conditions(self)
+
+    def operate(self, out):
+        if not self.dist.distributed_network or self.last_axis != 0:
+            return operators.SpectralOperator1D.operate(self, out)
+
+        arg = self.args[0]
+        layout = arg.layout
+        out.preset_layout(layout)
+        axis = self.last_axis
+        data_axis = axis + len(arg.tensorsig)
+        input_elements = layout.local_elements(
+            arg.domain,
+            arg.scales,
+        )[axis]
+        if not -self.input_basis.size <= self.position < self.input_basis.size:
+            raise IndexError('Cardinal interpolation position out of range')
+        weights = (input_elements == self.position % self.input_basis.size).astype(float)
+        role = getattr(self.input_basis, "_network_role", None)
+        if (
+            role == "vertices"
+            and self.dist.network_vertex_storage == "owned_ghost"
+        ):
+            canonical_vertices = take_elements(self.input_basis._network_elements, input_elements)
+            owned = (
+                self.dist.network_partition.vertex_equation_owners[
+                    canonical_vertices
+                ]
+                == self.dist.layout_comm.rank
+            )
+            weights = weights * owned
+        weight_shape = [1] * arg.data.ndim
+        weight_shape[data_axis] = weights.size
+        partial = np.sum(
+            arg.data * weights.reshape(weight_shape),
+            axis=data_axis,
+            keepdims=True,
+        )
+        if (
+            role == "vertices"
+            and self.dist.network_vertex_storage == "replicated"
+            and self.dist.layout_comm.rank != 0
+        ):
+            partial.fill(0)
+        selected = np.empty_like(partial)
+        self.dist.layout_comm.Allreduce(partial, selected)
+        if out.data.size:
+            if out.data.shape != selected.shape:
+                raise RuntimeError(
+                    "Distributed Cardinal interpolation produced an "
+                    "unexpected output shape."
+                )
+            np.copyto(out.data, selected)
+        else:
+            out.data.fill(0)
+
+
+def _distributed_cardinal_reduction_operate(operator, out):
+    """Reduce an owned Network cardinal axis onto its constant mode."""
+    arg = operator.args[0]
+    layout = arg.layout
+    out.preset_layout(layout)
+    axis = operator.last_axis
+    data_axis = axis + len(arg.tensorsig)
+    input_elements = layout.local_elements(
+        arg.domain,
+        arg.scales,
+    )[axis]
+    weights = operator._local_weights(input_elements)
+    role = getattr(operator.input_basis, "_network_role", None)
+    if (
+        role == "vertices"
+        and operator.dist.network_vertex_storage == "owned_ghost"
+    ):
+        canonical_vertices = take_elements(operator.input_basis._network_elements, input_elements)
+        owned = (
+            operator.dist.network_partition.vertex_equation_owners[
+                canonical_vertices
+            ]
+            == operator.dist.layout_comm.rank
+        )
+        weights = weights * owned
+    weight_shape = [1] * arg.data.ndim
+    weight_shape[data_axis] = weights.size
+    partial = np.sum(
+        arg.data * weights.reshape(weight_shape),
+        axis=data_axis,
+        keepdims=True,
+    )
+
+    # Edge and port data are disjoint rank-local contributions.  Vertex data
+    # are replicated, so only the authoritative rank contributes them.
+    comm = operator.dist.layout_comm
+    if (
+        role == "vertices"
+        and operator.dist.network_vertex_storage == "replicated"
+        and comm.rank != 0
+    ):
+        partial.fill(0)
+    reduced = np.empty_like(partial)
+    comm.Allreduce(partial, reduced)
+
+    if out.data.size:
+        if out.data.shape != reduced.shape:
+            raise RuntimeError(
+                "Distributed Cardinal reduction produced an unexpected "
+                "output shape."
+            )
+        np.copyto(out.data, reduced)
+    else:
+        out.data.fill(0)
+
+
+def _distributed_cardinal_reduction_subspace_matrix(operator, layout):
+    """Build a local cardinal reduction without duplicate ghost columns."""
+    input_elements = layout.local_elements(
+        operator.operand.domain,
+        scales=1,
+    )[operator.last_axis]
+    matrix = operator._local_weights(input_elements)[None, :].copy()
+    role = getattr(operator.input_basis, "_network_role", None)
+    if (
+        role == "vertices"
+        and operator.dist.network_vertex_storage == "owned_ghost"
+    ):
+        canonical_vertices = take_elements(operator.input_basis._network_elements, input_elements)
+        ghost_columns = (
+            operator.dist.network_partition.vertex_equation_owners[
+                canonical_vertices
+            ]
+            != operator.dist.layout_comm.rank
+        )
+        matrix[:, ghost_columns] = 0
+    return matrix
+
 
 class IntegrateCardinal(operators.Integrate, operators.SpectralOperator1D):
     """Cardinal basis integration."""
@@ -469,8 +1417,41 @@ class IntegrateCardinal(operators.Integrate, operators.SpectralOperator1D):
 
     @staticmethod
     def _full_matrix(input_basis, output_basis):
-        integ_vector = np.ones(input_basis.size)
+        integ_vector = input_basis.weights
         return integ_vector[None, :]
+
+    def _local_weights(self, elements):
+        return self.input_basis.weights[elements]
+
+    def subspace_matrix(self, layout):
+        """Reduce only this rank's owned Cardinal entries."""
+        if not self.dist.distributed_network or self.last_axis != 0:
+            return super().subspace_matrix(layout)
+        return _distributed_cardinal_reduction_subspace_matrix(self, layout)
+
+    @property
+    def network_matrix_additive(self):
+        """Owned vertex reductions combine one contribution from each rank."""
+        return bool(
+            self.dist.network_vertex_storage == "owned_ghost"
+            and getattr(self.input_basis, "_network_role", None) == "vertices"
+        )
+
+    def check_conditions(self):
+        if self.dist.distributed_network and self.last_axis == 0:
+            return not self.args[0].layout.grid_space[self.last_axis]
+        return operators.SpectralOperator.check_conditions(self)
+
+    def enforce_conditions(self):
+        if self.dist.distributed_network and self.last_axis == 0:
+            self.args[0].require_coeff_space(self.last_axis)
+        else:
+            operators.SpectralOperator.enforce_conditions(self)
+
+    def operate(self, out):
+        if self.dist.distributed_network and self.last_axis == 0:
+            return _distributed_cardinal_reduction_operate(self, out)
+        return operators.SpectralOperator1D.operate(self, out)
 
 
 class AverageCardinal(operators.Average, operators.SpectralOperator1D):
@@ -487,8 +1468,41 @@ class AverageCardinal(operators.Average, operators.SpectralOperator1D):
 
     @staticmethod
     def _full_matrix(input_basis, output_basis):
-        ave_vector = np.ones(input_basis.size) / input_basis.size
+        ave_vector = input_basis.weights / input_basis.volume
         return ave_vector[None, :]
+
+    def _local_weights(self, elements):
+        return self.input_basis.weights[elements] / self.input_basis.volume
+
+    def subspace_matrix(self, layout):
+        """Reduce only this rank's owned Cardinal entries."""
+        if not self.dist.distributed_network or self.last_axis != 0:
+            return super().subspace_matrix(layout)
+        return _distributed_cardinal_reduction_subspace_matrix(self, layout)
+
+    @property
+    def network_matrix_additive(self):
+        """Owned vertex reductions combine one contribution from each rank."""
+        return bool(
+            self.dist.network_vertex_storage == "owned_ghost"
+            and getattr(self.input_basis, "_network_role", None) == "vertices"
+        )
+
+    def check_conditions(self):
+        if self.dist.distributed_network and self.last_axis == 0:
+            return not self.args[0].layout.grid_space[self.last_axis]
+        return operators.SpectralOperator.check_conditions(self)
+
+    def enforce_conditions(self):
+        if self.dist.distributed_network and self.last_axis == 0:
+            self.args[0].require_coeff_space(self.last_axis)
+        else:
+            operators.SpectralOperator.enforce_conditions(self)
+
+    def operate(self, out):
+        if self.dist.distributed_network and self.last_axis == 0:
+            return _distributed_cardinal_reduction_operate(self, out)
+        return operators.SpectralOperator1D.operate(self, out)
 
 
 class IntervalBasis(Basis):

@@ -4,3 +4,8 @@ requires = ["cython >= 3.0.5",
             "numpy >= 1.20.0",
             "setuptools",
             "wheel"]
+
+[tool.pytest.ini_options]
+markers = [
+    "mpi(min_size): test requires an MPI communicator of at least min_size ranks",
+]
