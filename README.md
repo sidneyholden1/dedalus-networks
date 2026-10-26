@@ -1,9 +1,9 @@
 # Dedalus network PDEs
 
-A research fork of [Dedalus](https://github.com/DedalusProject/dedalus) by
-Sidney Holden for solving partial differential equations on metric networks.
-The extension represents edges with spectral bases and couples them through
-vertex values and flux conditions. It includes whole-edge MPI distribution and
+A research fork of [Dedalus](https://github.com/DedalusProject/dedalus) for
+solving partial differential equations on networks. The extension represents
+edges with spectral bases and couples them through vertex values and flux
+conditions. It distributes subgraphs across MPI processes and uses
 Dirichlet-to-Neumann solvers.
 
 This is an experimental extension, maintained separately from upstream Dedalus.
