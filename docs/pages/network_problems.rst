@@ -8,9 +8,15 @@ reference interval :math:`s \in [0,1]`; its physical length is included by the
 network derivative and integration measure.
 
 The :doc:`complete network Poisson example <examples/lbvp_network_poisson>`
-constructs a graph, declares fields and vertex equations, solves with the
-Dirichlet-to-Neumann backend, and writes the solution using the ordinary
-Dedalus analysis interface.
+uses a three-edge star with junction :math:`v_0` and leaves :math:`v_1`,
+:math:`v_2`, and :math:`v_3`. It declares fields and vertex equations, solves
+with the Dirichlet-to-Neumann backend, and writes the solution using the
+ordinary Dedalus analysis interface.
+
+The :doc:`disc heat example <examples/ivp_network_grid_heat>` evolves a
+central pulse on a 100-node triangulated network. It saves HDF5 snapshots,
+a colour animation and numerical checks for heat conservation and junction
+conditions. Both example pages show the output and how to reproduce it.
 
 Public API
 ==========
@@ -323,7 +329,12 @@ interpret its field without reference to bucket-local numbering.  Arithmetic
 within a bucket has the ordinary dense-field semantics; combine different
 buckets only after mapping them to a common space such as ``bases.vertices``.
 The :repo:`heterogeneous heat example <examples/ivp_network_heterogeneous_heat/heat.py>`
-supplies a complete time-dependent problem and analytic check.
+supplies a complete time-dependent problem and analytic check. Running it saves
+``network_heat.png`` with the final edge profiles and vertex-temperature decay,
+plus ``network_heat/network_heat_s1.h5`` with time snapshots of ``u_coarse``,
+``u_fine`` and ``U``. Each bucket retains its own grid and network metadata.
+Outputs are relative to the working directory and are overwritten on rerun;
+use separate output directories to retain serial and MPI results.
 
 Physical measure
 ================

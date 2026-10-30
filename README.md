@@ -12,17 +12,46 @@ The Python package remains `dedalus`; install this fork in its own environment.
 ## Start here
 
 1. Follow [installation and development instructions](NETWORK_DEVELOPMENT.md).
-2. Run the [three-edge Poisson example](examples/lbvp_network_poisson/poisson.py).
-   Its built-in analytic check gives the central vertex value `6/13`.
-3. Read the [network API and solver guide](docs/pages/network_problems.rst).
-4. Try the [heterogeneous heat example](examples/ivp_network_heterogeneous_heat/heat.py)
-   for time evolution on edges with different lengths and resolutions.
+2. Run the [three-edge Poisson example](examples/lbvp_network_poisson).
+   Its junction is `v_0`, with leaves `v_1` (left), `v_2` (upper),
+   and `v_3` (lower). The analytic check gives `u(v_0)=6/13`.
+3. Run the [disc heat example](examples/ivp_network_grid_heat) to save an
+   animation of diffusion on a 100-node triangulated network.
+4. Read the [network API and solver guide](docs/pages/network_problems.rst).
 
 The implementation includes linear and nonlinear boundary-value problems,
 initial-value problems, selected eigenvalue problems, dynamic vertex storage,
 constraints, and restart support. See the guide for the precise supported cases.
 Current network fields are scalar; the distributed eigenvalue path is restricted
 to selected right eigenmodes, and network file output uses gathering.
+
+## Example outputs
+
+### Heat diffusion on a network
+
+A central hot spot spreads along a random triangulation of a disc. The network
+is insulated, with continuous temperature and Kirchhoff flux balance at every
+junction. The animation uses a fixed logarithmic colour scale from 0.001 to 1.
+
+![Heat diffusion on a 100-node disc network](docs/pages/examples/images/network_disc_heat.gif)
+
+[Run the heat example](examples/ivp_network_grid_heat) to generate the animation,
+PNG snapshots, HDF5 solution data and numerical checks.
+
+### Poisson equation on a three-edge network
+
+The junction is `v_0`, with `v_1` on the left, `v_2` above and `v_3` below.
+The boundary values are `u(v_1)=1` and `u(v_2)=u(v_3)=0`; the analytic junction
+value is `u(v_0)=6/13`. The colour scale is linear from 0 to 1.
+
+![Three-edge Poisson solution](docs/pages/examples/images/network_poisson.png)
+
+[Run the Poisson example](examples/lbvp_network_poisson) to generate the plot
+and HDF5 edge/vertex solution data. Both examples place `u` above the colour bar.
+
+The separate [heterogeneous heat example](examples/ivp_network_heterogeneous_heat/heat.py)
+uses edges with different lengths and resolutions, saves a plot and HDF5
+snapshots, and checks an analytic heat mode.
 
 ## Development and review
 
@@ -31,11 +60,13 @@ Network tests live in `dedalus/tests/test_network*.py` and
 and MPI commands. The documented scaling harness is included under `benchmarks/`.
 
 This public branch consolidates the network implementation onto upstream commit
-`2a2ad15108f2cd2d24d0b103f8167962562b5cbc`. Library source, tests, examples, and
-the scaling harness match development snapshot `e6050873e952678d0d879764e12a4bd510835fc8`.
-Research archives, cluster administration, and simulation outputs are maintained
-separately. This initial publication is for use and architectural feedback;
-it does not claim upstream acceptance or a new performance validation.
+`2a2ad15108f2cd2d24d0b103f8167962562b5cbc`. The initial library source, tests,
+examples, and scaling harness matched development snapshot
+`e6050873e952678d0d879764e12a4bd510835fc8`.
+Research archives, cluster administration, and full simulation data are maintained
+separately; the example figures above are included here. This publication is for
+use and architectural feedback; it does not claim upstream acceptance or a new
+performance validation.
 
 ## Attribution and license
 

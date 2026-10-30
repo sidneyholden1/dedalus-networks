@@ -51,6 +51,10 @@ Curvilinear examples
 Network examples
 ----------------
 
+The Poisson example saves a static solution on a three-edge star. The heat
+example saves an animation of diffusion on a 100-node triangulated disc.
+Both pages include commands to regenerate the displayed output.
+
 .. nbgallery::
     :name: network-example-gallery
     :glob:

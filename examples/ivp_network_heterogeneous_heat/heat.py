@@ -15,9 +15,14 @@ is the global eigenmode sin(pi*x/L), so
 To run in serial or MPI:
     $ python3 heat.py
     $ mpiexec -n 4 python3 heat.py
+
+Both commands save network_heat.png and HDF5 time snapshots under network_heat/
+in the current working directory. The plot compares the final edge profiles
+and vertex-temperature decay with the analytic solution.
 """
 
 import logging
+from pathlib import Path
 
 from mpi4py import MPI
 import numpy as np
@@ -140,8 +145,23 @@ U.set_global_data(np.sin(wavenumber * vertex_x)[:, None])
 # Solver
 solver = problem.build_solver(d3.SBDF2, network_solver="dtn")
 solver.stop_sim_time = stop_sim_time
+
+# Each heterogeneous bucket has its own dense task and grid metadata. The
+# gather-mode handler writes all ranks' data to one file on rank zero.
+snapshots = solver.evaluator.add_file_handler(
+    "network_heat",
+    sim_dt=stop_sim_time / 10,
+    max_writes=100,
+    mode="overwrite",
+)
+snapshots.add_task(u_coarse, name="u_coarse")
+snapshots.add_task(u_fine, name="u_fine")
+snapshots.add_task(U, name="U")
 while solver.proceed:
     solver.step(timestep)
+
+# Scheduled output is evaluated before a step; explicitly save the final state.
+solver.evaluate_handlers([snapshots], dt=timestep)
 
 # Analytic validation. Edge errors use owned rows; U is gathered from owners.
 amplitude = np.exp(-(wavenumber**2) * solver.sim_time)
@@ -167,8 +187,66 @@ if error > 2e-6:
         f"Heterogeneous Network heat solution failed its analytic check: {error:.3e}"
     )
 if comm.rank == 0:
+    import h5py
+    import matplotlib.pyplot as plt
+
     logger.info(
         "Heterogeneous Network heat solve passed: t=%.3f, max error=%.3e",
         solver.sim_time,
         error,
     )
+
+    # Read the saved data, so the figure also demonstrates how to use the output.
+    with h5py.File(snapshots.current_file, "r") as file:
+        times = file["scales/sim_time"][:]
+        vertex_values = file["tasks/U"][:, :, 0]
+        profiles = [
+            file[f"tasks/{name}"][-1] for name in ("u_coarse", "u_fine")
+        ]
+
+    figure, (profile_axis, decay_axis) = plt.subplots(2, 1, figsize=(8, 7))
+    x_plot = np.linspace(0, total_length, 400)
+    profile_axis.plot(
+        x_plot, np.sin(wavenumber * x_plot), "--", color="0.6", label="Initial"
+    )
+    profile_axis.plot(
+        x_plot, amplitude * np.sin(wavenumber * x_plot), "k-", label="Final analytic"
+    )
+    labels = (
+        f"Chebyshev, {coarse.interval.size} modes",
+        f"Legendre, {fine.interval.size} modes",
+    )
+    for values, basis, label, marker in zip(
+        profiles, (coarse, fine), labels, ("o", "x")
+    ):
+        edge_index, s = basis.global_grids(dist, scales=(1, 1))
+        edge_index = edge_index.astype(int)
+        x = offsets[edge_index] + lengths[edge_index] * s
+        profile_axis.plot(
+            x.ravel(), values.ravel(), marker, markersize=4, label=label
+        )
+    for x_vertex in vertex_x[1:-1]:
+        profile_axis.axvline(x_vertex, color="0.8", linewidth=0.8)
+    profile_axis.set(
+        xlabel="Distance along the four-edge chain", ylabel="Temperature u"
+    )
+    profile_axis.set_title(
+        f"Heat equation at t = {solver.sim_time:.4f}; max error = {error:.2e}"
+    )
+    profile_axis.legend(fontsize="small", ncols=2)
+
+    # v2 lies near the peak of the initial eigenmode. The short verification
+    # run has modest decay; a separate time axis makes it visible.
+    exact_vertex = np.exp(-wavenumber**2 * times) * np.sin(wavenumber * vertex_x[2])
+    decay_axis.plot(times, exact_vertex, "k-", label="Analytic")
+    decay_axis.plot(
+        times, vertex_values[:, 2], "o", markersize=4, label="Saved solution"
+    )
+    decay_axis.set(xlabel="Time", ylabel="Temperature at vertex v2")
+    decay_axis.ticklabel_format(axis="y", style="plain", useOffset=False)
+    decay_axis.legend()
+    figure.tight_layout()
+    figure.savefig("network_heat.png", dpi=200)
+    plt.close(figure)
+    logger.info("Saved plot: %s", Path("network_heat.png").resolve())
+    logger.info("Saved time snapshots: %s", snapshots.current_file)
