@@ -5,6 +5,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+permissions:
+  contents: read
+  checks: write
 jobs:
   test_via_conda_forge:
     strategy:
@@ -52,19 +55,19 @@ jobs:
             mpi_args+=(--oversubscribe)
           fi
           mpiexec "${mpi_args[@]}" python -m pytest -q \
-            "$GITHUB_WORKSPACE"/dedalus/tests_parallel/test_network_*.py
+            --pyargs dedalus.tests_parallel -o 'python_files=test_network_*.py'
       - name: Test Dedalus
         shell: bash -l {0}
         run: |
           # Move out of repository to run tests
-          cd $HOME
+          cd "$HOME"
           conda activate dedalus
+          # Preserve the report even when pytest returns a failure status.
+          trap 'if [[ -f dedalus-test-junit.xml ]]; then cp dedalus-test-junit.xml "$GITHUB_WORKSPACE"; fi' EXIT
           python3 -m dedalus test --report
-          # Copy report back to repository for test-reporter
-          cp dedalus-test-junit.xml $GITHUB_WORKSPACE
       - name: Report test results
         uses: dorny/test-reporter@v1
-        if: success() || failure()
+        if: (success() || failure()) && hashFiles('dedalus-test-junit.xml') != ''
         with:
           name: Test report (${{ matrix.os }})
           path: dedalus-test-junit.xml

@@ -233,7 +233,10 @@ setup(
     install_requires=install_requires,
     license="GPL3",
     packages=setuptools.find_packages(),
-    package_data={"": ["dedalus.cfg", "examples.tar.gz"]},
+    package_data={
+        "": ["dedalus.cfg", "examples.tar.gz"],
+        "dedalus.tests": ["*.json"],
+    },
     ext_modules=cythonize(extensions, compiler_directives=compiler_directives),
     cmdclass={"build": build},
     entry_points={"xarray.backends": ["dedalus=dedalus.tools.post:DedalusXarrayBackend"]})
