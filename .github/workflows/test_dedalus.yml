@@ -21,9 +21,12 @@ jobs:
     name: Test ${{ github.ref_name }} via conda-forge on ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Setup miniforge
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
+          installation-dir: ${{ runner.temp }}/miniforge
           miniforge-version: latest
           auto-activate-base: true
           activate-environment: ""
@@ -36,8 +39,6 @@ jobs:
           conda env config vars set NUMEXPR_MAX_THREADS=1
           conda install -y -c conda-forge dedalus c-compiler cython pip setuptools wheel "h5py=*=mpi*"
           conda uninstall -y --force dedalus
-      - name: Checkout repository
-        uses: actions/checkout@v2
       - name: Install Dedalus from repository
         shell: bash -l {0}
         run: |
