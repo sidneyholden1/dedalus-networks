@@ -43,8 +43,12 @@ def render(output, render_output=None):
     background = "#faf9f6"
     cmap = matplotlib.colormaps["inferno"]
     norm = LogNorm(vmin=0.001, vmax=1, clip=True)
+    figure_width = 10
+    # Match the 7-inch Poisson figure's annotation sizes when both images
+    # are displayed at the same width, independently of their export DPI.
+    annotation_scale = figure_width / 7
     with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 12}):
-        fig = plt.figure(figsize=(10, 8), dpi=100, facecolor=background)
+        fig = plt.figure(figsize=(figure_width, 8), dpi=100, facecolor=background)
         ax = fig.add_axes((0.02, 0.04, 0.76, 0.90))
         centre = (xy.max(axis=0) + xy.min(axis=0)) / 2
         radius = 0.54 * np.max(np.ptp(xy, axis=0))
@@ -74,9 +78,15 @@ def render(output, render_output=None):
         )
         colorbar.ax.set_yticklabels(("0.001", "0.01", "0.1", "1"))
         colorbar.minorticks_off()
-        colorbar.ax.set_title("$u$", fontsize=20, math_fontfamily="cm", pad=8)
-        colorbar.ax.tick_params(labelsize=12, length=3, width=0.8, pad=6)
-        colorbar.outline.set_linewidth(0.8)
+        colorbar.ax.set_title(
+            "$u$", fontsize=20 * annotation_scale, math_fontfamily="cm",
+            pad=8 * annotation_scale,
+        )
+        colorbar.ax.tick_params(
+            labelsize=12 * annotation_scale, length=3 * annotation_scale,
+            width=0.8 * annotation_scale, pad=6 * annotation_scale,
+        )
+        colorbar.outline.set_linewidth(0.8 * annotation_scale)
 
         # One shared palette prevents GIF quantization from flickering. Keep
         # both the thermal colours and neutral background antialiasing.
@@ -131,6 +141,15 @@ def render(output, render_output=None):
         "temporal_interpolation": False,
         "annotations": True,
         "colour_bar": "right, with u above; same height as the network",
+        "colour_bar_typography": {
+            "reference": "examples/lbvp_network_poisson/poisson.py",
+            "reference_figure_width_inches": 7,
+            "figure_width_inches": figure_width,
+            "annotation_scale": annotation_scale,
+            "title_fontsize_points": 20 * annotation_scale,
+            "tick_fontsize_points": 12 * annotation_scale,
+            "comparison": "same apparent sizes at equal displayed image widths",
+        },
         "title": False, "time_annotation": False,
     }
     (render_output / "animation_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")

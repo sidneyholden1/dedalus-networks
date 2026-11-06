@@ -23,3 +23,9 @@ The native adjoint assembly has serial checks against the original method,
 covering matrices, nonlinear forcing, short time evolution and instantaneous
 rates. The saved production fields include their original source and MPI run
 provenance.
+
+From the repository root, `python examples/plot_readme.py --output <new-directory>`
+arranges the retained paper image into the README's four-snapshot row, with
+mathematical time/sign/width labels for light and dark backgrounds. It uses
+Matplotlib, NumPy and Pillow; the input image is included under
+`docs/pages/examples/images/network_kdv.png`.

@@ -1,223 +1,65 @@
 # Dedalus on Networks
 
 A research fork of [Dedalus](https://github.com/DedalusProject/dedalus) for
-solving partial differential equations on networks. The extension represents
-edges with spectral bases and couples them through vertex values and flux
-conditions. It distributes subgraphs across MPI processes and uses
-Dirichlet-to-Neumann solvers.
+solving partial differential equations on physical networks. Edges use spectral
+bases and are coupled through vertex values and flux conditions.
 
-This is an experimental extension, maintained separately from upstream Dedalus.
-The Python package remains `dedalus`; install this fork in its own environment.
+The network-calculus interface provides graph differential operators and
+automatic tau assembly. The solver supports linear and nonlinear boundary-value
+problems, initial-value problems and selected eigenvalue problems, with MPI
+distribution and Dirichlet-to-Neumann solvers.
 
-## Paper examples and reproduction
+This repository accompanies *A scalable computational framework for PDEs on
+physical networks* (2026, in preparation), by Sidney Holden, Keaton J. Burns,
+Daniel Lecoanet, Jeffrey S. Oishi, Benjamin P. Brown, and Geoffrey M. Vasil.
+It includes example scripts and data for reproducing the paper's figures.
 
-The paper companion for *A scalable computational framework for PDEs on
-physical networks* is included under `paper/`:
+[Installation](INSTALL.md) · [Paper examples](paper/README.md) ·
+[Reproduce the figures](paper/REPRODUCING.md) ·
+[Download the release](https://github.com/sidneyholden1/dedalus-networks/releases/tag/paper-companion-20261106.1)
 
-- [Seven readable example scripts and their equations](paper/README.md)
-- [Redraw the five paper figures from the included data](paper/REPRODUCING.md)
-- [Install the solver source or plotting dependencies](INSTALL.md)
-- [Validation records and production settings](paper/release-checks.json)
+The Python package remains `dedalus`; install this fork in a separate environment.
 
-The network-calculus interface adds continuous fields, graph differential
-operators and automatic tau assembly. Existing explicit edge/vertex equations
-remain supported. The examples and installation links below retain their
-existing paths. The manuscript is distributed separately.
+## Examples
 
-## Start here
-
-1. Follow [installation and development instructions](NETWORK_DEVELOPMENT.md).
-2. Run the [three-edge Poisson example](examples/lbvp_network_poisson).
-   Its junction is `v_0`, with leaves `v_1` (left), `v_2` (upper),
-   and `v_3` (lower). The analytic check gives `u(v_0)=6/13`.
-3. Run the [disc heat example](examples/ivp_network_grid_heat) to save an
-   animation of diffusion on a 100-node triangulated network.
-4. Read the [network API and solver guide](docs/pages/network_problems.rst).
-
-The implementation includes linear and nonlinear boundary-value problems,
-initial-value problems, selected eigenvalue problems, dynamic vertex storage,
-constraints, and restart support. See the guide for the precise supported cases.
-Current network fields are scalar; the distributed eigenvalue path is restricted
-to selected right eigenmodes, and network file output uses gathering.
-
-## Example outputs
-
-### Heat diffusion on a network
-
-A central hot spot spreads along a random triangulation of a disc. The network
-is insulated, with continuous temperature and Kirchhoff flux balance at every
-junction. The animation uses a fixed logarithmic colour scale from 0.001 to 1.
-
-![Heat diffusion on a 100-node disc network](docs/pages/examples/images/network_disc_heat.gif)
-
-[Run the heat example](examples/ivp_network_grid_heat) to generate the animation,
-PNG snapshots, HDF5 solution data and numerical checks.
-
-### Poisson equation on a three-edge network
-
-The junction is `v_0`, with `v_1` on the left, `v_2` above and `v_3` below.
-The boundary values are `u(v_1)=1` and `u(v_2)=u(v_3)=0`; the analytic junction
-value is `u(v_0)=6/13`. The colour scale is linear from 0 to 1.
-
-![Three-edge Poisson solution](docs/pages/examples/images/network_poisson.png)
-
-[Run the Poisson example](examples/lbvp_network_poisson) to generate the plot
-and HDF5 edge/vertex solution data. Both examples place `u` above the colour bar.
-
-The separate [heterogeneous heat example](examples/ivp_network_heterogeneous_heat/heat.py)
-uses edges with different lengths and resolutions, saves a plot and HDF5
-snapshots, and checks an analytic heat mode.
-
-## Development and review
-
-Network tests live in `dedalus/tests/test_network*.py` and
-`dedalus/tests_parallel/test_network*.py`. The development guide gives serial
-and MPI commands. The documented scaling harness is included under `benchmarks/`.
-
-This public branch consolidates the network implementation onto upstream commit
-`2a2ad15108f2cd2d24d0b103f8167962562b5cbc`. The initial library source, tests,
-examples, and scaling harness matched development snapshot
-`e6050873e952678d0d879764e12a4bd510835fc8`.
-Research archives, cluster administration, and full simulation data are maintained
-separately; the example figures above are included here. The paper companion adds the retained measurements, source settings and figure
-reproduction alongside these existing examples.
-
-## Attribution and license
-
-Dedalus is developed by the Dedalus collaboration, whose original project
-information follows below. The existing [license](LICENSE.txt) is retained. See the
-[companion citation](CITATION.cff) and the original
-[Dedalus citation](CITATION_UPSTREAM.cff).
-
----
-
-<!-- Title -->
-<h1 align="center">
-  Dedalus Project
-</h1>
-
-<!-- Information badges -->
-<p align="center">
-  <a href="https://www.repostatus.org/#active">
-    <img alt="Repo status" src="https://www.repostatus.org/badges/latest/active.svg" />
-  </a>
-  <a href="http://dedalus-project.readthedocs.org">
-    <img alt="Read the Docs" src="https://img.shields.io/readthedocs/dedalus-project">
-  </a>
-    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/dedalus">
-  <a href="https://pypi.org/project/dedalus/">
-    <img alt="PyPI" src="https://img.shields.io/pypi/v/dedalus">
-  </a>
-  <a href="https://github.com/conda-forge/dedalus-feedstock">
-  <img alt="Conda Version" src="https://img.shields.io/conda/vn/conda-forge/dedalus">
-  </a>
-  <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
-    <img alt="PyPI - License" src="https://img.shields.io/pypi/l/dedalus">
-  </a>
-</p>
-
-Dedalus is a flexible framework for solving partial differential equations using modern spectral methods.
-The code is open-source and developed by a team of researchers studying astrophysical, geophysical, and biological fluid dynamics.
-
-Dedalus is written primarily in Python and features an easy-to-use interface with symbolic vectorial equation specification.
-For example, to simulate incompressible hydrodynamics in a ball, you can symbolically enter the equations, including [gauge conditions](https://dedalus-project.readthedocs.io/en/latest/pages/gauge_conditions.html) and [boundary conditions enforced with the tau method](https://dedalus-project.readthedocs.io/en/latest/pages/tau_method.html), as:
-
-```python
-problem.add_equation("div(u) + tau_p = 0")
-problem.add_equation("dt(u) - nu*lap(u) + grad(p) + lift(tau_u) = - u@grad(u)")
-problem.add_equation("u(r=1) = 0")
-problem.add_equation("integ(p) = 0")
-```
-
-Our numerical algorithms produce sparse and spectrally accurate discretizations of PDEs on simple domains, including Cartesian domains of any dimension, disks, annuli, spheres, spherical shells, and balls:
-
-<table style="background-color:#FFFFFF;">
+<table align="center">
   <tr>
-    <th width="25%">
-      <a href="https://dedalus-project.readthedocs.io/en/latest/pages/examples/ivp_1d_kdv_burgers.html">
-        <figure>
-          <img src="https://raw.githubusercontent.com/DedalusProject/dedalus/master/docs/pages/examples/images/kdv_burgers.png">
-          <figcaption>KdV-Burgers equation (1D IVP)</figcaption>
-        </figure>
-      </a>
-    </th>
-    <th width="25%">
-      <a href="https://dedalus-project.readthedocs.io/en/latest/pages/examples/ivp_2d_rayleigh_benard.html">
-        <figure>
-          <img src="https://raw.githubusercontent.com/DedalusProject/dedalus/master/docs/pages/examples/images/rayleigh_benard.png">
-          <figcaption>Rayleigh-Benard convection (2D IVP)</figcaption>
-        </figure>
-      </a>
-    </th>
-    <th width="25%">
-      <a href="https://dedalus-project.readthedocs.io/en/latest/pages/examples/ivp_2d_shear_flow.html">
-        <figure>
-            <img src="https://raw.githubusercontent.com/DedalusProject/dedalus/master/docs/pages/examples/images/shear_flow.png">
-            <figcaption>Periodic shear flow (2D IVP)</figcaption>
-        </figure>
-      </a>
-    </th>
-    <th width="25%">
-      <a href="https://dedalus-project.readthedocs.io/en/latest/pages/examples/lbvp_2d_poisson.html">
-        <figure>
-            <img src="https://raw.githubusercontent.com/DedalusProject/dedalus/master/docs/pages/examples/images/poisson.png">
-            <figcaption>Poisson equation (2D LBVP)</figcaption>
-        </figure>
-      </a>
-    </th>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-    <th width="25%">
-      <a href="https://dedalus-project.readthedocs.io/en/latest/pages/examples/ivp_disk_libration.html">
-        <figure>
-          <img src="https://raw.githubusercontent.com/DedalusProject/dedalus/master/docs/pages/examples/images/libration.png">
-          <figcaption>Librational instability (disk IVP)</figcaption>
-        </figure>
-      </a>
-    </th>
-    <th width="25%">
-      <a href="https://dedalus-project.readthedocs.io/en/latest/pages/examples/ivp_sphere_shallow_water.html">
-        <figure>
-          <img src="https://raw.githubusercontent.com/DedalusProject/dedalus/master/docs/pages/examples/images/shallow_water.png">
-          <figcaption>Spherical shallow water (sphere IVP)</figcaption>
-        </figure>
-      </a>
-    </th>
-    <th width="25%">
-      <a href="https://dedalus-project.readthedocs.io/en/latest/pages/examples/ivp_shell_convection.html">
-        <figure>
-            <img src="https://raw.githubusercontent.com/DedalusProject/dedalus/master/docs/pages/examples/images/shell_convection.png">
-            <figcaption>Spherical shell convection (shell IVP)</figcaption>
-        </figure>
-      </a>
-    </th>
-    <th width="25%">
-      <a href="https://dedalus-project.readthedocs.io/en/latest/pages/examples/ivp_ball_internally_heated_convection.html">
-        <figure>
-            <img src="https://raw.githubusercontent.com/DedalusProject/dedalus/master/docs/pages/examples/images/internally_heated_convection.png">
-            <figcaption>Internally heated convection (ball IVP)</figcaption>
-        </figure>
-      </a>
-    </th>
+    <td align="center" valign="top">
+      <h3>Three-edge Poisson</h3>
+      <a href="examples/lbvp_network_poisson"><img src="docs/pages/examples/images/network_poisson_readme.png" width="332" alt="Three-edge Poisson solution with a linear colour bar labelled u" /></a>
+      <p>A boundary-value problem at one junction.</p>
+      <a href="examples/lbvp_network_poisson">Run the example</a>
+    </td>
+    <td align="center" valign="top">
+      <h3>Heat diffusion</h3>
+      <a href="examples/ivp_network_grid_heat"><img src="docs/pages/examples/images/network_disc_heat.gif" width="332" alt="Animated heat diffusion on a triangulated disc network, with a logarithmic colour bar labelled u" /></a>
+      <p>A hot spot spreads through a network.</p>
+      <a href="examples/ivp_network_grid_heat">Run the example</a>
+    </td>
   </tr>
 </table>
 
-The resulting systems are efficiently solved using compiled libraries and are automatically parallelized using MPI.
-See the [documentation](http://dedalus-project.readthedocs.org) for tutorials and additional examples.
+### KdV on a periodic lattice
 
-## Links
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/pages/examples/images/network_kdv_readme_dark.png" />
+    <img src="docs/pages/examples/images/network_kdv_readme_light.png" width="790" alt="KdV snapshots at t = 0, 6, 20 and 200, including the initial pulse. The sign key distinguishes u greater than zero and u less than zero; drawn width is proportional to the magnitude of u." />
+  </picture>
+</p>
 
-* Project homepage: <http://dedalus-project.org>
-* Code repository: <https://github.com/DedalusProject/dedalus>
-* Documentation: <http://dedalus-project.readthedocs.org>
-* Mailing list: <https://groups.google.com/forum/#!forum/dedalus-users>
+A localized pulse propagates and disperses across a periodic network.
 
-## Developers
+[Example script and equations](paper/kdv/README.md) ·
+[Full figure](paper/data/kdv/published.pdf)
 
-* [Keaton Burns (@kburns)](https://github.com/kburns)
-* [Geoff Vasil (@geoffvasil)](https://github.com/geoffvasil)
-* [Jeff Oishi (@jsoishi)](https://github.com/jsoishi)
-* [Daniel Lecoanet (@lecoanet)](https://github.com/lecoanet/)
-* [Ben Brown (@bpbrown)](https://github.com/bpbrown)
+---
+
+[Network API guide](docs/pages/network_problems.rst) ·
+[Development and tests](NETWORK_DEVELOPMENT.md) · [Citation](CITATION.cff)
+
+Built on [Dedalus](https://github.com/DedalusProject/dedalus), developed by the
+Dedalus collaboration. This research fork is maintained independently.
+
+[Upstream documentation](https://dedalus-project.readthedocs.io) ·
+[Dedalus citation](CITATION_UPSTREAM.cff) · [License](LICENSE.txt)

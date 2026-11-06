@@ -22,6 +22,8 @@ animation uses the same logarithmic inferno colour scale throughout, from
 below 0.001 share the lowest colour. A colour bar on the right spans the
 network's height, with `u` above it. Colours follow the spectral solution
 along the rods; the network has no vertex labels, axes or time readout.
+The colour-bar title and tick labels match the three-edge Poisson figure's
+apparent sizes when the two images are displayed at equal widths.
 
 The output directory also contains `run.json` (geometry and parameters),
 `checks.json` (numerical checks), and `animation_receipt.json` (frame times,
