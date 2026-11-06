@@ -525,6 +525,8 @@ class ProblemBase:
             raise TypeError('A vertex constraint requires a direct endpoint(u, deriv=k).')
         if lhs.side is not None:
             raise NotImplementedError('Vertex constraints use on= selections, not per-edge side selections.')
+        if lhs.vertices is None:
+            raise NotImplementedError('Automatic vertex constraints require replicated graph topology.')
         field = lhs.trace_operand
         if field not in self._continuous_network_fields:
             raise ValueError('Automatic vertex constraints require a continuous problem unknown.')
@@ -568,6 +570,8 @@ class ProblemBase:
                 # Continuity already identifies endpoint values. One row per
                 # vertex suffices; averaging is exact on the declared space.
                 _, mapping = _trace_selection(basis, trace.vertices, True, average=True)
+            elif mapping is None:
+                _, mapping = _trace_selection(basis, trace.vertices, False)
             reaction_name = f'__network_reaction_{field.name}_{index}'
             if any(v.name == reaction_name for v in self.variables):
                 raise ValueError(f'Variable name {reaction_name!r} is reserved for reactions.')

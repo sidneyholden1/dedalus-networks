@@ -51,8 +51,9 @@ Each command prints a `RESULT` record and raises an error if its numerical
 check fails. These short checks write no simulation files. The recorded
 execution results and source hashes are in [smoke-checks.json](smoke-checks.json).
 They were obtained with one rank and one numerical-library thread in the
-existing Rusty project environment. A clean installation on another machine
-has not been tested in this pass.
+existing Rusty project environment. Automated Linux/macOS source builds and
+test results are recorded in
+[GitHub Actions](https://github.com/sidneyholden1/dedalus-networks/actions).
 
 ## What the interfaces look like
 

@@ -43,7 +43,9 @@ The tested Python, NumPy/SciPy, MPI and plotting versions are recorded in
 [paper/environment.json](paper/environment.json). Verification reused the
 existing compatible compiled extensions and dependencies with the extracted
 release source; it did not rebuild or install into that active environment.
-A clean build on a second machine remains untested. Native KdV adjoint assembly
+Automated source builds and full serial/MPI checks are recorded in
+[GitHub Actions](https://github.com/sidneyholden1/dedalus-networks/actions).
+Native KdV adjoint assembly
 is currently qualified only in serial. Large production runs and performance
 experiments need appropriately provisioned compute resources; no supplied
 plotting or short-check command submits jobs.

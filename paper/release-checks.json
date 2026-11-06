@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "checked_at_utc": "2026-11-06T08:03:56.630041+00:00",
+  "checked_at_utc": "2026-11-06T08:29:29.000351+00:00",
   "status": "Validated paper companion source, examples and figure reproduction.",
-  "archive": "dedalus-paper-companion-20261106-release.tar.gz",
+  "archive": "dedalus-paper-companion-20261106.1-release.tar.gz",
   "interface": {
     "test_keyword_removed_from": [
       "rods/transient.py",
@@ -13,11 +13,11 @@
     "physical_discretizations_unchanged": true
   },
   "regression_tests": {
-    "passed": 123,
+    "passed": 124,
     "batches": [
       {
-        "passed": 123,
-        "seconds": 28.57,
+        "passed": 124,
+        "seconds": 29.8,
         "files": [
           "dedalus/tests/test_network_test_inference.py",
           "dedalus/tests/test_paper_native_interfaces.py",
@@ -29,18 +29,18 @@
           "dedalus/tests/test_network_native_calculus.py"
         ],
         "log": "checks/publication-regressions.txt",
-        "log_sha256": "8102302edbe5f0b701236f63c5f77cb94dabc5cb6452ec0aac555d2c8b3f9cf4",
+        "log_sha256": "92ab5c18ec5b9f9d2e3afc1fd38d67fa8d437f6a845bea0374f78f3753ff31d3",
         "test_source_sha256": {
           "dedalus/tests/test_network_test_inference.py": "3518f185a22b23ba7329c6f1ca23e5542493e83ccf9883438774e6a054da169a",
           "dedalus/tests/test_paper_native_interfaces.py": "0480b80cf0ba76a49c4d40ba94d85145bddd1333ad73c02cc9250d3f20a4be67",
           "dedalus/tests/test_network_native_ordinary_kdv.py": "90b2f7254da216c94f8370a68146351aa1cc741fcb1283588979250ce2e68b86",
           "dedalus/tests/test_network_galerkin.py": "f022f5e9af9b027cd1c2523404aa3503666c95865f13959a4da1e1393a149c37",
           "dedalus/tests/test_network_auto_tau.py": "c8991cca4aaa47666d65bc6c9dcb285c62b131053772b735c200f953e56b0dbe",
-          "dedalus/tests/test_network_selected_traces.py": "74b6c41a397333a11bb343d0d9ae0cb9031f55c4ad04315d783ec639c50bb9b0",
+          "dedalus/tests/test_network_selected_traces.py": "96324aac9f45e12681102354f709a7e8520fd3090028e333ab65a15ad202baa6",
           "dedalus/tests/test_network_hidden_interface.py": "2e2b1658f70df4e6e96610fe2deff620ae7fe9ceacddd3bb61c0a9e5b97fe3b0",
           "dedalus/tests/test_network_native_calculus.py": "f078a30a5711b1d67604413573e1d6014a3ec53a48ee87ebec4d9e698cc5ab66"
         },
-        "runtime": "Disposable extracted source tree; original checkout removed from Python search path."
+        "runtime": "Project source with its existing compatible environment; one MPI rank and one numerical-library thread."
       }
     ]
   },
@@ -72,7 +72,9 @@
     "clean_external_install_tested": false,
     "record": "checks/extracted-executions.json",
     "plotter_docstrings_polished_after_checks": true,
-    "executable_ast_unchanged_after_checks": true
+    "executable_ast_unchanged_after_checks": false,
+    "snapshot": "Initial companion extraction; the subsequent trace compatibility patch is recorded separately.",
+    "subsequent_library_patch": "checks/trace-compatibility.json"
   },
   "manuscript_figure_commit": "bad13bfe6a648946e46579578e48409b7515eac0",
   "source_sha256": {
@@ -137,11 +139,11 @@
     "dedalus/core/network_galerkin.py": "bb35c1aaa7718c03a76b84f58ffbaeedc2677256c2be319eb305d26f2a562206",
     "dedalus/core/network_local.py": "35a9148a95b76337f5fa7f94e5da0ce28932cecdbd7b6859c5238ee198ca7bc4",
     "dedalus/core/network_matrix.py": "d63b55088a6b87fadbdb642a5baaabca427e78e7b4900533867e56928cac53b8",
-    "dedalus/core/network_operators.py": "61d204c915877de55487cfbfc0c72019f15e46ed50b2cf9ef8701603e890312a",
+    "dedalus/core/network_operators.py": "bcaed1a389fc54edcbfaea5ecca768e828d6ceed84e73f6dd911205f4d08e608",
     "dedalus/core/network_partitioning.py": "97e3c8b9ab60474759ae1ff53cbf24a833d50b71bb552ea5daa086c6e9578e58",
     "dedalus/core/network_storage.py": "00177f9f505eda2d8532364b969d4e3f4b698c0f13f30390756813807a20c50f",
     "dedalus/core/operators.py": "93170d31206cf0029ca86e19297b6ab8a990f0231822f31966ee90a8e7598821",
-    "dedalus/core/problems.py": "9f2d09f637ffa935c459f70318cd05846299816cc400edb397a558a06edb8873",
+    "dedalus/core/problems.py": "39f353a40d2c446adb6c3d5df0c66d815dabceba4a40ecfd8092f78b3ab66815",
     "dedalus/core/solvers.py": "6d391bb4ed5cabbb882c06f6e12b4039a5aa933a678442e2f539041f9fca908f",
     "dedalus/core/subsystems.py": "02897488fc2a2602c3c035e194501910ebbaaf0248207abcd951ea2e3d6fd459",
     "dedalus/core/system.py": "20467b631d91160b1b255497a18b0e756381737e3fe1b2ccfde31f60205bd94e",
@@ -202,7 +204,6 @@
     "Private research history, cluster controllers and credentials"
   ],
   "remaining": [
-    "A clean build on another machine has not been tested.",
     "Insert the manuscript/archive identifier when assigned; citation currently uses verified title and authors."
   ],
   "actions": {
@@ -274,6 +275,33 @@
         "dedalus/tests/test_network_hidden_interface.py": "2e2b1658f70df4e6e96610fe2deff620ae7fe9ceacddd3bb61c0a9e5b97fe3b0",
         "dedalus/tests/test_network_native_calculus.py": "f078a30a5711b1d67604413573e1d6014a3ec53a48ee87ebec4d9e698cc5ab66"
       }
+    },
+    {
+      "passed": 123,
+      "seconds": 28.57,
+      "files": [
+        "dedalus/tests/test_network_test_inference.py",
+        "dedalus/tests/test_paper_native_interfaces.py",
+        "dedalus/tests/test_network_native_ordinary_kdv.py",
+        "dedalus/tests/test_network_galerkin.py",
+        "dedalus/tests/test_network_auto_tau.py",
+        "dedalus/tests/test_network_selected_traces.py",
+        "dedalus/tests/test_network_hidden_interface.py",
+        "dedalus/tests/test_network_native_calculus.py"
+      ],
+      "log": "checks/publication-regressions.txt",
+      "log_sha256": "8102302edbe5f0b701236f63c5f77cb94dabc5cb6452ec0aac555d2c8b3f9cf4",
+      "test_source_sha256": {
+        "dedalus/tests/test_network_test_inference.py": "3518f185a22b23ba7329c6f1ca23e5542493e83ccf9883438774e6a054da169a",
+        "dedalus/tests/test_paper_native_interfaces.py": "0480b80cf0ba76a49c4d40ba94d85145bddd1333ad73c02cc9250d3f20a4be67",
+        "dedalus/tests/test_network_native_ordinary_kdv.py": "90b2f7254da216c94f8370a68146351aa1cc741fcb1283588979250ce2e68b86",
+        "dedalus/tests/test_network_galerkin.py": "f022f5e9af9b027cd1c2523404aa3503666c95865f13959a4da1e1393a149c37",
+        "dedalus/tests/test_network_auto_tau.py": "c8991cca4aaa47666d65bc6c9dcb285c62b131053772b735c200f953e56b0dbe",
+        "dedalus/tests/test_network_selected_traces.py": "74b6c41a397333a11bb343d0d9ae0cb9031f55c4ad04315d783ec639c50bb9b0",
+        "dedalus/tests/test_network_hidden_interface.py": "2e2b1658f70df4e6e96610fe2deff620ae7fe9ceacddd3bb61c0a9e5b97fe3b0",
+        "dedalus/tests/test_network_native_calculus.py": "f078a30a5711b1d67604413573e1d6014a3ec53a48ee87ebec4d9e698cc5ab66"
+      },
+      "runtime": "Disposable extracted source tree; original checkout removed from Python search path."
     }
   ],
   "legacy_examples": {
@@ -281,5 +309,10 @@
     "record": "checks/legacy-examples.json",
     "disc_heat_steps": 4
   },
-  "figure_style_sha256": "be2b00d355c5d6c333e55e0a48c1673dd1a5636724b3a183dafdeaf32d6af682"
+  "figure_style_sha256": "be2b00d355c5d6c333e55e0a48c1673dd1a5636724b3a183dafdeaf32d6af682",
+  "trace_compatibility": {
+    "record": "checks/trace-compatibility.json",
+    "mpi_ranks": 4,
+    "mpi_tests_passed_per_rank": 8
+  }
 }

@@ -424,7 +424,16 @@ class _SelectedTrace(operators.LinearOperator):
             value_network = getattr(value_basis, '_network', None)
             if value_network is not None and value_network is not basis.network:
                 raise ValueError('Endpoint data and the selected basis must use the same network.')
-        if side is None:
+        if not isinstance(summed, (bool, np.bool_)):
+            raise TypeError('The trace sum option must be Boolean.')
+        if side is None and on is None and not summed:
+            # An unfiltered trace already uses the canonical port basis. It
+            # needs neither a topology-wide selection nor an identity map.
+            # Retain constraint metadata where the full topology is available.
+            self.vertices = (None if getattr(basis.network, '_local_input', False)
+                             else np.unique(basis.network.endpoints[basis.edge_indices]))
+            self.mapping = None
+        elif side is None:
             self.vertices, self.mapping = _trace_selection(basis, on, summed)
         else:
             from .basis import CardinalMap
@@ -455,7 +464,7 @@ class _SelectedTrace(operators.LinearOperator):
             constant = value.dist.Field(bases=basis.ports, dtype=value.dtype)
             constant['g'] = trace
             trace = constant
-        operand = self.mapping @ trace
+        operand = trace if self.mapping is None else self.mapping @ trace
         super().__init__(operand)
         self.operand = operand
         self.domain, self.dtype, self.tensorsig = operand.domain, operand.dtype, operand.tensorsig

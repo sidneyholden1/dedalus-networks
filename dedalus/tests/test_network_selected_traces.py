@@ -109,6 +109,22 @@ def test_default_traces_remain_compatible_with_existing_port_maps():
     np.testing.assert_allclose(values(d3.NeumannTrace(coefficient, on=[0], sum=True)), 0)
 
 
+def test_legacy_traces_allow_isolated_vertices():
+    network = d3.Network(vertex_ids=('left', 'right', 'isolated'),
+                         endpoints=((0, 1),), lengths=(2.,))
+    dist = d3.Distributor(network, dtype=np.float64)
+    basis = d3.NetworkBasis(network, size=8)
+    u = dist.Field(bases=basis)
+    x = basis.local_physical_grid(dist)
+    u['g'] = 1 + 3*x + x*x
+    for expression in (d3.dtrace(u), d3.endpoint(u)):
+        np.testing.assert_allclose(values(expression), [1., 11.], atol=1e-12)
+    for expression in (d3.ntrace(u), d3.endpoint(u, deriv=1)):
+        np.testing.assert_allclose(values(expression), [-3., 7.], atol=1e-12)
+    np.testing.assert_allclose(values(basis.R.T @ d3.ntrace(u)),
+                               [-3., 7., 0.], atol=1e-12)
+
+
 @pytest.mark.parametrize('backend', [None, 'dtn'])
 @pytest.mark.parametrize('reverse', [False, True])
 @pytest.mark.parametrize('dtype', [np.float64, np.complex128])
