@@ -1,0 +1,720 @@
+{
+  "timed_steps": 1000,
+  "mean_timestep_seconds": 0.6744761958229355,
+  "sim_time": 1.0099999999999996,
+  "restart": null,
+  "parameters": {
+    "family": "triangular",
+    "hubs": 8,
+    "scale": 129,
+    "policy": "mt-kahypar",
+    "workload": "ivp",
+    "fields": 2,
+    "steps": 1000,
+    "dt": 0.001,
+    "homogeneous": false,
+    "direct": false,
+    "output": "/mnt/ceph/users/sholden/dedalus-network-pdes/paper-scaling-20261026/matched-study-01/jobs/matched-full-scaling-recovery-20261101-v1/paper-work/retime-nine-01/attempts/strong-triangular-q4000000-p2-r1-a1/result.json",
+    "model": "coefficient",
+    "graph_seed": 20261026,
+    "partition_seed": 20261026,
+    "preset": "quality",
+    "epsilon": 0.05,
+    "resolution": 0,
+    "calibration": null,
+    "coupling": 0.2,
+    "nonlinear": 0.1,
+    "profile": false,
+    "scheme": "RK222",
+    "memory_every": 0,
+    "vary_dt": false,
+    "checkpoint_every": 0,
+    "save_every": 0,
+    "owners": "/mnt/ceph/users/sholden/dedalus-network-pdes/paper-scaling-20261026/matched-study-01/partitions/triangular-s129-p2-n1-67c0750dbd0b3b7c.npy",
+    "local_input": null,
+    "instrument": false,
+    "separator_rtol": 1e-13,
+    "separator_atol": 1e-14,
+    "node_size": 96,
+    "separator": "gmres",
+    "warmup": 10,
+    "mode_factor": 1,
+    "pause_at": 0,
+    "restart": null,
+    "sample_all": false
+  },
+  "partition_info": {
+    "policy": "mt-kahypar",
+    "model": "coefficient",
+    "fields": 2,
+    "seed": 20261026,
+    "preset": "quality",
+    "epsilon": 0.05,
+    "threads": 1,
+    "weight_seconds": 8.461000106763095e-05,
+    "public_api": {
+      "package": "mtkahypar",
+      "version": "1.7.post1",
+      "objective": "km1",
+      "preset": "quality",
+      "seed": 20261026,
+      "threads": 1,
+      "epsilon": 0.05,
+      "num_parts": 2,
+      "weight_conversion": {
+        "scale": 27.77777777777778,
+        "maximum_relative_rounding_error": 0.0003076923076922311
+      },
+      "package_metrics": {
+        "cut": 516,
+        "km1": 516,
+        "soed": 1032
+      },
+      "estimated_loads": [
+        2095860.0,
+        2095864.0
+      ],
+      "estimated_imbalance": 1.0000009542613015,
+      "conversion_and_import_seconds": 1.2055034869990777,
+      "partition_seconds": 0.2476795060065342,
+      "total_seconds": 1.502334624005016
+    },
+    "package_seconds": 0.2476795060065342,
+    "construction_seconds": 0.010430881986394525,
+    "cut": 516,
+    "km1": 516,
+    "soed": 1032,
+    "model_load": [
+      2095860.0,
+      2095864.0
+    ],
+    "coefficient_load": [
+      2095860.0,
+      2095864.0
+    ],
+    "model_imbalance": 1.0000009542613015,
+    "coefficient_imbalance": 1.0000009542613015,
+    "interface_per_rank": [
+      516,
+      516
+    ],
+    "peer_counts": [
+      1,
+      1
+    ],
+    "owners_sha256": "03e690fe4d550341013375ba4b40a72347136c6c794ae7acf4b51746269752f4",
+    "diagnostic_seconds": 0.13713631300197449,
+    "input_sha256": "ce09d1c758966f558119e61be8270052a5ad621265c66c0968882e64659c92dd",
+    "num_parts": 2,
+    "prepared_construction_seconds": 1.513761597991106,
+    "reused_owners": true
+  },
+  "trajectories": [],
+  "rank_records": [
+    {
+      "evolved_coefficients": 1996016,
+      "tau_unknowns": 99844,
+      "owned_vertex_unknowns": 16884,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 1597140992
+        },
+        {
+          "step": 10,
+          "rss_bytes": 3085492224
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 3087433728
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 4,
+          "restart_cycles": 1,
+          "residual_norm": 1.5591950909805532e-15,
+          "relative_residual": 1.8252892545968785e-15,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 0,
+      "host": "worker7330",
+      "affinity": [
+        0
+      ],
+      "separator_iterations": 4,
+      "peak_rss_bytes": 3958960128,
+      "phase_seconds": {
+        "graph": 0.10132339000119828,
+        "partition": 0.048572250991128385,
+        "fields_equations_build": 10.10255061899079,
+        "first_step": 76.3522474700003,
+        "warmup": 6.072242977999849,
+        "repeated_solve": 674.4761415950197,
+        "validation": 0.14088648499455303
+      },
+      "solver_seconds": 768.8435706990131,
+      "local_edges": 24961,
+      "work": 2095860.0,
+      "transform_work": 10810151.516791008,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 2112228,
+          "interior_nnz": 19392940,
+          "lu_nnz": 41681947,
+          "separator_size": 516,
+          "retained_unknowns": 516,
+          "owned_schur_nnz": 99006,
+          "owned_schur_rows": 516,
+          "ghost_count": 0,
+          "local_separator_nnz": 93979,
+          "response_nnz": null,
+          "reconstruction": "solve",
+          "response_representation": "factored",
+          "response_shape": [
+            2112228,
+            516
+          ],
+          "coupling_nnz": 1722,
+          "stored_response_nnz": 0
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 0,
+        "solve": 1,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 1996016,
+      "tau_unknowns": 99848,
+      "owned_vertex_unknowns": 16398,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 1595912192
+        },
+        {
+          "step": 10,
+          "rss_bytes": 3074727936
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 3076808704
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 4,
+          "restart_cycles": 1,
+          "residual_norm": 1.5591950909805532e-15,
+          "relative_residual": 1.8252892545968785e-15,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 1,
+      "host": "worker7330",
+      "affinity": [
+        1
+      ],
+      "separator_iterations": 4,
+      "peak_rss_bytes": 3946881024,
+      "phase_seconds": {
+        "graph": 0.10139746201457456,
+        "partition": 0.04857210098998621,
+        "fields_equations_build": 10.1025522989803,
+        "first_step": 76.35224806997576,
+        "warmup": 6.072245368006406,
+        "repeated_solve": 674.4761958229356,
+        "validation": 0.140885305008851
+      },
+      "solver_seconds": 768.84375430402,
+      "local_edges": 24962,
+      "work": 2095864.0,
+      "transform_work": 10811144.695888063,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 2112262,
+          "interior_nnz": 19398504,
+          "lu_nnz": 42014048,
+          "separator_size": 516,
+          "retained_unknowns": 516,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 97539,
+          "response_nnz": null,
+          "reconstruction": "solve",
+          "response_representation": "factored",
+          "response_shape": [
+            2112262,
+            516
+          ],
+          "coupling_nnz": 1554,
+          "stored_response_nnz": 0
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 0,
+        "solve": 1,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    }
+  ],
+  "mode_counts": {
+    "16": 4076,
+    "24": 8365,
+    "32": 8384,
+    "40": 8310,
+    "48": 8405,
+    "56": 8325,
+    "64": 4058
+  },
+  "topology_sha256": "18ca728c4bcabd5a11eced97d32f734975ac9c342bf073b160f93bbdd0007112",
+  "equation_input_sha256": "685489f0607c94c3c69fe311203acb2f5625c8289eca3ae282bad262ace4323e",
+  "separator_vertices": 258,
+  "interface_dofs": 516,
+  "edge_coefficients": 3992032,
+  "num_edges": 49923,
+  "num_vertices": 16641,
+  "degree_histogram": {
+    "4": 1083,
+    "5": 4122,
+    "6": 6175,
+    "7": 4234,
+    "8": 1027
+  },
+  "excess_participation": 516,
+  "samples": [
+    [
+      0,
+      0,
+      [
+        0.4370627369813724,
+        0.43739992430145536,
+        0.4363205390426676,
+        0.433249325236223,
+        0.431025480964722
+      ]
+    ],
+    [
+      0,
+      1,
+      [
+        0.43102548096474114,
+        0.4296324131095958,
+        0.4247464290001667,
+        0.417868617716954,
+        0.41391452528672057
+      ]
+    ],
+    [
+      0,
+      2,
+      [
+        0.41391452528674066,
+        0.4112343094516998,
+        0.4035167038550759,
+        0.3938072845705571,
+        0.3885661080123358
+      ]
+    ],
+    [
+      0,
+      3,
+      [
+        0.3885661080123337,
+        0.38525529519180024,
+        0.3761503987776353,
+        0.36505368243174247,
+        0.3591819441638083
+      ]
+    ],
+    [
+      0,
+      4,
+      [
+        0.35918194416380894,
+        0.35600157234995583,
+        0.3471836836256672,
+        0.3363739765772857,
+        0.3306327080145772
+      ]
+    ],
+    [
+      0,
+      5,
+      [
+        0.33063270801457767,
+        0.3283221953084652,
+        0.32141803783200196,
+        0.31252206714374603,
+        0.3076506975405526
+      ]
+    ],
+    [
+      0,
+      6,
+      [
+        0.3076506975405531,
+        0.30680526966955135,
+        0.30312433821784607,
+        0.29745159215046735,
+        0.2940453514325628
+      ]
+    ],
+    [
+      0,
+      7,
+      [
+        0.294045351432563,
+        0.2950173914369108,
+        0.2953349122470971,
+        0.29366061666978643,
+        0.29207182928629666
+      ]
+    ],
+    [
+      0,
+      8,
+      [
+        0.2920718292862968,
+        0.29491249935229696,
+        0.2993409216281686,
+        0.30177752824414794,
+        0.30205733940961044
+      ]
+    ],
+    [
+      0,
+      9,
+      [
+        0.30205733940961094,
+        0.3065079843820359,
+        0.31447833831788075,
+        0.32045687733026584,
+        0.3223466510123335
+      ]
+    ],
+    [
+      0,
+      10,
+      [
+        0.3223466510123325,
+        0.3278817882733266,
+        0.3382380110154926,
+        0.3466024139076767,
+        0.3495766624573743
+      ]
+    ],
+    [
+      0,
+      11,
+      [
+        0.34957666245737434,
+        0.3554910379685604,
+        0.36668156882569714,
+        0.3758802816162501,
+        0.37923375471478543
+      ]
+    ],
+    [
+      0,
+      12,
+      [
+        0.3792337547147859,
+        0.38475926315015446,
+        0.3950942587945567,
+        0.4034374375331853,
+        0.4064020150144225
+      ]
+    ],
+    [
+      0,
+      13,
+      [
+        0.4064020150144232,
+        0.41083500938724116,
+        0.4187664521625728,
+        0.42470607030890956,
+        0.42657811065857326
+      ]
+    ],
+    [
+      0,
+      14,
+      [
+        0.42657811065857365,
+        0.42939601263733135,
+        0.43377426550588816,
+        0.4361606934760972,
+        0.4364176297815424
+      ]
+    ],
+    [
+      0,
+      15,
+      [
+        0.436417629781543,
+        0.4373656197509951,
+        0.4376300343485111,
+        0.435902624495451,
+        0.4342896366516787
+      ]
+    ],
+    [
+      1,
+      0,
+      [
+        0.40357661914063575,
+        0.40052974472222025,
+        0.39200547978510014,
+        0.38148939364926865,
+        0.37588157283087625
+      ]
+    ],
+    [
+      1,
+      1,
+      [
+        0.3758815728308938,
+        0.3725326186549909,
+        0.3633438244856582,
+        0.3521632111538958,
+        0.34625334434587246
+      ]
+    ],
+    [
+      1,
+      2,
+      [
+        0.34625334434589,
+        0.34336966549715686,
+        0.33520455980466574,
+        0.3250476491338607,
+        0.31960309263301656
+      ]
+    ],
+    [
+      1,
+      3,
+      [
+        0.3196030926330147,
+        0.3178749507506348,
+        0.31225201891813065,
+        0.30463727005194513,
+        0.30034829178699757
+      ]
+    ],
+    [
+      1,
+      4,
+      [
+        0.30034829178699807,
+        0.300274371681357,
+        0.29829075613725115,
+        0.29431532349647027,
+        0.2916805744860113
+      ]
+    ],
+    [
+      1,
+      5,
+      [
+        0.2916805744860118,
+        0.2934853934649905,
+        0.29563497188820886,
+        0.2957927367612709,
+        0.2950367215449512
+      ]
+    ],
+    [
+      1,
+      6,
+      [
+        0.29503672154495186,
+        0.29863334365744293,
+        0.30472488962819416,
+        0.3088246184789167,
+        0.30986041186595054
+      ]
+    ],
+    [
+      1,
+      7,
+      [
+        0.3098604118659505,
+        0.3148649047317925,
+        0.3240537755985712,
+        0.3312508266414846,
+        0.33369445973077594
+      ]
+    ],
+    [
+      1,
+      8,
+      [
+        0.3336944597307762,
+        0.3394895635779695,
+        0.35041770403478345,
+        0.3593540248930386,
+        0.3625882268471551
+      ]
+    ],
+    [
+      1,
+      9,
+      [
+        0.3625882268471558,
+        0.36842557735330056,
+        0.37944663660782,
+        0.388475876945711,
+        0.39175230608262596
+      ]
+    ],
+    [
+      1,
+      10,
+      [
+        0.39175230608262435,
+        0.3968765578348678,
+        0.40632878932224525,
+        0.41378919852311224,
+        0.4163525037407449
+      ]
+    ],
+    [
+      1,
+      11,
+      [
+        0.41635250374074567,
+        0.4201265201332359,
+        0.426608209790984,
+        0.43109808001657635,
+        0.4323111435703235
+      ]
+    ],
+    [
+      1,
+      12,
+      [
+        0.43231114357032535,
+        0.4343215868863027,
+        0.4369234236315492,
+        0.4375334432177513,
+        0.4369829245847769
+      ]
+    ],
+    [
+      1,
+      13,
+      [
+        0.4369829245847761,
+        0.4371088119998194,
+        0.43556460294179766,
+        0.43202857165733133,
+        0.4295935012823289
+      ]
+    ],
+    [
+      1,
+      14,
+      [
+        0.4295935012823286,
+        0.42802618387148395,
+        0.42275697074627866,
+        0.4154959364278819,
+        0.41136768277855373
+      ]
+    ],
+    [
+      1,
+      15,
+      [
+        0.41136768277855185,
+        0.4085792246971967,
+        0.4006235046389295,
+        0.3906759644349632,
+        0.3853265734769241
+      ]
+    ]
+  ],
+  "correctness": {
+    "passed": true,
+    "max_error": 2.843279502950935e-07,
+    "max_continuity": 2.6674549334945624e-12,
+    "assembled_residual": null,
+    "tolerance": 2e-06
+  },
+  "solver_seconds": 768.84375430402,
+  "python_seconds": 769.3351909760095,
+  "reconstruction_counts": {
+    "response": 0,
+    "solve": 2,
+    "none": 0
+  },
+  "reconstruction_count_scope": "unique local factors across ranks; excludes shared stage aliases; none means no nonzero response application",
+  "optimization": {
+    "variant": "auto",
+    "response_setup_by_rank": [
+      [
+        {
+          "method": "auto",
+          "retained": false,
+          "stored_response_nnz": 0,
+          "schur_nnz": 93979,
+          "seconds": 69.54355952597689
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": false,
+          "stored_response_nnz": 0,
+          "schur_nnz": 97539,
+          "seconds": 69.32843280798988
+        }
+      ]
+    ],
+    "source_manifest": "70325a7556f5f7d9bf73c1797e6914136f3be61313c6db718f3d67ec2a15625e"
+  }
+}

@@ -30,7 +30,153 @@ The package-level ``dedalus.public`` namespace exports
 The endpoint operators
 :func:`dtrace <dedalus.core.operators.network_dirichlet_trace>` and
 :func:`ntrace <dedalus.core.operators.network_neumann_trace>` are likewise
-available as ``d3.dtrace`` and ``d3.ntrace``.
+available as ``d3.dtrace`` and ``d3.ntrace`` for compatibility. New native
+examples use ``d3.endpoint(u, deriv=k, on=..., sum=...)``, or simply
+``endpoint`` inside equation strings. The older ``d3.EndpointTrace(u, k)``
+spelling remains available.
+``trace`` and ``d3.Trace`` retain their ordinary tensor-trace meaning.
+
+``endpoint(u, deriv=0)`` returns endpoint values; ``endpoint(u, deriv=1)`` returns outward
+physical slopes. For arbitrary nonnegative integer order ``k`` it returns
+:math:`n^k\partial_x^k u`, with :math:`n=-1` at an edge tail and :math:`n=+1`
+at its head. Thus order two gives curvature. The ``on`` argument selects
+vertex-table indices or a Boolean vertex mask, including internal junctions.
+Every incident endpoint is retained, including both ends of a self-loop.
+``sum=True`` adds contributions separately at each selected vertex.
+
+Vertex constraints and their reactions
+=====================================
+
+A vertex constraint prescribes an admissible displacement or derivative at
+selected vertices, which may be outer ends or internal junctions. For example,
+the beam script uses these explicit kinematic conditions:
+
+.. code-block:: python
+
+    problem.add_vertex_constraint("endpoint(u, deriv=0, on=clamped) = 0")
+    problem.add_vertex_constraint("endpoint(u, deriv=1, on=clamped) = 0")
+    problem.add_vertex_constraint(
+        "endpoint(u, deriv=1, on=selected_junctions, sum=True) = 0")
+
+The last equation is a chosen joint law, not a universal beam condition.
+Each call registers a condition :math:`Cu=g`. At solver build, Dedalus adds
+the condition rows, creates the unknown reaction :math:`\lambda`, and adds
+its adjoint contribution :math:`C^*\lambda` to the associated balance:
+
+.. math::
+
+    H^*(EI\,Hu) + C^*\lambda = f, \qquad Cu = g.
+
+Thus a clamp supplies the reaction force or moment needed to enforce the
+prescribed displacement or slope. The reaction is determined by the solve;
+the corresponding natural balance includes that reaction.
+
+The explicit method is preferred in introductory examples. The following is
+an equivalent way to write the slope clamp above; use either form once:
+
+.. code-block:: python
+
+    problem.add_equation(
+        "endpoint(u, deriv=1, on=clamped) = 0", vertex_constraint=True)
+
+Both entry points use the same assembly. Ordinary ``add_equation`` adds the
+supplied equality without creating a paired reaction. The old ``constraint``
+keyword remains a compatibility alias; new code should use the explicit
+``vertex_constraint`` spelling. Numerical tau corrections are separate from
+these physical reactions.
+
+The beam operator is written ``H.T(EI*H(u))`` in equation strings. ``H`` gives
+regular edge curvature; ``H.T`` gives its distributional transpose, including
+endpoint forces and moments. It is also available as ``d3.Hessian.T`` in
+Python. The existing ``Hstar`` spelling remains a compatibility alias.
+
+Automatic reactions support LBVPs and IVPs with fixed direct endpoint
+constraints on continuous unknowns and a corresponding distributional balance.
+Prescribed values may be constants or scalar Fields on the full vertex basis.
+A coupled evolution balance identifies its field from a unique time derivative
+and consistent distributional flux. Lower-order edge coupling is allowed.
+Mixed time derivatives, cross-fluxes and coupled static balances require an
+explicit ``test=u`` association; names and equation order never select it. Higher-order traces can also be evaluated
+or used in explicit equations; their availability does not imply that every
+derivative order supplies an independent admissible kinematic constraint for
+a given PDE.
+
+Automatic taus in native graph equations
+=======================================
+
+The native graph operators allow scalar equations to be entered with only
+physical unknowns. For example, with continuous temperature ``T`` and
+capacity/source coefficients already assigned:
+
+.. code-block:: python
+
+    problem = d3.IVP([T], namespace=locals())
+    problem.add_equation("capacity*dt(T) - div(K*grad(T)) = source")
+
+Equation assembly generates the edge tau fields and their lifts internally.
+For the second-order heat equation this supplies two corrections per edge;
+``H.T(EI*H(u))`` supplies four for the fourth-order beam equation. The
+default uses the highest edge derivative order of problem unknowns in the
+equation and lifts into the corresponding derivative basis. Derivatives of
+prescribed coefficients do not raise that order. The physical boundary and
+junction laws still come from the field spaces and the supplied equations.
+
+The generated fields are ordinary Dedalus fields, available immediately after
+``add_equation`` for inspection or output:
+
+.. code-block:: python
+
+    tau_0, tau_1 = problem.tau_fields
+    # After solving, inspect their coefficients with tau_0["c"], etc.
+
+``problem.tau_fields`` contains only automatically generated taus, ordered by
+equation and then by lift mode (-1, -2, ...). For several equations, each
+lowered edge row in ``problem.network_lowered_equations`` also records its
+own ``network_tau_fields`` tuple. Generated checkpoint names are deterministic
+for an unchanged equation order. IVP-to-EVP conversion keeps tau perturbations
+internal, including when custom physical perturbation fields are supplied.
+
+For a custom discretization, include your own tau fields in the problem
+variables and use ``problem.add_equation(..., tau=False)``. Existing explicit
+unknown-bearing edge lifts are also recognized automatically, so legacy
+native graph scripts do not acquire duplicate taus. This automation applies
+to equations lowered by the native graph calculus; the explicit edge/vertex
+assembly examples below retain their own tau choices. Mixed formulations
+still require a compatible set of equations and physical conditions; counting
+the differential order does not resolve redundant constraints or singular
+systems.
+
+Adjoint tau corrections
+-----------------------
+
+The network extension also provides ``tau='adjoint'``. It constructs correction
+shapes from the physical-L2 adjoints of the continuity and junction conditions;
+their amplitudes are solved for internally. The corrections generally involve
+all retained polynomial modes, with weights fixed by those conditions. Both
+the default and adjoint choices are spectral discretizations.
+
+For example, the ordinary KdV application uses:
+
+.. code-block:: python
+
+    # Construct tau corrections from the adjoints of the junction conditions.
+    problem.add_equation('dt(u) + div(E*w) = -6*u*(E@grad(u))', tau='adjoint')
+
+The example declares the slope conditions with ``add_vertex_constraint``;
+continuity comes from the field declaration and signed curvature balance from
+``div``. Its default high-mode tau prescription fails the checked linear
+stability test, so the example retains the adjoint construction used for its
+original results.
+
+In coefficient form, the correction is :math:`M^{-1}C^H\lambda`, where
+:math:`C` contains the vertex constraints and :math:`M` is the physical-L2
+mass matrix. Regular nonlinear products are also projected in physical L2.
+This is the constrained Galerkin discretization; the old ``tau='galerkin'``
+spelling remains a compatibility alias for the same implementation.
+
+This path currently supports serial LBVPs and IVPs with one continuous scalar,
+a full-network Legendre basis, uniform vertex degree at least two, and static
+homogeneous vertex constraints. It does not select the physical junction laws.
 
 Constructing a network
 ======================

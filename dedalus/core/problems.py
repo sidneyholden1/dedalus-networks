@@ -4,7 +4,7 @@ import hashlib
 import numpy as np
 from collections import ChainMap
 
-from .field import Operand, Field, LockedField
+from .field import Operand, Field, LockedField, network_algebra_required
 from . import arithmetic
 from . import operators
 from . import solvers
@@ -76,6 +76,25 @@ class ProblemBase:
                     "network_interfaces must be a Field or an iterable of "
                     "Fields and (edge_field, vertex_field) pairs."
                 ) from error
+
+        # A regularity declaration belongs to the Field, and supplies the
+        # matching equations through every ordinary problem class.
+        continuous = tuple(v for v in user_variables
+                           if getattr(v, 'regularity', None) == 'continuous')
+        registered = tuple(spec if isinstance(spec, Field) else spec[0]
+                           for spec in interface_specs
+                           if isinstance(spec, Field)
+                           or (isinstance(spec, (tuple, list)) and len(spec) == 2))
+        interface_specs += tuple(v for v in continuous if v not in registered)
+        self._continuous_network_fields = continuous
+        self._network_matching_added = False
+        self.network_lowered_equations = []
+        self._network_constraints = []
+        self._network_constraints_compiled = False
+        self._hidden_network_constraint_fields = ()
+        self._hidden_network_tau_fields = ()
+        self._network_galerkin_balance = None
+        self._network_galerkin_compiling = False
 
         for interface_spec in interface_specs:
             if isinstance(interface_spec, Field):
@@ -232,6 +251,8 @@ class ProblemBase:
             interface_bindings.append(
                 (edge_field, vertex_field, network_basis)
             )
+            if edge_field in continuous:
+                edge_field._network_vertex = vertex_field
 
         self.network_interfaces = tuple(
             (edge_field, vertex_field)
@@ -281,6 +302,22 @@ class ProblemBase:
             self.namespace = ChainMap(self.local_namespace, parseables)
         else:
             self.namespace = ChainMap(self.local_namespace, namespace, parseables)
+        if getattr(self.dist, 'network', None) is not None:
+            from .network_operators import (Hessian, HessianAdjoint, endpoint, TraceAdjoint,
+                                            DirichletTrace, NeumannTrace)
+            # Mathematical aliases, just like the standard dt/grad/div names.
+            self.local_namespace.update(H=Hessian, Hstar=HessianAdjoint,
+                                        endpoint=self._network_endpoint, trace_adjoint=TraceAdjoint,
+                                        dtrace=DirichletTrace, ntrace=NeumannTrace)
+
+    def _network_endpoint(self, operand, **kwargs):
+        """Resolve vertex-only endpoint expressions from the problem's bucket."""
+        from .network_operators import endpoint, _find_basis
+        if 'basis' not in kwargs:
+            bases = getattr(getattr(operand, 'domain', None), 'bases', ())
+            if len(bases) == 1 and getattr(bases[0], '_network_role', None) == 'vertices':
+                kwargs['basis'] = _find_basis(*self.variables)
+        return endpoint(operand, **kwargs)
 
     def _network_interface_binding(self, edge_field):
         """Return the registered vertex field and basis for an edge field."""
@@ -327,8 +364,83 @@ class ProblemBase:
     def dtype(self):
         return np.result_type(*[eqn['dtype'] for eqn in self.equations])
 
-    def add_equation(self, equation, condition="True"):
-        """Add equation to problem."""
+    @property
+    def tau_fields(self):
+        """Automatically generated network tau Fields, in equation/mode order.
+
+        These are ordinary mutable Fields for diagnostics and output. They are
+        created by add_equation, before solver construction. Explicit user taus
+        remain the caller's own fields and are not included in this tuple.
+        """
+        return self._hidden_network_tau_fields
+
+    def add_vertex_constraint(self, equation, condition="True", *, test=None):
+        """Impose ``C u = g`` together with its unknown adjoint reaction.
+
+        At solver build, add the constraint rows, create reaction unknowns
+        ``lambda``, and add ``C* lambda`` to the corresponding vertex/endpoint
+        balances. This is exactly equivalent to
+        ``add_equation(equation, vertex_constraint=True)``.
+
+        Supports LBVPs and IVPs with fixed direct endpoint constraints on a
+        continuous unknown. Prescribed values may be constants or scalar
+        Fields on the full vertex basis. Coupled evolution balances identify
+        their field from a unique time derivative and consistent flux; use
+        ``test=u`` for ambiguous balances. Supports may be outer ends or
+        internal junctions.
+
+        With ``tau='adjoint'`` on a scalar balance, static homogeneous linear
+        vertex constraints use physical-L2 reactions.
+        """
+        return self.add_equation(equation, condition=condition, test=test,
+                                 vertex_constraint=True)
+
+    def add_equation(self, equation, condition="True", *, test=None,
+                     vertex_constraint=None, tau="auto", constraint=None):
+        """Add an equation, optionally imposing a vertex constraint and reaction.
+
+        ``vertex_constraint=True`` is equivalent to ``add_vertex_constraint``:
+        it supplies both ``C u = g`` and the unknown reaction ``C* lambda`` in
+        the associated balance. ``None`` or ``False`` leaves the equation as
+        an ordinary equation. The old ``constraint`` keyword is retained only
+        as a compatibility alias; new scripts should use the vertex spelling.
+
+        Native scalar graph equations automatically receive edge tau lifts at
+        their differential order. Existing unknown-bearing lifts are respected.
+        Use ``tau=False`` to supply a custom discretization; generated Fields
+        are accessible through ``problem.tau_fields`` and the lowered edge row's
+        ``network_tau_fields`` entry. This does not choose physical conditions.
+
+        Coupled network balances infer their test Field from a unique
+        time-differentiated continuous unknown, provided the distributional
+        flux involves only that unknown. Lower-order edge coupling is allowed.
+        Use ``test=field`` explicitly for mixed time derivatives, cross-fluxes
+        or coupled static balances; field names and equation order never select
+        the association.
+
+        ``tau='adjoint'`` constructs correction shapes from the physical-L2
+        adjoints of continuity and vertex constraints, retaining every Legendre
+        mode and projecting regular RHS products in physical L2. This opt-in
+        path currently supports one continuous scalar on a regular-degree
+        graph, static homogeneous constraints, and serial LBVP/IVP assembly.
+        The previous ``tau='galerkin'`` spelling remains a compatibility alias.
+        """
+        for name, value in (('vertex_constraint', vertex_constraint), ('constraint', constraint)):
+            if value is not None and not isinstance(value, (bool, np.bool_)):
+                raise TypeError(f'{name} must be a Boolean.')
+        if (vertex_constraint is not None and constraint is not None
+                and vertex_constraint != constraint):
+            raise ValueError('vertex_constraint and the compatibility alias constraint disagree.')
+        if vertex_constraint is None:
+            vertex_constraint = constraint
+        if tau == 'galerkin':
+            tau = 'adjoint'
+        if tau is not False and tau not in ('auto', 'adjoint'):
+            raise ValueError("tau must be 'auto', 'adjoint', or False "
+                             "('galerkin' is a compatibility alias).")
+        if self._network_galerkin_balance is not None and not self._network_galerkin_compiling:
+            if not vertex_constraint:
+                raise ValueError('Adjoint tau assembly accepts one balance and its vertex constraints.')
         logger.debug(f"Adding equation {len(self.eqs)}")
         # Split equation into LHS and RHS expressions
         if isinstance(equation, str):
@@ -340,6 +452,16 @@ class ProblemBase:
         else:
             # Split operator tuples
             LHS, RHS = equation
+        if vertex_constraint:
+            if self._network_galerkin_balance is not None:
+                from .network_galerkin import register_constraint
+                return register_constraint(self, LHS, RHS, condition, test)
+            return self._add_network_constraint(LHS, RHS, condition, test)
+        if tau == 'adjoint':
+            from .network_galerkin import register_balance
+            return register_balance(self, LHS, RHS, condition, test)
+        if network_algebra_required(LHS) or network_algebra_required(RHS):
+            return self._add_network_equation(LHS, RHS, condition, test, tau)
         logger.debug(f"  LHS: {LHS}")
         logger.debug(f"  RHS: {RHS}")
         logger.debug(f"  condition: {condition}")
@@ -360,7 +482,295 @@ class ProblemBase:
 
     def build_solver(self, *args, **kw):
         """Build corresponding solver class."""
+        if self._network_galerkin_balance is not None:
+            from .network_galerkin import compile_balance
+            compile_balance(self)
+        self._ensure_network_constraints()
+        self._ensure_network_matching()
+        initialized_vertices = set()
+        for field in self._continuous_network_fields:
+            vertex = self.vertex_field(field)
+            if vertex not in initialized_vertices:
+                self._initialize_network_vertex(field)
+                initialized_vertices.add(vertex)
+        if self._continuous_network_fields:
+            # Traverse expression order, not an identity-hashed set: every
+            # MPI rank must validate coefficients in the same collective order.
+            coefficients, seen = [], set()
+            def visit(value):
+                if isinstance(value, Field):
+                    if value not in seen:
+                        seen.add(value)
+                        coefficients.append(value)
+                else:
+                    for arg in getattr(value, 'original_args', getattr(value, 'args', ())):
+                        visit(arg)
+            for equation in self.equations:
+                visit(equation['eqn'])
+            for field in coefficients:
+                if field.regularity == 'continuous' and field not in self.variables:
+                    self._initialize_network_vertex(field)
         return self.solver_class(self, *args, **kw)
+
+    def _add_network_constraint(self, lhs, rhs, condition, test):
+        from numbers import Number
+        from .network_operators import _SelectedTrace
+        if not isinstance(self, (LinearBoundaryValueProblem, InitialValueProblem)):
+            raise NotImplementedError('Automatic vertex constraints currently support LBVPs and IVPs.')
+        if self._network_constraints_compiled:
+            raise ValueError('Add vertex constraints before building the solver.')
+        if condition != 'True':
+            raise NotImplementedError('Automatic vertex constraints must be unconditional.')
+        if not isinstance(lhs, _SelectedTrace) or not isinstance(lhs.trace_operand, Field):
+            raise TypeError('A vertex constraint requires a direct endpoint(u, deriv=k).')
+        if lhs.side is not None:
+            raise NotImplementedError('Vertex constraints use on= selections, not per-edge side selections.')
+        field = lhs.trace_operand
+        if field not in self._continuous_network_fields:
+            raise ValueError('Automatic vertex constraints require a continuous problem unknown.')
+        if test is not None and test is not field:
+            raise ValueError('A vertex constraint must be paired with its own unknown.')
+        if not isinstance(rhs, Number):
+            basis = lhs.network_basis
+            if (not isinstance(rhs, Field) or rhs in self.variables or rhs.tensorsig
+                    or rhs.domain.bases != (basis.vertices,)):
+                raise NotImplementedError('A vertex constraint RHS must be a constant or prescribed vertex Field.')
+        for previous in self._network_constraints:
+            other = previous['LHS']
+            same_field = (other.trace_operand is field or
+                          (lhs.order == 0 and self.vertex_field(other.trace_operand) is self.vertex_field(field)))
+            if (same_field and other.order == lhs.order
+                    and np.intersect1d(other.vertices, lhs.vertices).size):
+                raise ValueError('Overlapping vertex constraints would duplicate endpoint conditions.')
+        record = {'LHS': lhs, 'RHS': rhs, 'condition': condition}
+        self._network_constraints.append(record)
+        return record
+
+    def _ensure_network_constraints(self):
+        """Pair kinematic rows and reaction columns using the same trace map."""
+        from .network_operators import _trace_selection, Trace, TraceAdjoint, _NetworkLowerer
+        if self._network_constraints_compiled or not self._network_constraints:
+            return
+        plans = []
+        for index, record in enumerate(self._network_constraints):
+            trace = record['LHS']
+            field, basis = trace.trace_operand, trace.network_basis
+            role = f'endpoint_{trace.order}' if trace.order else 'vertex'
+            balances = [eq for eq in self.equations
+                        if eq.get('network_role') == role
+                        and (eq.get('network_test') is field
+                             or field in eq.get('network_tests', ()))]
+            if len(balances) != 1:
+                raise ValueError('A vertex constraint needs exactly one corresponding '
+                                 f'distributional balance; specify test={field.name} on it.')
+            mapping = trace.mapping
+            if trace.order == 0 and not trace.summed:
+                # Continuity already identifies endpoint values. One row per
+                # vertex suffices; averaging is exact on the declared space.
+                _, mapping = _trace_selection(basis, trace.vertices, True, average=True)
+            reaction_name = f'__network_reaction_{field.name}_{index}'
+            if any(v.name == reaction_name for v in self.variables):
+                raise ValueError(f'Variable name {reaction_name!r} is reserved for reactions.')
+            multiplier = self.dist.Field(name=reaction_name, bases=mapping.target,
+                                         dtype=field.dtype)
+            multiplier['c'] = 0
+            graph = _NetworkLowerer(self.dist, basis, self._network_interface_bindings)
+            reaction = graph.scalar(TraceAdjoint(mapping.H @ multiplier, trace.order))
+            reaction = (reaction.endpoints[trace.order] if trace.order
+                        else graph.vertex_balance(reaction))
+            lhs = mapping @ Trace(field, trace.order)
+            rhs = record['RHS']
+            if isinstance(rhs, Field):
+                rhs_mapping = (_trace_selection(basis, trace.vertices, True, average=True)[1]
+                               if trace.summed else mapping)
+                rhs = rhs_mapping @ (basis.restriction @ rhs)
+            plans.append((record, balances[0], multiplier, reaction, lhs, rhs))
+
+        # Compilation is transactional: a malformed constraint must not leave
+        # hidden unknowns or partly changed balances in a retryable problem.
+        original_variables = len(self.variables)
+        original_equations = [(eq, eq.copy()) for eq in self.equations]
+        try:
+            self.variables.extend(plan[2] for plan in plans)
+            for record, balance, multiplier, reaction, lhs, rhs in plans:
+                balance['LHS'] = balance['LHS'] + reaction
+                equation = self.add_equation((lhs, rhs))
+                equation['network_role'] = 'constraint'
+            # Refresh all matrix expressions with the complete variable list.
+            for equation in self.equations:
+                expr = equation['LHS'] - equation['RHS']
+                equation.update(eqn=expr, tensorsig=expr.tensorsig, dtype=expr.dtype,
+                                valid_modes=expr.valid_modes.copy())
+                self._check_equation_conditions(equation)
+                self._build_matrix_expressions(equation)
+        except Exception:
+            del self.variables[original_variables:]
+            self.equations[:] = [eq for eq, saved in original_equations]
+            for equation, saved in original_equations:
+                equation.clear()
+                equation.update(saved)
+            raise
+        self._hidden_network_constraint_fields = tuple(plan[2] for plan in plans)
+        self._network_constraints_compiled = True
+
+    def _ensure_network_matching(self):
+        if not self._network_matching_added:
+            for field in self._continuous_network_fields:
+                equation = self.add_equation((self.continuity(field), 0))
+                equation['network_role'] = 'continuity'
+            self._network_matching_added = True
+
+    def _initialize_network_vertex(self, field):
+        """Derive the common initial value from compatible endpoint traces."""
+        from mpi4py import MPI
+        if field in self._continuous_network_fields:
+            vertex, basis = self._network_interface_binding(field)
+            group = [(edge, bundle) for edge, common, bundle in self._network_interface_bindings
+                     if common is vertex and edge in self._continuous_network_fields]
+        else:
+            from .network_operators import _find_basis
+            basis = _find_basis(field)
+            vertex = field.dist.Field(bases=basis.vertices, dtype=field.dtype)
+            group = [(field, basis)]
+        states = [(edge, edge.scales, edge.layout) for edge, _ in group]
+        try:
+            counts, totals = 0, 0
+            for edge, bundle in group:
+                ones = self.dist.Field(bases=bundle.ports, dtype=edge.dtype)
+                ones['g'] = 1
+                counts = counts + (bundle.restriction.T @ ones).evaluate()['g']
+                totals = totals + (bundle.restriction.T @ bundle.dtrace(edge)).evaluate()['g']
+            if self.dist.comm.allreduce(bool(np.any(counts == 0)), op=MPI.LOR):
+                raise ValueError('A continuous field needs incident edges at every vertex.')
+            vertex['g'] = totals / counts
+            error = 0.
+            for edge, bundle in group:
+                residual = (bundle.dtrace(edge) - bundle.restriction @ vertex).evaluate()['g']
+                error = max(error, float(np.max(np.abs(residual), initial=0)))
+            error = self.dist.comm.allreduce(error, op=MPI.MAX)
+            scale = self.dist.comm.allreduce(float(np.max(np.abs(vertex['g']), initial=0)), op=MPI.MAX)
+        finally:
+            for edge, scales, layout in states:
+                edge.change_scales(scales)
+                edge.change_layout(layout)
+        if error > 1e-9 * max(1., scale):
+            raise ValueError(f'Initial values of continuous field {field.name!r} have '
+                             f'incompatible endpoint traces (maximum mismatch {error:.3g}).')
+
+    def _add_network_equation(self, lhs, rhs, condition, test, tau):
+        from .network_operators import (_find_basis, _NetworkLowerer,
+                                        _network_tau_order, _network_evolution_test)
+        from .network_calculus import _zero
+        basis = _find_basis(lhs, rhs)
+        graph = _NetworkLowerer(self.dist, basis, self._network_interface_bindings)
+        left, right = graph.scalar(lhs), graph.scalar(rhs)
+        singular = bool(left.endpoints or right.endpoints
+                        or not _zero(left.point) or not _zero(right.point))
+        if test is None:
+            choices = [edge for edge, _, bundle in self._network_interface_bindings
+                       if bundle is basis and edge in self._continuous_network_fields]
+            if singular and not choices:
+                raise ValueError('A distributional graph equation needs an explicit test Field '
+                                 'or a continuous Field declaration.')
+            continuous = True
+            test_field = choices[0] if len(choices) == 1 else None
+            if len(choices) > 1:
+                test_field = _network_evolution_test(
+                    lhs, rhs, left, right, choices, self._network_interface_bindings,
+                    basis, self.variables)
+        else:
+            if not isinstance(test, Field) or _find_basis(test) is not basis:
+                raise ValueError('The test Field must use the equation\'s NetworkBasis.')
+            continuous = test.regularity == 'continuous'
+            test_field = test
+        if left.rank or right.rank:
+            raise TypeError('Graph balance equations currently require scalar tests.')
+        order = (_network_tau_order(left.edge, right.edge, self.variables, basis)
+                 if tau == 'auto' else 0)
+        if order >= basis.interval.size:
+            raise ValueError('Automatic network taus need more interval modes than '
+                             'the differential order.')
+        taus = tuple(self.dist.Field(
+            name=f'__network_tau_{len(self.network_lowered_equations)}_{j}',
+            bases=basis.edges, dtype=np.result_type(
+                getattr(left.edge, 'dtype', type(left.edge)),
+                getattr(right.edge, 'dtype', type(right.edge)), self.variables[0].dtype))
+            for j in range(order))
+        for field in taus:
+            if any(v.name == field.name for v in self.variables):
+                raise ValueError(f'Variable name {field.name!r} is reserved for automatic taus.')
+            field['c'] = 0
+        edge_lhs = left.edge
+        if taus:
+            lift_basis = basis.interval.derivative_basis(order)
+            for j, field in enumerate(taus):
+                edge_lhs = edge_lhs + operators.Lift(field, lift_basis, -j-1)
+        rows = [('edge', edge_lhs, right.edge)]
+        if continuous:
+            rows.append(('vertex', graph.vertex_balance(left), graph.vertex_balance(right)))
+        else:
+            if not _zero(left.point) or not _zero(right.point):
+                raise TypeError('A common vertex measure requires continuous tests.')
+            rows.append(('endpoint_0', left.endpoints.get(0, 0), right.endpoints.get(0, 0)))
+        orders = sorted((left.endpoints.keys() | right.endpoints.keys()) - {0})
+        rows.extend((f'endpoint_{k}', left.endpoints.get(k, 0), right.endpoints.get(k, 0))
+                    for k in orders)
+        start = len(self.equations)
+        original_equations = [(eq, eq.copy()) for eq in self.equations]
+        original_variables = len(self.variables)
+        original_perturbations = len(getattr(self, 'perturbations', ()))
+        generated = []
+        try:
+            self.variables.extend(taus)
+            if isinstance(self, NonlinearBoundaryValueProblem):
+                for field in taus:
+                    perturbation = field.copy()
+                    perturbation.name = 'δ' + field.name
+                    perturbation['c'] = 0
+                    self.perturbations.append(perturbation)
+            for role, a, b in rows:
+                if _zero(a) and _zero(b):
+                    continue
+                common = (self.vertex_field(test_field) if role == 'vertex'
+                          and test_field in self._continuous_network_fields else None)
+                existing = [eq for eq in self.equations if common is not None
+                            and eq.get('network_common_vertex') is common]
+                if existing:
+                    if len(existing) != 1 or test_field in existing[0]['network_tests']:
+                        raise ValueError('Each continuous resolution bucket needs one vertex balance.')
+                    equation = existing[0]
+                    equation['LHS'] = equation['LHS'] + a
+                    equation['RHS'] = equation['RHS'] + b
+                    expr = equation['LHS'] - equation['RHS']
+                    equation.update(eqn=expr, tensorsig=expr.tensorsig, dtype=expr.dtype,
+                                    valid_modes=expr.valid_modes.copy())
+                    self._check_equation_conditions(equation)
+                    self._build_matrix_expressions(equation)
+                    equation['network_tests'] += (test_field,)
+                    generated.append(equation)
+                    continue
+                equation = self.add_equation((a, b), condition=condition)
+                equation['network_role'] = role
+                equation['network_test'] = test_field
+                if common is not None:
+                    equation['network_common_vertex'] = common
+                    equation['network_tests'] = (test_field,)
+                if role == 'edge':
+                    equation['network_tau_fields'] = taus
+                    equation['network_tau_order'] = order
+                generated.append(equation)
+        except Exception:
+            del self.equations[start:]
+            for equation, saved in original_equations:
+                equation.clear()
+                equation.update(saved)
+            del self.variables[original_variables:]
+            if isinstance(self, NonlinearBoundaryValueProblem):
+                del self.perturbations[original_perturbations:]
+            raise
+        self._hidden_network_tau_fields += taus
+        self.network_lowered_equations.append(tuple(generated))
+        return tuple(generated)
 
     def _check_equation_conditions(self, eqn):
         """Check equation conditions."""
@@ -653,7 +1063,7 @@ class InitialValueProblem(ProblemBase):
         perturbations : list of Fields, optional
             Perturbation fields for the EVP. Default: copies of IVP variables.
             When the IVP manages hidden Network vertex fields, provide only
-            the exposed perturbation fields; the hidden vertex perturbations
+            the exposed perturbation fields; hidden vertex and tau perturbations
             and their interface bindings are recreated automatically.
 
         Notes
@@ -669,10 +1079,11 @@ class InitialValueProblem(ProblemBase):
         # recreate them through the EVP constructor instead of turning their
         # copies into unrelated explicit variables.  This preserves the
         # interface bindings, helper namespace, and hidden-field metadata.
+        self._ensure_network_matching()
         variables = tuple(self.variables)
         hidden_variable_ids = {
             id(variable)
-            for variable in self._hidden_network_interface_fields
+            for variable in (*self._hidden_network_interface_fields, *self.tau_fields)
         }
         exposed_variables = tuple(
             variable
@@ -694,7 +1105,7 @@ class InitialValueProblem(ProblemBase):
             if len(exposed_perturbations) != len(exposed_variables):
                 if hidden_variable_ids:
                     detail = (
-                        "; omit problem-managed hidden vertex fields because "
+                        "; omit problem-managed hidden vertex and tau fields because "
                         "build_EVP recreates them automatically"
                     )
                 else:
@@ -729,6 +1140,18 @@ class InitialValueProblem(ProblemBase):
                 )
             kw["network_interfaces"] = interface_specs
         EVP = EigenvalueProblem(exposed_perturbations, eigenvalue, **kw)
+
+        # The equations below are already lowered, including their tau lifts.
+        # Copy these internal unknowns without asking the caller to supply
+        # perturbations for them or running automatic discretization a second time.
+        tau_perturbations = []
+        for field in self.tau_fields:
+            perturbation = field.copy()
+            perturbation.name = 'δ' + field.name
+            perturbation_by_variable_id[id(field)] = perturbation
+            tau_perturbations.append(perturbation)
+        EVP.variables.extend(tau_perturbations)
+        EVP._hidden_network_tau_fields = tuple(tau_perturbations)
 
         for edge_field, vertex_field in self.network_interfaces:
             if id(vertex_field) in hidden_variable_ids:
@@ -780,6 +1203,8 @@ class InitialValueProblem(ProblemBase):
         for var in backgrounds:
             if var.name:
                 EVP.local_namespace[var.name] = var
+        # Matching rows have already been linearized above.
+        EVP._network_matching_added = True
         return EVP
 
 

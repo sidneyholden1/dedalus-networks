@@ -1,0 +1,2758 @@
+{
+  "scope": "All eight short standalone runs passed with the current inferred-association library in an isolated archive extraction.",
+  "environment": {
+    "python": "3.12.9 (main, Jun 12 2025, 02:14:33) [GCC 13.3.0]",
+    "platform": "Linux-5.14.0-687.65.1.el9_8.x86_64-x86_64-with-glibc2.34",
+    "packages": {
+      "numpy": "2.2.4",
+      "scipy": "1.15.2",
+      "matplotlib": "3.10.1",
+      "Pillow": "11.1.0",
+      "mpi4py": "4.0.1",
+      "h5py": "3.12.1",
+      "numexpr": "2.10.2",
+      "xarray": "2024.7.0",
+      "docopt": "0.6.2",
+      "Cython": "3.0.11",
+      "setuptools": "76.0.0",
+      "wheel": "0.45.1",
+      "pytest": "8.2.1"
+    },
+    "mpi": "Open MPI v5.0.6, package: Open MPI nixbld1@rustyadm2 Distribution, ident: 5.0.6, repo rev: v5.0.6, Nov 15, 2024\u0000",
+    "verification": "Existing compatible project runtime; a fresh external installation has not been tested.",
+    "native_tool_versions": {
+      "gcc": "gcc (Spack GCC) 13.3.0",
+      "g++": "g++ (Spack GCC) 13.3.0",
+      "latex": "pdfTeX 3.141592653-2.6-1.40.26 (TeX Live 2024 - Spack)",
+      "dvipng": "This is dvipng 1.17 Copyright 2002-2015, 2019 Jan-Ake Larsson",
+      "pdfimages": "pdfimages version 21.01.0"
+    },
+    "rusty_modules": [
+      "gcc/13.3.0",
+      "openmpi/5.0.6",
+      "python-mpi/3.12.9",
+      "fftw/mpi-3.3.10",
+      "hdf5/mpi-1.12.3",
+      "texlive"
+    ]
+  },
+  "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+  "checks": [
+    {
+      "script": "methods/beam.py",
+      "arguments": [],
+      "returncode": 0,
+      "wall_seconds": 2.638742759998422,
+      "metrics": {
+        "example": "beam methods listing",
+        "maximum_error": 1.1473044736476368e-12
+      },
+      "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+      "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+      "local_dependency_sha256": {
+        "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf"
+      }
+    },
+    {
+      "script": "rods/steady.py",
+      "arguments": [],
+      "returncode": 0,
+      "wall_seconds": 3.3551600060018245,
+      "metrics": {
+        "example": "steady rods",
+        "modes": 16,
+        "maximum_error": 7.771561172376096e-16
+      },
+      "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+      "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+      "local_dependency_sha256": {
+        "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+        "rods/plot.py": "f570419fce89214bd44ba364124296f8f31b25fe70868a41a0b4ad15469bbfa9",
+        "rods/plotting.py": "c0afb463416b28f71eed678cc3367020d06e050047d212a4b8a5526d852e6e97",
+        "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+        "rods/transient.py": "aadadb46819a1d248e197ca4e4d1b56be61708a2255e0dbab27e50b9bde81df3",
+        "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd"
+      }
+    },
+    {
+      "script": "rods/transient.py",
+      "arguments": [],
+      "returncode": 0,
+      "wall_seconds": 3.248815981001826,
+      "metrics": {
+        "example": "transient rods",
+        "steps": 3,
+        "time": 0.0234375,
+        "vertex_residual": 3.344763702117781e-17,
+        "heated_vertex": 0.0021948534039735006
+      },
+      "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+      "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+      "local_dependency_sha256": {
+        "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+        "rods/plot.py": "f570419fce89214bd44ba364124296f8f31b25fe70868a41a0b4ad15469bbfa9",
+        "rods/plotting.py": "c0afb463416b28f71eed678cc3367020d06e050047d212a4b8a5526d852e6e97",
+        "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+        "rods/transient.py": "aadadb46819a1d248e197ca4e4d1b56be61708a2255e0dbab27e50b9bde81df3",
+        "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd"
+      }
+    },
+    {
+      "script": "scaling/benchmark.py",
+      "arguments": [],
+      "returncode": 0,
+      "wall_seconds": 3.6518104480055626,
+      "metrics": {
+        "example": "scaling equations",
+        "edges": 24,
+        "coefficients": 2048,
+        "ranks": 1,
+        "steps": 3,
+        "warmup": 1,
+        "maximum_error": 1.7747931613243395e-07,
+        "smoke_seconds": 0.04495186801068485
+      },
+      "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+      "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+      "local_dependency_sha256": {
+        "scaling/benchmark.py": "85bcc2f6cd0bd6776e26e18c593bcf14dada63f6026888e2db0e3fa364a09f9b",
+        "scaling/explicit_reference.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+        "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d",
+        "scaling/plot.py": "5466009d2137cb784027b716ef7fd6e3047b1c9569266b72c8f30b4a387248df"
+      }
+    },
+    {
+      "script": "photonic/eigenmodes.py",
+      "arguments": [],
+      "returncode": 0,
+      "wall_seconds": 1.7288810829923023,
+      "metrics": {
+        "example": "photonic resonances",
+        "edges": 5,
+        "k_real": 10.18159345887768,
+        "k_imag": -0.12541311786989146,
+        "delta_real": -0.49840654112231936,
+        "delta_imag": -0.07541311786989144,
+        "carrier_real": 10.68,
+        "carrier_imag": -0.05,
+        "pencil": 9.626934687716982e-15,
+        "continuity": 3.0302666127903583e-16,
+        "vertex": 6.152635301810137e-16,
+        "bond": 5.62526877673889e-16,
+        "differential": 8.013086468505413e-16,
+        "physical_interpolation": 2.2090077653674975e-15,
+        "integral_relative": 8.177075856630302e-16,
+        "I2": 0.1940975459504719,
+        "I4": 0.016931608491127258,
+        "Lpart": 2.2250607414964705,
+        "physical_quadrature_points": 112,
+        "envelope_coefficients": 16
+      },
+      "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+      "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+      "local_dependency_sha256": {
+        "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+        "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+        "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+        "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+        "photonic/photonic_intensity_boxes.py": "355430c122765728664d265a805ea6ed58b8de692726bb2ad832e6a829a191e0",
+        "photonic/photonic_pointwise_raster.cpp": "d76ee9b26d9dc6f6f1520a1714e8589a864035e19a01d0b4712e88559bcfaabd",
+        "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+        "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+        "photonic/plot.py": "2916951a31ca0665fa02a5049772491ddc3c67f919f1248fb767eed3e936faa8",
+        "photonic/plot_photonic_full_pointwise.py": "ac83466f516de4e1f26a6495417edafcbe828439790191b7c76b3597978b4974",
+        "photonic/plot_photonic_interior_figure.py": "79114f9fbbbd56e1dfaf8bcb6e082ca87113a7550cdb852f8333790d59c3c1a8",
+        "photonic/plot_photonic_pointwise_panel.py": "91882ab53652ad83421d7093cfa83aad7fdd73593e92ea760be6f4f9363a7917",
+        "photonic/plot_photonic_quantile_pair.py": "42eae46a72420a773b334308f21b5a2cd50973a5510512010fe92f2e28cf4558"
+      }
+    },
+    {
+      "script": "photonic/eigenmodes.py",
+      "arguments": [
+        "--interval-check"
+      ],
+      "returncode": 0,
+      "wall_seconds": 1.8116831989900675,
+      "metrics": {
+        "example": "photonic resonances",
+        "edges": 1,
+        "k_real": 10.681415022205297,
+        "k_imag": -0.05364793041447001,
+        "delta_real": 0.0014150222052977653,
+        "delta_imag": -0.0036479304144700045,
+        "carrier_real": 10.68,
+        "carrier_imag": -0.05,
+        "pencil": 2.0828799509180233e-13,
+        "continuity": 2.0562092347217614e-16,
+        "vertex": 3.2899347755548183e-16,
+        "bond": 9.794724146082095e-15,
+        "differential": 9.285223403253755e-17,
+        "physical_interpolation": 6.076820623274008e-14,
+        "integral_relative": 2.4776865358041223e-15,
+        "I2": 3.773726174927556,
+        "I4": 0.9409860036859613,
+        "Lpart": 15.134135032348544,
+        "physical_quadrature_points": 1632,
+        "envelope_coefficients": 16,
+        "analytic_eigenvalue_error": 0.0
+      },
+      "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+      "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+      "local_dependency_sha256": {
+        "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+        "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+        "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+        "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+        "photonic/photonic_intensity_boxes.py": "355430c122765728664d265a805ea6ed58b8de692726bb2ad832e6a829a191e0",
+        "photonic/photonic_pointwise_raster.cpp": "d76ee9b26d9dc6f6f1520a1714e8589a864035e19a01d0b4712e88559bcfaabd",
+        "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+        "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+        "photonic/plot.py": "2916951a31ca0665fa02a5049772491ddc3c67f919f1248fb767eed3e936faa8",
+        "photonic/plot_photonic_full_pointwise.py": "ac83466f516de4e1f26a6495417edafcbe828439790191b7c76b3597978b4974",
+        "photonic/plot_photonic_interior_figure.py": "79114f9fbbbd56e1dfaf8bcb6e082ca87113a7550cdb852f8333790d59c3c1a8",
+        "photonic/plot_photonic_pointwise_panel.py": "91882ab53652ad83421d7093cfa83aad7fdd73593e92ea760be6f4f9363a7917",
+        "photonic/plot_photonic_quantile_pair.py": "42eae46a72420a773b334308f21b5a2cd50973a5510512010fe92f2e28cf4558"
+      }
+    },
+    {
+      "script": "mineral/evolve.py",
+      "arguments": [],
+      "returncode": 0,
+      "wall_seconds": 2.223352471002727,
+      "metrics": {
+        "example": "mineral replacement",
+        "pores": 44,
+        "steps": 3,
+        "scaled_time": 0.006,
+        "water_residual": 6.608690068832274e-20,
+        "solute_defect": 1.6523241108679088e-16,
+        "algebraic_residual": 3.908188970884133e-15,
+        "inventory_defect": 1.3552527156068805e-20
+      },
+      "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+      "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+      "local_dependency_sha256": {
+        "mineral/evolve.py": "6dd3077e7ed5b86c8675b8896d0fb9f8b4d72f2ad1c1d0b80ed4463a93f4a199",
+        "mineral/explicit_reference.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+        "mineral/mineral_dedalus.py": "e76fb70fe1cddb562e5301ab40b3889ad13163f46ebe043b6d2e758ccb574f35",
+        "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+        "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+        "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+        "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+        "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+        "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+        "mineral/plot.py": "4da6dde8c5e02fb7684b716d4fc9021bd254f843f19683ac511621854e014054"
+      }
+    },
+    {
+      "script": "kdv/evolve.py",
+      "arguments": [],
+      "returncode": 0,
+      "wall_seconds": 2.316247494003619,
+      "metrics": {
+        "example": "KdV",
+        "edges": 18,
+        "modes": 24,
+        "steps": 3,
+        "time": 0.000375,
+        "mass_drift": 9.266116926488407e-16,
+        "constraint_max": 2.7657455319018975e-15,
+        "mass_balance_residual": -1.1461121282376765e-15,
+        "l2_balance_residual": 1.2848072905679273e-16
+      },
+      "checked_at_utc": "2026-11-06T06:45:28.714266+00:00",
+      "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+      "local_dependency_sha256": {
+        "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+        "kdv/evolve.py": "cba40f87639262a6ae2083ab4e17399303b4ff3bada9e0047b3164eab5264e17",
+        "kdv/explicit_reference.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+        "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+        "kdv/model.py": "c5d56d1a5f636422afdfb215ced909b946c369987d0009f7dbc6ed574664d95c",
+        "kdv/plot.py": "edea28bc7e5a273b5b8b334e05f872b2d7016fd458ee17bb14860c1d43e0c9f2",
+        "kdv/plotting.py": "62c401ee4f1cc779021f1cdec98a886822cc644e7b929e77d4d9ce8137c7f0f5"
+      }
+    }
+  ],
+  "library_sha256": {
+    "dedalus/__init__.py": "d76bc2ee36673c456f0a90e8ee5aacd78cb1c03275bd46e9da5b0ead919e59bf",
+    "dedalus/__main__.py": "ecd3475467648219d64af420cdef82e24cd4fc84e054cf8fdf36d87288217182",
+    "dedalus/core/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "dedalus/core/arithmetic.py": "05bf2de5df0788a4b4d6741565b400fb2b2397fd03963ce69a7b8f3c4e167647",
+    "dedalus/core/basis.py": "273dfa8b4641320b58a062b5547ed833d93e525ad405930007ad047d8dc1cf50",
+    "dedalus/core/coords.py": "522a7f77c3c8eff0078364230dc2d46c01b295f9a19ef7f46eedd967268fff2c",
+    "dedalus/core/distributor.py": "5d397932a355b428b9df21af71d77de29d65b422a83ff2d08f6437b35b68cc6b",
+    "dedalus/core/domain.py": "e243308e891c6214103c9cf86d2a6af6cf79319bf686ab51c3eedd22d701cfba",
+    "dedalus/core/evaluator.py": "735b11e24b369f0703aae3c15ec73fc2dfef817619688b7df29575b418066970",
+    "dedalus/core/field.py": "c557572e700c49926aab7a3d2e9dc26b5b1a7526f9cd4fcad8777cded636f1d3",
+    "dedalus/core/future.py": "bf4b1193248a122d3de1f4919a6dc9a7bdd2faf97221d3b87ea0af5fdbe3beee",
+    "dedalus/core/network.py": "7311401061970f427c2c1f94586a3b4ae93d7d6e518dd5c913aa1d05c1525ade",
+    "dedalus/core/network_calculus.py": "e221049a08804fc47598633b3b40841fcbb05ac4eaab584d1a48fc0e545f3eaa",
+    "dedalus/core/network_galerkin.py": "bb35c1aaa7718c03a76b84f58ffbaeedc2677256c2be319eb305d26f2a562206",
+    "dedalus/core/network_local.py": "35a9148a95b76337f5fa7f94e5da0ce28932cecdbd7b6859c5238ee198ca7bc4",
+    "dedalus/core/network_matrix.py": "d63b55088a6b87fadbdb642a5baaabca427e78e7b4900533867e56928cac53b8",
+    "dedalus/core/network_operators.py": "61d204c915877de55487cfbfc0c72019f15e46ed50b2cf9ef8701603e890312a",
+    "dedalus/core/network_partitioning.py": "97e3c8b9ab60474759ae1ff53cbf24a833d50b71bb552ea5daa086c6e9578e58",
+    "dedalus/core/network_storage.py": "00177f9f505eda2d8532364b969d4e3f4b698c0f13f30390756813807a20c50f",
+    "dedalus/core/operators.py": "93170d31206cf0029ca86e19297b6ab8a990f0231822f31966ee90a8e7598821",
+    "dedalus/core/problems.py": "9f2d09f637ffa935c459f70318cd05846299816cc400edb397a558a06edb8873",
+    "dedalus/core/solvers.py": "6d391bb4ed5cabbb882c06f6e12b4039a5aa933a678442e2f539041f9fca908f",
+    "dedalus/core/subsystems.py": "02897488fc2a2602c3c035e194501910ebbaaf0248207abcd951ea2e3d6fd459",
+    "dedalus/core/system.py": "20467b631d91160b1b255497a18b0e756381737e3fe1b2ccfde31f60205bd94e",
+    "dedalus/core/timesteppers.py": "6330b20d8b844a1c04af192b41e91b940b6c3deca711195f295d4c6e2014c6b7",
+    "dedalus/core/transforms.py": "36786b1fbc0e407a7a91aacacf2fead456498ae2805a2d89dfc7c3ebe3a65d1d",
+    "dedalus/core/transposes.pyx": "be658f61b8ca3e0bcac438b72292ae6842ab1a21f144aafedc14bd54431f3527",
+    "dedalus/dedalus.cfg": "28930f0172ad46580830a1e007319fedd2105eaf01035b739eb73d3f65fd2abe",
+    "dedalus/extras/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "dedalus/extras/flow_tools.py": "e08fe4b4eedb9b953cbe96a06cd2e2b031a4d9bccaa9f279551cebc29f974c34",
+    "dedalus/extras/plot_tools.py": "dd01e4349b37ad336cabd4a10cbd0f9ac3053d6793f927ef9814a75642eca24f",
+    "dedalus/extras/quick_domains.py": "c09e59dbd4841035562ffffb105f4827e7a4c40b96b4d64bb28a6e7e90b74d04",
+    "dedalus/libraries/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "dedalus/libraries/dedalus_sphere/__init__.py": "8835e4c486f996e3db9db478805e5971dfc20ffd4734504cdf26ce220027da7f",
+    "dedalus/libraries/dedalus_sphere/annulus.py": "81ada09e836a6f55eec09071174be48a909f02d616e44b31cb58dcab22bbedea",
+    "dedalus/libraries/dedalus_sphere/ball_wrapper.py": "f7938146f9ab29fa9700a33c37835225d494cb29d7e1d4906cba24752d9a3ca2",
+    "dedalus/libraries/dedalus_sphere/clenshaw.py": "8c7f27aa02bb77642368a644d6708e9eac33258843a5ac8945582c3d9f6238ab",
+    "dedalus/libraries/dedalus_sphere/jacobi.py": "54ecd89e64b7e7c9a8ca2008287e03ff8ef2f29eabee0790bc1bf76b6b773b55",
+    "dedalus/libraries/dedalus_sphere/old_intertwiner.py": "664dfee479ca0351078d7e85bae112a9b7d63320c886686bae6e9932744b30db",
+    "dedalus/libraries/dedalus_sphere/operators.py": "9838b5afe0e85f806f2aa7ce473c0916ec0b69b0d797c4a6c3972df3337e44c3",
+    "dedalus/libraries/dedalus_sphere/shell.py": "b87f3c27924668a46a6637ea76932ab3851bc49d5e287bae0f5aeffec23d629b",
+    "dedalus/libraries/dedalus_sphere/sphere.py": "487930619fd7bcd61da9f241d951c629357f0a9b5bb1308bfd5fefe8d3dc74b2",
+    "dedalus/libraries/dedalus_sphere/sphere_wrapper.py": "9cadc90df020fad5e41565ebd9215e4f0c034ef3dd0b24b28cec44dc3c3b99cc",
+    "dedalus/libraries/dedalus_sphere/spin_operators.py": "ee46b274dd544eb45a83a4b6e4ee52ede6719a75db87eca4dc3bf5348ca6bd0c",
+    "dedalus/libraries/dedalus_sphere/timesteppers.py": "20ce5bc68e198f0ccc15327ebbfeb9f15077e5586539ec85dd680c801d549dfb",
+    "dedalus/libraries/dedalus_sphere/tuple_tools.py": "82db9c312708d75c8e8047c1b07e01cb0ebfbb732904f0ec93039aae75c131ad",
+    "dedalus/libraries/dedalus_sphere/zernike.py": "40afdd6116298b39d0ea1428b14c5a7f8a2cd57367442f8627b1e4636730aee4",
+    "dedalus/libraries/fftw/__init__.py": "8ef813c722d8390bf6429acc77d7dc3337944a6cb7e57ddab6a296e4dc25b9af",
+    "dedalus/libraries/fftw/fftw_c_api.pxd": "627b918aaf1a68ecdbc10e8ee54f6635d815b370b14a3e1aff869e57915128cc",
+    "dedalus/libraries/fftw/fftw_wrappers.pyx": "5d964c90dde7c227eed90ee3a55de4640a320d9d4bb89e21bcbbac7f223c6434",
+    "dedalus/libraries/matsolvers.py": "8d06373b089ce0d0e5e571f4ea4f3ffe2bf0d988388c65b54d0ad8aaee797b48",
+    "dedalus/libraries/spin_recombination.pyx": "07ee6a4fc74ed8bc71dd98a092bff6b2ebfc787069b0dd5462e1cf1f58fdec5d",
+    "dedalus/public.py": "7291fdeeb4824ea77041e7c1f1c0e3d89baa25a586ffd06cd071151f93e4e4ec",
+    "dedalus/tools/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "dedalus/tools/array.py": "bb144ddc8f2fe7d312fea608da938fe9d9d7e03f2948dae29aae17677a0e0b61",
+    "dedalus/tools/cache.py": "c5a650e400cf37fb722d9ea1429716b4069c60fda5e9bdf249cdeb189091176a",
+    "dedalus/tools/clenshaw.py": "39c499998d158398c3f862c3b643df30e81857e31f5fab99414f88640c26b508",
+    "dedalus/tools/collective_eigs.py": "608f1be6ac07aa1d216ff3b3e01087fcd1f0875c92feda6e5f053d1b04ee53e9",
+    "dedalus/tools/collective_linalg.py": "a02bdc2641a7965e459e7c2a38b5e79d39788087bd12a8d7bd0921caf16ee0ef",
+    "dedalus/tools/collective_metadata.py": "a542ade508f4028dccc980df1094a0f0852a949b9cec5fcdd4776fa695ba93d9",
+    "dedalus/tools/config.py": "99f0ef20f497996dd49e4e70e38d05b8255b566f5e45a4f9a67108ba3499dfad",
+    "dedalus/tools/dispatch.py": "aba2e9951c0cfa4e4350c8071e8d37e2d3580bf6db459ad2bb49286e25f033ae",
+    "dedalus/tools/exceptions.py": "e87a6241b082c97a0c489ecba4f1b50e365c5e635ccf5e7391365625fcc3fc4f",
+    "dedalus/tools/general.py": "7d14b9efbde81a698b28f787d4c112c5636e54e9e92cf821d6b4a57c43bddc23",
+    "dedalus/tools/jacobi.py": "c0978d1b9776f8c987a9c0e58da53402982abd7d4905b62bf014b950a5e12612",
+    "dedalus/tools/linalg.pyx": "8d10ad7814adf673ad51ea996d989dfcf0a47a27ccbd3ad8bf774ef657580f7b",
+    "dedalus/tools/logging.py": "650efceb10e6630fb52eb2460f3ed0f324bebf2b0bbc3634c7143e704bc1fe16",
+    "dedalus/tools/network_partitioning.py": "7e9a5091f3d2589302fcaecdcd82f80672caf845bec62975017b3315c89a15ad",
+    "dedalus/tools/parallel.py": "eea8b32686ccfa104d9a40d250d0bc3d5743667351293a3009309e2cd52c4ea8",
+    "dedalus/tools/parsing.py": "7523701f5dcb9223b0e4aaf42c0679dd762f173a779b880a8d3c6c59cc08ca43",
+    "dedalus/tools/plot_op.py": "02b9fd985943117d1682ba72e7416b891b3371eb78dfa65423e370cde2d19e04",
+    "dedalus/tools/post.py": "1d6f84bccc5de8c7bc6211f54aaae7897d0f08484629694b1a3b0f83ce10d348",
+    "dedalus/tools/progress.py": "a12b59dc31e0ec87ba561ea39262df34fcb0cb73965d36b670f6350bbb7fd152",
+    "dedalus/tools/random_arrays.py": "27a632875c012f091cf784160ec260a1c044ed1fcf397731b32aef7e0dead835"
+  },
+  "source_sha256": {
+    "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+    "kdv/evolve.py": "cba40f87639262a6ae2083ab4e17399303b4ff3bada9e0047b3164eab5264e17",
+    "kdv/explicit_reference.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+    "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+    "kdv/model.py": "c5d56d1a5f636422afdfb215ced909b946c369987d0009f7dbc6ed574664d95c",
+    "kdv/plot.py": "edea28bc7e5a273b5b8b334e05f872b2d7016fd458ee17bb14860c1d43e0c9f2",
+    "kdv/plotting.py": "62c401ee4f1cc779021f1cdec98a886822cc644e7b929e77d4d9ce8137c7f0f5",
+    "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf",
+    "mineral/evolve.py": "6dd3077e7ed5b86c8675b8896d0fb9f8b4d72f2ad1c1d0b80ed4463a93f4a199",
+    "mineral/explicit_reference.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+    "mineral/mineral_dedalus.py": "e76fb70fe1cddb562e5301ab40b3889ad13163f46ebe043b6d2e758ccb574f35",
+    "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+    "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+    "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+    "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+    "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+    "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+    "mineral/plot.py": "4da6dde8c5e02fb7684b716d4fc9021bd254f843f19683ac511621854e014054",
+    "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+    "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+    "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+    "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+    "photonic/photonic_intensity_boxes.py": "355430c122765728664d265a805ea6ed58b8de692726bb2ad832e6a829a191e0",
+    "photonic/photonic_pointwise_raster.cpp": "d76ee9b26d9dc6f6f1520a1714e8589a864035e19a01d0b4712e88559bcfaabd",
+    "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+    "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+    "photonic/plot.py": "2916951a31ca0665fa02a5049772491ddc3c67f919f1248fb767eed3e936faa8",
+    "photonic/plot_photonic_full_pointwise.py": "ac83466f516de4e1f26a6495417edafcbe828439790191b7c76b3597978b4974",
+    "photonic/plot_photonic_interior_figure.py": "79114f9fbbbd56e1dfaf8bcb6e082ca87113a7550cdb852f8333790d59c3c1a8",
+    "photonic/plot_photonic_pointwise_panel.py": "91882ab53652ad83421d7093cfa83aad7fdd73593e92ea760be6f4f9363a7917",
+    "photonic/plot_photonic_quantile_pair.py": "42eae46a72420a773b334308f21b5a2cd50973a5510512010fe92f2e28cf4558",
+    "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+    "rods/plot.py": "f570419fce89214bd44ba364124296f8f31b25fe70868a41a0b4ad15469bbfa9",
+    "rods/plotting.py": "c0afb463416b28f71eed678cc3367020d06e050047d212a4b8a5526d852e6e97",
+    "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+    "rods/transient.py": "aadadb46819a1d248e197ca4e4d1b56be61708a2255e0dbab27e50b9bde81df3",
+    "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd",
+    "scaling/benchmark.py": "85bcc2f6cd0bd6776e26e18c593bcf14dada63f6026888e2db0e3fa364a09f9b",
+    "scaling/explicit_reference.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+    "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d",
+    "scaling/plot.py": "5466009d2137cb784027b716ef7fd6e3047b1c9569266b72c8f30b4a387248df",
+    "verify_data.py": "20d1e07286f022023013d4ea8094dae7f397d7e1eeeedfa5eac92c9b73d29c36"
+  },
+  "previous_runs": [
+    {
+      "scope": "All eight short standalone runs passed with the current inferred-association library in an isolated archive extraction.",
+      "environment": {
+        "python": "3.12.9 (main, Jun 12 2025, 02:14:33) [GCC 13.3.0]",
+        "platform": "Linux-5.14.0-687.65.1.el9_8.x86_64-x86_64-with-glibc2.34",
+        "packages": {
+          "numpy": "2.2.4",
+          "scipy": "1.15.2",
+          "matplotlib": "3.10.1",
+          "Pillow": "11.1.0",
+          "mpi4py": "4.0.1",
+          "h5py": "3.12.1",
+          "numexpr": "2.10.2",
+          "xarray": "2024.7.0",
+          "docopt": "0.6.2",
+          "Cython": "3.0.11",
+          "setuptools": "76.0.0",
+          "wheel": "0.45.1",
+          "pytest": "8.2.1"
+        },
+        "mpi": "Open MPI v5.0.6, package: Open MPI nixbld1@rustyadm2 Distribution, ident: 5.0.6, repo rev: v5.0.6, Nov 15, 2024\u0000",
+        "verification": "Existing compatible project runtime; a fresh external installation has not been tested.",
+        "native_tool_versions": {
+          "gcc": "gcc (Spack GCC) 13.3.0",
+          "g++": "g++ (Spack GCC) 13.3.0",
+          "latex": "pdfTeX 3.141592653-2.6-1.40.26 (TeX Live 2024 - Spack)",
+          "dvipng": "This is dvipng 1.17 Copyright 2002-2015, 2019 Jan-Ake Larsson",
+          "pdfimages": "pdfimages version 21.01.0"
+        },
+        "rusty_modules": [
+          "gcc/13.3.0",
+          "openmpi/5.0.6",
+          "python-mpi/3.12.9",
+          "fftw/mpi-3.3.10",
+          "hdf5/mpi-1.12.3",
+          "texlive"
+        ]
+      },
+      "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+      "checks": [
+        {
+          "script": "methods/beam.py",
+          "arguments": [],
+          "returncode": 0,
+          "wall_seconds": 1.8002187199890614,
+          "metrics": {
+            "example": "beam methods listing",
+            "maximum_error": 1.1473044736476368e-12
+          },
+          "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+          "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+          "local_dependency_sha256": {
+            "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf"
+          }
+        },
+        {
+          "script": "rods/steady.py",
+          "arguments": [],
+          "returncode": 0,
+          "wall_seconds": 1.744843024003785,
+          "metrics": {
+            "example": "steady rods",
+            "modes": 16,
+            "maximum_error": 7.771561172376096e-16
+          },
+          "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+          "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+          "local_dependency_sha256": {
+            "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+            "rods/plot.py": "f570419fce89214bd44ba364124296f8f31b25fe70868a41a0b4ad15469bbfa9",
+            "rods/plotting.py": "c0afb463416b28f71eed678cc3367020d06e050047d212a4b8a5526d852e6e97",
+            "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+            "rods/transient.py": "aadadb46819a1d248e197ca4e4d1b56be61708a2255e0dbab27e50b9bde81df3",
+            "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd"
+          }
+        },
+        {
+          "script": "rods/transient.py",
+          "arguments": [],
+          "returncode": 0,
+          "wall_seconds": 3.2592998489999445,
+          "metrics": {
+            "example": "transient rods",
+            "steps": 3,
+            "time": 0.0234375,
+            "vertex_residual": 3.344763702117781e-17,
+            "heated_vertex": 0.0021948534039735006
+          },
+          "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+          "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+          "local_dependency_sha256": {
+            "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+            "rods/plot.py": "f570419fce89214bd44ba364124296f8f31b25fe70868a41a0b4ad15469bbfa9",
+            "rods/plotting.py": "c0afb463416b28f71eed678cc3367020d06e050047d212a4b8a5526d852e6e97",
+            "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+            "rods/transient.py": "aadadb46819a1d248e197ca4e4d1b56be61708a2255e0dbab27e50b9bde81df3",
+            "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd"
+          }
+        },
+        {
+          "script": "scaling/benchmark.py",
+          "arguments": [],
+          "returncode": 0,
+          "wall_seconds": 2.8693828760006,
+          "metrics": {
+            "example": "scaling equations",
+            "edges": 24,
+            "coefficients": 2048,
+            "ranks": 1,
+            "steps": 3,
+            "warmup": 1,
+            "maximum_error": 1.7747931579936704e-07,
+            "smoke_seconds": 0.045395050998195074
+          },
+          "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+          "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+          "local_dependency_sha256": {
+            "scaling/benchmark.py": "85bcc2f6cd0bd6776e26e18c593bcf14dada63f6026888e2db0e3fa364a09f9b",
+            "scaling/explicit_reference.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+            "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d",
+            "scaling/plot.py": "5466009d2137cb784027b716ef7fd6e3047b1c9569266b72c8f30b4a387248df"
+          }
+        },
+        {
+          "script": "photonic/eigenmodes.py",
+          "arguments": [],
+          "returncode": 0,
+          "wall_seconds": 1.9729310080001596,
+          "metrics": {
+            "example": "photonic resonances",
+            "edges": 5,
+            "k_real": 10.18159345887768,
+            "k_imag": -0.12541311786989146,
+            "delta_real": -0.49840654112231936,
+            "delta_imag": -0.07541311786989144,
+            "carrier_real": 10.68,
+            "carrier_imag": -0.05,
+            "pencil": 9.626934687716982e-15,
+            "continuity": 3.0302666127903583e-16,
+            "vertex": 6.152635301810137e-16,
+            "bond": 5.62526877673889e-16,
+            "differential": 8.013086468505413e-16,
+            "physical_interpolation": 2.2090077653674975e-15,
+            "integral_relative": 8.177075856630302e-16,
+            "I2": 0.1940975459504719,
+            "I4": 0.016931608491127258,
+            "Lpart": 2.2250607414964705,
+            "physical_quadrature_points": 112,
+            "envelope_coefficients": 16
+          },
+          "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+          "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+          "local_dependency_sha256": {
+            "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+            "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+            "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+            "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+            "photonic/photonic_intensity_boxes.py": "355430c122765728664d265a805ea6ed58b8de692726bb2ad832e6a829a191e0",
+            "photonic/photonic_pointwise_raster.cpp": "d76ee9b26d9dc6f6f1520a1714e8589a864035e19a01d0b4712e88559bcfaabd",
+            "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+            "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+            "photonic/plot.py": "2916951a31ca0665fa02a5049772491ddc3c67f919f1248fb767eed3e936faa8",
+            "photonic/plot_photonic_full_pointwise.py": "ac83466f516de4e1f26a6495417edafcbe828439790191b7c76b3597978b4974",
+            "photonic/plot_photonic_interior_figure.py": "79114f9fbbbd56e1dfaf8bcb6e082ca87113a7550cdb852f8333790d59c3c1a8",
+            "photonic/plot_photonic_pointwise_panel.py": "91882ab53652ad83421d7093cfa83aad7fdd73593e92ea760be6f4f9363a7917",
+            "photonic/plot_photonic_quantile_pair.py": "42eae46a72420a773b334308f21b5a2cd50973a5510512010fe92f2e28cf4558"
+          }
+        },
+        {
+          "script": "photonic/eigenmodes.py",
+          "arguments": [
+            "--interval-check"
+          ],
+          "returncode": 0,
+          "wall_seconds": 1.7330819140042877,
+          "metrics": {
+            "example": "photonic resonances",
+            "edges": 1,
+            "k_real": 10.681415022205297,
+            "k_imag": -0.05364793041447001,
+            "delta_real": 0.0014150222052977653,
+            "delta_imag": -0.0036479304144700045,
+            "carrier_real": 10.68,
+            "carrier_imag": -0.05,
+            "pencil": 2.0828799509180233e-13,
+            "continuity": 2.0562092347217614e-16,
+            "vertex": 3.2899347755548183e-16,
+            "bond": 9.794724146082095e-15,
+            "differential": 9.285223403253755e-17,
+            "physical_interpolation": 6.076820623274008e-14,
+            "integral_relative": 2.4776865358041223e-15,
+            "I2": 3.773726174927556,
+            "I4": 0.9409860036859613,
+            "Lpart": 15.134135032348544,
+            "physical_quadrature_points": 1632,
+            "envelope_coefficients": 16,
+            "analytic_eigenvalue_error": 0.0
+          },
+          "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+          "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+          "local_dependency_sha256": {
+            "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+            "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+            "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+            "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+            "photonic/photonic_intensity_boxes.py": "355430c122765728664d265a805ea6ed58b8de692726bb2ad832e6a829a191e0",
+            "photonic/photonic_pointwise_raster.cpp": "d76ee9b26d9dc6f6f1520a1714e8589a864035e19a01d0b4712e88559bcfaabd",
+            "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+            "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+            "photonic/plot.py": "2916951a31ca0665fa02a5049772491ddc3c67f919f1248fb767eed3e936faa8",
+            "photonic/plot_photonic_full_pointwise.py": "ac83466f516de4e1f26a6495417edafcbe828439790191b7c76b3597978b4974",
+            "photonic/plot_photonic_interior_figure.py": "79114f9fbbbd56e1dfaf8bcb6e082ca87113a7550cdb852f8333790d59c3c1a8",
+            "photonic/plot_photonic_pointwise_panel.py": "91882ab53652ad83421d7093cfa83aad7fdd73593e92ea760be6f4f9363a7917",
+            "photonic/plot_photonic_quantile_pair.py": "42eae46a72420a773b334308f21b5a2cd50973a5510512010fe92f2e28cf4558"
+          }
+        },
+        {
+          "script": "mineral/evolve.py",
+          "arguments": [],
+          "returncode": 0,
+          "wall_seconds": 2.875863921988639,
+          "metrics": {
+            "example": "mineral replacement",
+            "pores": 44,
+            "steps": 3,
+            "scaled_time": 0.006,
+            "water_residual": 6.608690068832274e-20,
+            "solute_defect": 1.6523241108679088e-16,
+            "algebraic_residual": 3.908188970884133e-15,
+            "inventory_defect": 1.3552527156068805e-20
+          },
+          "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+          "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+          "local_dependency_sha256": {
+            "mineral/evolve.py": "6dd3077e7ed5b86c8675b8896d0fb9f8b4d72f2ad1c1d0b80ed4463a93f4a199",
+            "mineral/explicit_reference.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+            "mineral/mineral_dedalus.py": "e76fb70fe1cddb562e5301ab40b3889ad13163f46ebe043b6d2e758ccb574f35",
+            "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+            "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+            "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+            "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+            "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+            "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+            "mineral/plot.py": "4da6dde8c5e02fb7684b716d4fc9021bd254f843f19683ac511621854e014054"
+          }
+        },
+        {
+          "script": "kdv/evolve.py",
+          "arguments": [],
+          "returncode": 0,
+          "wall_seconds": 3.3576832209946588,
+          "metrics": {
+            "example": "KdV",
+            "edges": 18,
+            "modes": 24,
+            "steps": 3,
+            "time": 0.000375,
+            "mass_drift": 9.266116926488407e-16,
+            "constraint_max": 2.7657455319018975e-15,
+            "mass_balance_residual": -1.1461121282376765e-15,
+            "l2_balance_residual": 1.2848072905679273e-16
+          },
+          "checked_at_utc": "2026-11-06T06:37:56.809962+00:00",
+          "execution": "Extracted archive entry with original research source removed from sys.path; same compatible compiled extensions.",
+          "local_dependency_sha256": {
+            "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+            "kdv/evolve.py": "cba40f87639262a6ae2083ab4e17399303b4ff3bada9e0047b3164eab5264e17",
+            "kdv/explicit_reference.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+            "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+            "kdv/model.py": "c5d56d1a5f636422afdfb215ced909b946c369987d0009f7dbc6ed574664d95c",
+            "kdv/plot.py": "edea28bc7e5a273b5b8b334e05f872b2d7016fd458ee17bb14860c1d43e0c9f2",
+            "kdv/plotting.py": "62c401ee4f1cc779021f1cdec98a886822cc644e7b929e77d4d9ce8137c7f0f5"
+          }
+        }
+      ],
+      "library_sha256": {
+        "dedalus/__init__.py": "d76bc2ee36673c456f0a90e8ee5aacd78cb1c03275bd46e9da5b0ead919e59bf",
+        "dedalus/__main__.py": "ecd3475467648219d64af420cdef82e24cd4fc84e054cf8fdf36d87288217182",
+        "dedalus/core/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dedalus/core/arithmetic.py": "05bf2de5df0788a4b4d6741565b400fb2b2397fd03963ce69a7b8f3c4e167647",
+        "dedalus/core/basis.py": "273dfa8b4641320b58a062b5547ed833d93e525ad405930007ad047d8dc1cf50",
+        "dedalus/core/coords.py": "522a7f77c3c8eff0078364230dc2d46c01b295f9a19ef7f46eedd967268fff2c",
+        "dedalus/core/distributor.py": "5d397932a355b428b9df21af71d77de29d65b422a83ff2d08f6437b35b68cc6b",
+        "dedalus/core/domain.py": "e243308e891c6214103c9cf86d2a6af6cf79319bf686ab51c3eedd22d701cfba",
+        "dedalus/core/evaluator.py": "735b11e24b369f0703aae3c15ec73fc2dfef817619688b7df29575b418066970",
+        "dedalus/core/field.py": "c557572e700c49926aab7a3d2e9dc26b5b1a7526f9cd4fcad8777cded636f1d3",
+        "dedalus/core/future.py": "bf4b1193248a122d3de1f4919a6dc9a7bdd2faf97221d3b87ea0af5fdbe3beee",
+        "dedalus/core/network.py": "7311401061970f427c2c1f94586a3b4ae93d7d6e518dd5c913aa1d05c1525ade",
+        "dedalus/core/network_calculus.py": "e221049a08804fc47598633b3b40841fcbb05ac4eaab584d1a48fc0e545f3eaa",
+        "dedalus/core/network_galerkin.py": "bb35c1aaa7718c03a76b84f58ffbaeedc2677256c2be319eb305d26f2a562206",
+        "dedalus/core/network_local.py": "35a9148a95b76337f5fa7f94e5da0ce28932cecdbd7b6859c5238ee198ca7bc4",
+        "dedalus/core/network_matrix.py": "d63b55088a6b87fadbdb642a5baaabca427e78e7b4900533867e56928cac53b8",
+        "dedalus/core/network_operators.py": "ac3f400d8c96241fc5266f30ae520b7aa2f4a0acb60a15f482617f239b138cc3",
+        "dedalus/core/network_partitioning.py": "97e3c8b9ab60474759ae1ff53cbf24a833d50b71bb552ea5daa086c6e9578e58",
+        "dedalus/core/network_storage.py": "00177f9f505eda2d8532364b969d4e3f4b698c0f13f30390756813807a20c50f",
+        "dedalus/core/operators.py": "93170d31206cf0029ca86e19297b6ab8a990f0231822f31966ee90a8e7598821",
+        "dedalus/core/problems.py": "53161e4c2fdaa762a136dad4b7cf576df1dde48c843fe6139e3d568ace4bd740",
+        "dedalus/core/solvers.py": "6d391bb4ed5cabbb882c06f6e12b4039a5aa933a678442e2f539041f9fca908f",
+        "dedalus/core/subsystems.py": "02897488fc2a2602c3c035e194501910ebbaaf0248207abcd951ea2e3d6fd459",
+        "dedalus/core/system.py": "20467b631d91160b1b255497a18b0e756381737e3fe1b2ccfde31f60205bd94e",
+        "dedalus/core/timesteppers.py": "6330b20d8b844a1c04af192b41e91b940b6c3deca711195f295d4c6e2014c6b7",
+        "dedalus/core/transforms.py": "36786b1fbc0e407a7a91aacacf2fead456498ae2805a2d89dfc7c3ebe3a65d1d",
+        "dedalus/core/transposes.pyx": "be658f61b8ca3e0bcac438b72292ae6842ab1a21f144aafedc14bd54431f3527",
+        "dedalus/dedalus.cfg": "28930f0172ad46580830a1e007319fedd2105eaf01035b739eb73d3f65fd2abe",
+        "dedalus/extras/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dedalus/extras/flow_tools.py": "e08fe4b4eedb9b953cbe96a06cd2e2b031a4d9bccaa9f279551cebc29f974c34",
+        "dedalus/extras/plot_tools.py": "dd01e4349b37ad336cabd4a10cbd0f9ac3053d6793f927ef9814a75642eca24f",
+        "dedalus/extras/quick_domains.py": "c09e59dbd4841035562ffffb105f4827e7a4c40b96b4d64bb28a6e7e90b74d04",
+        "dedalus/libraries/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dedalus/libraries/dedalus_sphere/__init__.py": "8835e4c486f996e3db9db478805e5971dfc20ffd4734504cdf26ce220027da7f",
+        "dedalus/libraries/dedalus_sphere/annulus.py": "81ada09e836a6f55eec09071174be48a909f02d616e44b31cb58dcab22bbedea",
+        "dedalus/libraries/dedalus_sphere/ball_wrapper.py": "f7938146f9ab29fa9700a33c37835225d494cb29d7e1d4906cba24752d9a3ca2",
+        "dedalus/libraries/dedalus_sphere/clenshaw.py": "8c7f27aa02bb77642368a644d6708e9eac33258843a5ac8945582c3d9f6238ab",
+        "dedalus/libraries/dedalus_sphere/jacobi.py": "54ecd89e64b7e7c9a8ca2008287e03ff8ef2f29eabee0790bc1bf76b6b773b55",
+        "dedalus/libraries/dedalus_sphere/old_intertwiner.py": "664dfee479ca0351078d7e85bae112a9b7d63320c886686bae6e9932744b30db",
+        "dedalus/libraries/dedalus_sphere/operators.py": "9838b5afe0e85f806f2aa7ce473c0916ec0b69b0d797c4a6c3972df3337e44c3",
+        "dedalus/libraries/dedalus_sphere/shell.py": "b87f3c27924668a46a6637ea76932ab3851bc49d5e287bae0f5aeffec23d629b",
+        "dedalus/libraries/dedalus_sphere/sphere.py": "487930619fd7bcd61da9f241d951c629357f0a9b5bb1308bfd5fefe8d3dc74b2",
+        "dedalus/libraries/dedalus_sphere/sphere_wrapper.py": "9cadc90df020fad5e41565ebd9215e4f0c034ef3dd0b24b28cec44dc3c3b99cc",
+        "dedalus/libraries/dedalus_sphere/spin_operators.py": "ee46b274dd544eb45a83a4b6e4ee52ede6719a75db87eca4dc3bf5348ca6bd0c",
+        "dedalus/libraries/dedalus_sphere/timesteppers.py": "20ce5bc68e198f0ccc15327ebbfeb9f15077e5586539ec85dd680c801d549dfb",
+        "dedalus/libraries/dedalus_sphere/tuple_tools.py": "82db9c312708d75c8e8047c1b07e01cb0ebfbb732904f0ec93039aae75c131ad",
+        "dedalus/libraries/dedalus_sphere/zernike.py": "40afdd6116298b39d0ea1428b14c5a7f8a2cd57367442f8627b1e4636730aee4",
+        "dedalus/libraries/fftw/__init__.py": "8ef813c722d8390bf6429acc77d7dc3337944a6cb7e57ddab6a296e4dc25b9af",
+        "dedalus/libraries/fftw/fftw_c_api.pxd": "627b918aaf1a68ecdbc10e8ee54f6635d815b370b14a3e1aff869e57915128cc",
+        "dedalus/libraries/fftw/fftw_wrappers.pyx": "5d964c90dde7c227eed90ee3a55de4640a320d9d4bb89e21bcbbac7f223c6434",
+        "dedalus/libraries/matsolvers.py": "8d06373b089ce0d0e5e571f4ea4f3ffe2bf0d988388c65b54d0ad8aaee797b48",
+        "dedalus/libraries/spin_recombination.pyx": "07ee6a4fc74ed8bc71dd98a092bff6b2ebfc787069b0dd5462e1cf1f58fdec5d",
+        "dedalus/public.py": "7291fdeeb4824ea77041e7c1f1c0e3d89baa25a586ffd06cd071151f93e4e4ec",
+        "dedalus/tools/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dedalus/tools/array.py": "bb144ddc8f2fe7d312fea608da938fe9d9d7e03f2948dae29aae17677a0e0b61",
+        "dedalus/tools/cache.py": "c5a650e400cf37fb722d9ea1429716b4069c60fda5e9bdf249cdeb189091176a",
+        "dedalus/tools/clenshaw.py": "39c499998d158398c3f862c3b643df30e81857e31f5fab99414f88640c26b508",
+        "dedalus/tools/collective_eigs.py": "608f1be6ac07aa1d216ff3b3e01087fcd1f0875c92feda6e5f053d1b04ee53e9",
+        "dedalus/tools/collective_linalg.py": "a02bdc2641a7965e459e7c2a38b5e79d39788087bd12a8d7bd0921caf16ee0ef",
+        "dedalus/tools/collective_metadata.py": "a542ade508f4028dccc980df1094a0f0852a949b9cec5fcdd4776fa695ba93d9",
+        "dedalus/tools/config.py": "99f0ef20f497996dd49e4e70e38d05b8255b566f5e45a4f9a67108ba3499dfad",
+        "dedalus/tools/dispatch.py": "aba2e9951c0cfa4e4350c8071e8d37e2d3580bf6db459ad2bb49286e25f033ae",
+        "dedalus/tools/exceptions.py": "e87a6241b082c97a0c489ecba4f1b50e365c5e635ccf5e7391365625fcc3fc4f",
+        "dedalus/tools/general.py": "7d14b9efbde81a698b28f787d4c112c5636e54e9e92cf821d6b4a57c43bddc23",
+        "dedalus/tools/jacobi.py": "c0978d1b9776f8c987a9c0e58da53402982abd7d4905b62bf014b950a5e12612",
+        "dedalus/tools/linalg.pyx": "8d10ad7814adf673ad51ea996d989dfcf0a47a27ccbd3ad8bf774ef657580f7b",
+        "dedalus/tools/logging.py": "650efceb10e6630fb52eb2460f3ed0f324bebf2b0bbc3634c7143e704bc1fe16",
+        "dedalus/tools/network_partitioning.py": "7e9a5091f3d2589302fcaecdcd82f80672caf845bec62975017b3315c89a15ad",
+        "dedalus/tools/parallel.py": "eea8b32686ccfa104d9a40d250d0bc3d5743667351293a3009309e2cd52c4ea8",
+        "dedalus/tools/parsing.py": "7523701f5dcb9223b0e4aaf42c0679dd762f173a779b880a8d3c6c59cc08ca43",
+        "dedalus/tools/plot_op.py": "02b9fd985943117d1682ba72e7416b891b3371eb78dfa65423e370cde2d19e04",
+        "dedalus/tools/post.py": "1d6f84bccc5de8c7bc6211f54aaae7897d0f08484629694b1a3b0f83ce10d348",
+        "dedalus/tools/progress.py": "a12b59dc31e0ec87ba561ea39262df34fcb0cb73965d36b670f6350bbb7fd152",
+        "dedalus/tools/random_arrays.py": "27a632875c012f091cf784160ec260a1c044ed1fcf397731b32aef7e0dead835"
+      },
+      "source_sha256": {
+        "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+        "kdv/evolve.py": "cba40f87639262a6ae2083ab4e17399303b4ff3bada9e0047b3164eab5264e17",
+        "kdv/explicit_reference.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+        "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+        "kdv/model.py": "c5d56d1a5f636422afdfb215ced909b946c369987d0009f7dbc6ed574664d95c",
+        "kdv/plot.py": "edea28bc7e5a273b5b8b334e05f872b2d7016fd458ee17bb14860c1d43e0c9f2",
+        "kdv/plotting.py": "62c401ee4f1cc779021f1cdec98a886822cc644e7b929e77d4d9ce8137c7f0f5",
+        "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf",
+        "mineral/evolve.py": "6dd3077e7ed5b86c8675b8896d0fb9f8b4d72f2ad1c1d0b80ed4463a93f4a199",
+        "mineral/explicit_reference.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+        "mineral/mineral_dedalus.py": "e76fb70fe1cddb562e5301ab40b3889ad13163f46ebe043b6d2e758ccb574f35",
+        "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+        "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+        "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+        "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+        "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+        "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+        "mineral/plot.py": "4da6dde8c5e02fb7684b716d4fc9021bd254f843f19683ac511621854e014054",
+        "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+        "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+        "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+        "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+        "photonic/photonic_intensity_boxes.py": "355430c122765728664d265a805ea6ed58b8de692726bb2ad832e6a829a191e0",
+        "photonic/photonic_pointwise_raster.cpp": "d76ee9b26d9dc6f6f1520a1714e8589a864035e19a01d0b4712e88559bcfaabd",
+        "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+        "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+        "photonic/plot.py": "2916951a31ca0665fa02a5049772491ddc3c67f919f1248fb767eed3e936faa8",
+        "photonic/plot_photonic_full_pointwise.py": "ac83466f516de4e1f26a6495417edafcbe828439790191b7c76b3597978b4974",
+        "photonic/plot_photonic_interior_figure.py": "79114f9fbbbd56e1dfaf8bcb6e082ca87113a7550cdb852f8333790d59c3c1a8",
+        "photonic/plot_photonic_pointwise_panel.py": "91882ab53652ad83421d7093cfa83aad7fdd73593e92ea760be6f4f9363a7917",
+        "photonic/plot_photonic_quantile_pair.py": "42eae46a72420a773b334308f21b5a2cd50973a5510512010fe92f2e28cf4558",
+        "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+        "rods/plot.py": "f570419fce89214bd44ba364124296f8f31b25fe70868a41a0b4ad15469bbfa9",
+        "rods/plotting.py": "c0afb463416b28f71eed678cc3367020d06e050047d212a4b8a5526d852e6e97",
+        "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+        "rods/transient.py": "aadadb46819a1d248e197ca4e4d1b56be61708a2255e0dbab27e50b9bde81df3",
+        "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd",
+        "scaling/benchmark.py": "85bcc2f6cd0bd6776e26e18c593bcf14dada63f6026888e2db0e3fa364a09f9b",
+        "scaling/explicit_reference.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+        "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d",
+        "scaling/plot.py": "5466009d2137cb784027b716ef7fd6e3047b1c9569266b72c8f30b4a387248df",
+        "verify_data.py": "20d1e07286f022023013d4ea8094dae7f397d7e1eeeedfa5eac92c9b73d29c36"
+      },
+      "previous_runs": [
+        {
+          "scope": "KdV rerun after the adjoint option rename. Seven previous successful standalone executions retained with their original library snapshot; 39 current focused regressions are recorded separately.",
+          "environment": {
+            "checked_at_utc": "2026-11-06T05:55:41.878359+00:00",
+            "python": "3.12.9",
+            "platform": "Linux-5.14.0-687.65.1.el9_8.x86_64-x86_64-with-glibc2.34",
+            "numpy": "2.2.4",
+            "scipy": "1.15.2",
+            "mpi4py": "4.0.1",
+            "dedalus_source": "dedalus/__init__.py",
+            "repository_head": "e6050873e952678d0d879764e12a4bd510835fc8",
+            "numerical_threads": 1,
+            "mpi_ranks": 1,
+            "mpi_transport": "ob1/self,tcp for local serial checks"
+          },
+          "checks": [
+            {
+              "script": "kdv/evolve.py",
+              "arguments": [],
+              "returncode": 0,
+              "wall_seconds": 2.065732281000237,
+              "metrics": {
+                "example": "KdV",
+                "edges": 18,
+                "modes": 24,
+                "steps": 3,
+                "time": 0.000375,
+                "mass_drift": 9.266116926488407e-16,
+                "constraint_max": 2.7657455319018975e-15,
+                "mass_balance_residual": -1.1461121282376765e-15,
+                "l2_balance_residual": 1.2848072905679273e-16
+              },
+              "checked_at_utc": "2026-11-06T05:55:41.878359+00:00",
+              "execution": "Rerun after naming the existing correction tau='adjoint'; numerical method unchanged",
+              "local_dependency_sha256": {
+                "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+                "kdv/evolve.py": "cba40f87639262a6ae2083ab4e17399303b4ff3bada9e0047b3164eab5264e17",
+                "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+                "kdv/model.py": "c5d56d1a5f636422afdfb215ced909b946c369987d0009f7dbc6ed574664d95c"
+              }
+            },
+            {
+              "script": "methods/beam.py",
+              "arguments": [],
+              "returncode": 0,
+              "wall_seconds": 1.613371638013632,
+              "metrics": {
+                "example": "beam methods listing",
+                "maximum_error": 1.1473044736476368e-12
+              },
+              "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+              "execution": "Historical standalone execution retained; local paper dependencies unchanged. The current library has the naming-only update checked by the separate 39-test regression receipt.",
+              "local_dependency_sha256": {
+                "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf"
+              },
+              "standalone_library_snapshot": "#/previous_runs/0/library_sha256"
+            },
+            {
+              "script": "mineral/evolve.py",
+              "arguments": [],
+              "returncode": 0,
+              "wall_seconds": 2.4174248579947744,
+              "metrics": {
+                "example": "mineral replacement",
+                "pores": 44,
+                "steps": 3,
+                "scaled_time": 0.006,
+                "water_residual": 6.608690068832274e-20,
+                "solute_defect": 1.6523241108679088e-16,
+                "algebraic_residual": 3.908188970884133e-15,
+                "inventory_defect": 1.3552527156068805e-20
+              },
+              "checked_at_utc": "2026-11-06T04:57:31.868261+00:00",
+              "execution": "Historical standalone execution retained; local paper dependencies unchanged. The current library has the naming-only update checked by the separate 39-test regression receipt.",
+              "local_dependency_sha256": {
+                "mineral/evolve.py": "6dd3077e7ed5b86c8675b8896d0fb9f8b4d72f2ad1c1d0b80ed4463a93f4a199",
+                "mineral/mineral_dedalus.py": "e76fb70fe1cddb562e5301ab40b3889ad13163f46ebe043b6d2e758ccb574f35",
+                "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+                "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+                "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+                "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+                "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+                "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9"
+              },
+              "standalone_library_snapshot": "#/previous_runs/0/library_sha256"
+            },
+            {
+              "script": "photonic/eigenmodes.py",
+              "arguments": [],
+              "returncode": 0,
+              "wall_seconds": 2.004403999002534,
+              "metrics": {
+                "example": "photonic resonances",
+                "edges": 5,
+                "k_real": 10.18159345887768,
+                "k_imag": -0.12541311786989146,
+                "delta_real": -0.49840654112231936,
+                "delta_imag": -0.07541311786989144,
+                "carrier_real": 10.68,
+                "carrier_imag": -0.05,
+                "pencil": 9.626934687716982e-15,
+                "continuity": 3.0302666127903583e-16,
+                "vertex": 6.152635301810137e-16,
+                "bond": 5.62526877673889e-16,
+                "differential": 8.013086468505413e-16,
+                "physical_interpolation": 2.2090077653674975e-15,
+                "integral_relative": 8.177075856630302e-16,
+                "I2": 0.1940975459504719,
+                "I4": 0.016931608491127258,
+                "Lpart": 2.2250607414964705,
+                "physical_quadrature_points": 112,
+                "envelope_coefficients": 16
+              },
+              "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+              "execution": "Historical standalone execution retained; local paper dependencies unchanged. The current library has the naming-only update checked by the separate 39-test regression receipt.",
+              "local_dependency_sha256": {
+                "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+                "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+                "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+                "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f"
+              },
+              "standalone_library_snapshot": "#/previous_runs/0/library_sha256"
+            },
+            {
+              "script": "photonic/eigenmodes.py",
+              "arguments": [
+                "--interval-check"
+              ],
+              "returncode": 0,
+              "wall_seconds": 3.309435449002194,
+              "metrics": {
+                "example": "photonic resonances",
+                "edges": 1,
+                "k_real": 10.681415022205297,
+                "k_imag": -0.05364793041447001,
+                "delta_real": 0.0014150222052977653,
+                "delta_imag": -0.0036479304144700045,
+                "carrier_real": 10.68,
+                "carrier_imag": -0.05,
+                "pencil": 2.0828799509180233e-13,
+                "continuity": 2.0562092347217614e-16,
+                "vertex": 3.2899347755548183e-16,
+                "bond": 9.794724146082095e-15,
+                "differential": 9.285223403253755e-17,
+                "physical_interpolation": 6.076820623274008e-14,
+                "integral_relative": 2.4776865358041223e-15,
+                "I2": 3.773726174927556,
+                "I4": 0.9409860036859613,
+                "Lpart": 15.134135032348544,
+                "physical_quadrature_points": 1632,
+                "envelope_coefficients": 16,
+                "analytic_eigenvalue_error": 0.0
+              },
+              "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+              "execution": "Historical standalone execution retained; local paper dependencies unchanged. The current library has the naming-only update checked by the separate 39-test regression receipt.",
+              "local_dependency_sha256": {
+                "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+                "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+                "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+                "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f"
+              },
+              "standalone_library_snapshot": "#/previous_runs/0/library_sha256"
+            },
+            {
+              "script": "rods/steady.py",
+              "arguments": [],
+              "returncode": 0,
+              "wall_seconds": 2.3832301079964964,
+              "metrics": {
+                "example": "steady rods",
+                "modes": 16,
+                "maximum_error": 7.771561172376096e-16
+              },
+              "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+              "execution": "Historical standalone execution retained; local paper dependencies unchanged. The current library has the naming-only update checked by the separate 39-test regression receipt.",
+              "local_dependency_sha256": {
+                "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+                "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0"
+              },
+              "standalone_library_snapshot": "#/previous_runs/0/library_sha256"
+            },
+            {
+              "script": "rods/transient.py",
+              "arguments": [],
+              "returncode": 0,
+              "wall_seconds": 3.0734618720016442,
+              "metrics": {
+                "example": "transient rods",
+                "steps": 3,
+                "time": 0.0234375,
+                "vertex_residual": 3.344763702117781e-17,
+                "heated_vertex": 0.0021948534039735006
+              },
+              "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+              "execution": "Historical standalone execution retained; local paper dependencies unchanged. The current library has the naming-only update checked by the separate 39-test regression receipt.",
+              "local_dependency_sha256": {
+                "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+                "rods/transient.py": "81b22cf3ddef847f6c26760d28e90056aa2caa11756a4dc66ecc82dd77d7b8cc"
+              },
+              "standalone_library_snapshot": "#/previous_runs/0/library_sha256"
+            },
+            {
+              "script": "scaling/benchmark.py",
+              "arguments": [],
+              "returncode": 0,
+              "wall_seconds": 2.7596104909898713,
+              "metrics": {
+                "example": "scaling equations",
+                "edges": 24,
+                "coefficients": 2048,
+                "ranks": 1,
+                "steps": 3,
+                "warmup": 1,
+                "maximum_error": 1.7747931613243395e-07,
+                "smoke_seconds": 0.045257923993631266
+              },
+              "checked_at_utc": "2026-11-06T04:57:34.627994+00:00",
+              "execution": "Historical standalone execution retained; local paper dependencies unchanged. The current library has the naming-only update checked by the separate 39-test regression receipt.",
+              "local_dependency_sha256": {
+                "scaling/benchmark.py": "77a216cf089af71085c83697db7d103fc14226523073997918067c2a9eb4c1fa",
+                "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d"
+              },
+              "standalone_library_snapshot": "#/previous_runs/0/library_sha256"
+            }
+          ],
+          "python_syntax_files": 28,
+          "local_imports": [
+            {
+              "source": "kdv/evolve.py",
+              "dependency": "kdv/model.py"
+            },
+            {
+              "source": "kdv/explicit_reference.py",
+              "dependency": "kdv/linear_solvers.py"
+            },
+            {
+              "source": "kdv/explicit_reference.py",
+              "dependency": "kdv/conditions.py"
+            },
+            {
+              "source": "kdv/explicit_reference.py",
+              "dependency": "kdv/linear_solvers.py"
+            },
+            {
+              "source": "kdv/model.py",
+              "dependency": "kdv/linear_solvers.py"
+            },
+            {
+              "source": "kdv/model.py",
+              "dependency": "kdv/conditions.py"
+            },
+            {
+              "source": "mineral/evolve.py",
+              "dependency": "mineral/mineral_reference.py"
+            },
+            {
+              "source": "mineral/evolve.py",
+              "dependency": "mineral/mineral_geometry.py"
+            },
+            {
+              "source": "mineral/evolve.py",
+              "dependency": "mineral/mineral_evolution.py"
+            },
+            {
+              "source": "mineral/evolve.py",
+              "dependency": "mineral/mineral_dedalus.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_lifecycle.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_lifecycle.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_mixing.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_lifecycle.py"
+            },
+            {
+              "source": "mineral/explicit_reference.py",
+              "dependency": "mineral/mineral_lifecycle.py"
+            },
+            {
+              "source": "mineral/mineral_dedalus.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/mineral_dedalus.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/mineral_dedalus.py",
+              "dependency": "mineral/mineral_lifecycle.py"
+            },
+            {
+              "source": "mineral/mineral_dedalus.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/mineral_dedalus.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/mineral_dedalus.py",
+              "dependency": "mineral/mineral_lifecycle.py"
+            },
+            {
+              "source": "mineral/mineral_dedalus.py",
+              "dependency": "mineral/mineral_lifecycle.py"
+            },
+            {
+              "source": "mineral/mineral_dedalus.py",
+              "dependency": "mineral/mineral_lifecycle.py"
+            },
+            {
+              "source": "mineral/mineral_reference.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/mineral_reference.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/mineral_reference.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "mineral/mineral_reference.py",
+              "dependency": "mineral/mineral_mixing.py"
+            },
+            {
+              "source": "mineral/mineral_reference.py",
+              "dependency": "mineral/mineral_topology.py"
+            },
+            {
+              "source": "photonic/carrier_reference.py",
+              "dependency": "photonic/photonic_dedalus.py"
+            },
+            {
+              "source": "photonic/carrier_reference.py",
+              "dependency": "photonic/photonic_reference.py"
+            },
+            {
+              "source": "photonic/eigenmodes.py",
+              "dependency": "photonic/photonic_reference.py"
+            },
+            {
+              "source": "photonic/eigenmodes.py",
+              "dependency": "photonic/photonic_carrier.py"
+            },
+            {
+              "source": "photonic/photonic_carrier.py",
+              "dependency": "photonic/photonic_dedalus.py"
+            },
+            {
+              "source": "photonic/photonic_carrier.py",
+              "dependency": "photonic/photonic_reference.py"
+            },
+            {
+              "source": "photonic/photonic_dedalus.py",
+              "dependency": "photonic/photonic_reference.py"
+            },
+            {
+              "source": "photonic/physical_reference.py",
+              "dependency": "photonic/photonic_reference.py"
+            },
+            {
+              "source": "rods/steady.py",
+              "dependency": "rods/inputs.py"
+            },
+            {
+              "source": "rods/transient.py",
+              "dependency": "rods/inputs.py"
+            },
+            {
+              "source": "rods/transient_reference.py",
+              "dependency": "rods/inputs.py"
+            },
+            {
+              "source": "scaling/benchmark.py",
+              "dependency": "scaling/inputs.py"
+            },
+            {
+              "source": "scaling/explicit_reference.py",
+              "dependency": "scaling/inputs.py"
+            }
+          ],
+          "source_map_sha256": "f4ea2ad67cf798953bba7cc269faa709c872e8147f7c5320514e2756357c02c8",
+          "review_python_sha256": {
+            "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+            "kdv/evolve.py": "cba40f87639262a6ae2083ab4e17399303b4ff3bada9e0047b3164eab5264e17",
+            "kdv/explicit_reference.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+            "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+            "kdv/model.py": "c5d56d1a5f636422afdfb215ced909b946c369987d0009f7dbc6ed574664d95c",
+            "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf",
+            "mineral/evolve.py": "6dd3077e7ed5b86c8675b8896d0fb9f8b4d72f2ad1c1d0b80ed4463a93f4a199",
+            "mineral/explicit_reference.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+            "mineral/mineral_dedalus.py": "e76fb70fe1cddb562e5301ab40b3889ad13163f46ebe043b6d2e758ccb574f35",
+            "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+            "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+            "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+            "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+            "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+            "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+            "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+            "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+            "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+            "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+            "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+            "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+            "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+            "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+            "rods/transient.py": "81b22cf3ddef847f6c26760d28e90056aa2caa11756a4dc66ecc82dd77d7b8cc",
+            "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd",
+            "scaling/benchmark.py": "77a216cf089af71085c83697db7d103fc14226523073997918067c2a9eb4c1fa",
+            "scaling/explicit_reference.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+            "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d"
+          },
+          "library_sha256": {
+            "dedalus/public.py": "7291fdeeb4824ea77041e7c1f1c0e3d89baa25a586ffd06cd071151f93e4e4ec",
+            "dedalus/core/arithmetic.py": "05bf2de5df0788a4b4d6741565b400fb2b2397fd03963ce69a7b8f3c4e167647",
+            "dedalus/core/basis.py": "273dfa8b4641320b58a062b5547ed833d93e525ad405930007ad047d8dc1cf50",
+            "dedalus/core/distributor.py": "5d397932a355b428b9df21af71d77de29d65b422a83ff2d08f6437b35b68cc6b",
+            "dedalus/core/evaluator.py": "735b11e24b369f0703aae3c15ec73fc2dfef817619688b7df29575b418066970",
+            "dedalus/core/field.py": "c557572e700c49926aab7a3d2e9dc26b5b1a7526f9cd4fcad8777cded636f1d3",
+            "dedalus/core/network.py": "7311401061970f427c2c1f94586a3b4ae93d7d6e518dd5c913aa1d05c1525ade",
+            "dedalus/core/network_calculus.py": "e221049a08804fc47598633b3b40841fcbb05ac4eaab584d1a48fc0e545f3eaa",
+            "dedalus/core/network_operators.py": "cba80ba48b0327b8d2bec958e6fe415dfb2e7ce001d77046af443079194c6e56",
+            "dedalus/core/operators.py": "93170d31206cf0029ca86e19297b6ab8a990f0231822f31966ee90a8e7598821",
+            "dedalus/core/problems.py": "d2a7be9d68abe9d2dbba74ed264943f7bf1c00691bb5c4fe99d4a79ff298c075",
+            "dedalus/core/solvers.py": "6d391bb4ed5cabbb882c06f6e12b4039a5aa933a678442e2f539041f9fca908f",
+            "dedalus/core/subsystems.py": "02897488fc2a2602c3c035e194501910ebbaaf0248207abcd951ea2e3d6fd459",
+            "dedalus/core/timesteppers.py": "6330b20d8b844a1c04af192b41e91b940b6c3deca711195f295d4c6e2014c6b7",
+            "dedalus/core/network_galerkin.py": "bb35c1aaa7718c03a76b84f58ffbaeedc2677256c2be319eb305d26f2a562206"
+          },
+          "limitations": [
+            "Single process only.",
+            "No clean-environment installation tested.",
+            "Original paper data, figures and scientific provenance are retained separately."
+          ],
+          "repaired_during_checks": "Naming-only update: tau='adjoint' selects the existing implementation; tau='galerkin' remains an alias. No numerical-method changes.",
+          "native_kdv_translation_checks": "kdv-native-checks.json",
+          "native_application_translation_checks": "native-interface-checks.json",
+          "previous_runs": [
+            {
+              "scope": "Two revised examples rerun; six unchanged successful executions retained after dependency and library hash verification. All checks are small and serial.",
+              "environment": {
+                "checked_at_utc": "2026-11-06T04:57:34.631445+00:00",
+                "python": "3.12.9",
+                "platform": "Linux-5.14.0-687.65.1.el9_8.x86_64-x86_64-with-glibc2.34",
+                "numpy": "2.2.4",
+                "scipy": "1.15.2",
+                "mpi4py": "4.0.1",
+                "dedalus_source": "dedalus/__init__.py",
+                "repository_head": "e6050873e952678d0d879764e12a4bd510835fc8",
+                "numerical_threads": 1,
+                "mpi_ranks": 1,
+                "mpi_transport": "ob1/self,tcp for local serial checks"
+              },
+              "checks": [
+                {
+                  "script": "kdv/evolve.py",
+                  "arguments": [],
+                  "returncode": 0,
+                  "wall_seconds": 3.7304785379965324,
+                  "metrics": {
+                    "example": "KdV",
+                    "edges": 18,
+                    "modes": 24,
+                    "steps": 3,
+                    "time": 0.000375,
+                    "mass_drift": 9.266116926488407e-16,
+                    "constraint_max": 2.7657455319018975e-15,
+                    "mass_balance_residual": -1.1461121282376765e-15,
+                    "l2_balance_residual": 1.2848072905679273e-16
+                  },
+                  "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+                  "execution": "Previous successful execution retained; all local dependency and shared-library hashes unchanged",
+                  "local_dependency_sha256": {
+                    "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+                    "kdv/evolve.py": "5d04fce74765553f57ba54e280a24f6a6fb214a089cbcba35a55b84833f751c2",
+                    "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+                    "kdv/model.py": "35edfd94cf0450ca26a3ac14fb74ca05537aa1c7d7da089bd5fd7e3d32021c79"
+                  }
+                },
+                {
+                  "script": "methods/beam.py",
+                  "arguments": [],
+                  "returncode": 0,
+                  "wall_seconds": 1.613371638013632,
+                  "metrics": {
+                    "example": "beam methods listing",
+                    "maximum_error": 1.1473044736476368e-12
+                  },
+                  "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+                  "execution": "Previous successful execution retained; all local dependency and shared-library hashes unchanged",
+                  "local_dependency_sha256": {
+                    "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf"
+                  }
+                },
+                {
+                  "script": "mineral/evolve.py",
+                  "arguments": [],
+                  "returncode": 0,
+                  "wall_seconds": 2.4174248579947744,
+                  "metrics": {
+                    "example": "mineral replacement",
+                    "pores": 44,
+                    "steps": 3,
+                    "scaled_time": 0.006,
+                    "water_residual": 6.608690068832274e-20,
+                    "solute_defect": 1.6523241108679088e-16,
+                    "algebraic_residual": 3.908188970884133e-15,
+                    "inventory_defect": 1.3552527156068805e-20
+                  },
+                  "checked_at_utc": "2026-11-06T04:57:31.868261+00:00",
+                  "execution": "Rerun after the readability changes",
+                  "local_dependency_sha256": {
+                    "mineral/evolve.py": "6dd3077e7ed5b86c8675b8896d0fb9f8b4d72f2ad1c1d0b80ed4463a93f4a199",
+                    "mineral/mineral_dedalus.py": "e76fb70fe1cddb562e5301ab40b3889ad13163f46ebe043b6d2e758ccb574f35",
+                    "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+                    "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+                    "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+                    "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+                    "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+                    "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9"
+                  }
+                },
+                {
+                  "script": "photonic/eigenmodes.py",
+                  "arguments": [],
+                  "returncode": 0,
+                  "wall_seconds": 2.004403999002534,
+                  "metrics": {
+                    "example": "photonic resonances",
+                    "edges": 5,
+                    "k_real": 10.18159345887768,
+                    "k_imag": -0.12541311786989146,
+                    "delta_real": -0.49840654112231936,
+                    "delta_imag": -0.07541311786989144,
+                    "carrier_real": 10.68,
+                    "carrier_imag": -0.05,
+                    "pencil": 9.626934687716982e-15,
+                    "continuity": 3.0302666127903583e-16,
+                    "vertex": 6.152635301810137e-16,
+                    "bond": 5.62526877673889e-16,
+                    "differential": 8.013086468505413e-16,
+                    "physical_interpolation": 2.2090077653674975e-15,
+                    "integral_relative": 8.177075856630302e-16,
+                    "I2": 0.1940975459504719,
+                    "I4": 0.016931608491127258,
+                    "Lpart": 2.2250607414964705,
+                    "physical_quadrature_points": 112,
+                    "envelope_coefficients": 16
+                  },
+                  "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+                  "execution": "Previous successful execution retained; all local dependency and shared-library hashes unchanged",
+                  "local_dependency_sha256": {
+                    "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+                    "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+                    "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+                    "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f"
+                  }
+                },
+                {
+                  "script": "photonic/eigenmodes.py",
+                  "arguments": [
+                    "--interval-check"
+                  ],
+                  "returncode": 0,
+                  "wall_seconds": 3.309435449002194,
+                  "metrics": {
+                    "example": "photonic resonances",
+                    "edges": 1,
+                    "k_real": 10.681415022205297,
+                    "k_imag": -0.05364793041447001,
+                    "delta_real": 0.0014150222052977653,
+                    "delta_imag": -0.0036479304144700045,
+                    "carrier_real": 10.68,
+                    "carrier_imag": -0.05,
+                    "pencil": 2.0828799509180233e-13,
+                    "continuity": 2.0562092347217614e-16,
+                    "vertex": 3.2899347755548183e-16,
+                    "bond": 9.794724146082095e-15,
+                    "differential": 9.285223403253755e-17,
+                    "physical_interpolation": 6.076820623274008e-14,
+                    "integral_relative": 2.4776865358041223e-15,
+                    "I2": 3.773726174927556,
+                    "I4": 0.9409860036859613,
+                    "Lpart": 15.134135032348544,
+                    "physical_quadrature_points": 1632,
+                    "envelope_coefficients": 16,
+                    "analytic_eigenvalue_error": 0.0
+                  },
+                  "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+                  "execution": "Previous successful execution retained; all local dependency and shared-library hashes unchanged",
+                  "local_dependency_sha256": {
+                    "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+                    "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+                    "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+                    "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f"
+                  }
+                },
+                {
+                  "script": "rods/steady.py",
+                  "arguments": [],
+                  "returncode": 0,
+                  "wall_seconds": 2.3832301079964964,
+                  "metrics": {
+                    "example": "steady rods",
+                    "modes": 16,
+                    "maximum_error": 7.771561172376096e-16
+                  },
+                  "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+                  "execution": "Previous successful execution retained; all local dependency and shared-library hashes unchanged",
+                  "local_dependency_sha256": {
+                    "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+                    "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0"
+                  }
+                },
+                {
+                  "script": "rods/transient.py",
+                  "arguments": [],
+                  "returncode": 0,
+                  "wall_seconds": 3.0734618720016442,
+                  "metrics": {
+                    "example": "transient rods",
+                    "steps": 3,
+                    "time": 0.0234375,
+                    "vertex_residual": 3.344763702117781e-17,
+                    "heated_vertex": 0.0021948534039735006
+                  },
+                  "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+                  "execution": "Previous successful execution retained; all local dependency and shared-library hashes unchanged",
+                  "local_dependency_sha256": {
+                    "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+                    "rods/transient.py": "81b22cf3ddef847f6c26760d28e90056aa2caa11756a4dc66ecc82dd77d7b8cc"
+                  }
+                },
+                {
+                  "script": "scaling/benchmark.py",
+                  "arguments": [],
+                  "returncode": 0,
+                  "wall_seconds": 2.7596104909898713,
+                  "metrics": {
+                    "example": "scaling equations",
+                    "edges": 24,
+                    "coefficients": 2048,
+                    "ranks": 1,
+                    "steps": 3,
+                    "warmup": 1,
+                    "maximum_error": 1.7747931613243395e-07,
+                    "smoke_seconds": 0.045257923993631266
+                  },
+                  "checked_at_utc": "2026-11-06T04:57:34.627994+00:00",
+                  "execution": "Rerun after the readability changes",
+                  "local_dependency_sha256": {
+                    "scaling/benchmark.py": "77a216cf089af71085c83697db7d103fc14226523073997918067c2a9eb4c1fa",
+                    "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d"
+                  }
+                }
+              ],
+              "python_syntax_files": 28,
+              "local_imports": [
+                {
+                  "source": "kdv/evolve.py",
+                  "dependency": "kdv/model.py"
+                },
+                {
+                  "source": "kdv/explicit_reference.py",
+                  "dependency": "kdv/linear_solvers.py"
+                },
+                {
+                  "source": "kdv/explicit_reference.py",
+                  "dependency": "kdv/conditions.py"
+                },
+                {
+                  "source": "kdv/explicit_reference.py",
+                  "dependency": "kdv/linear_solvers.py"
+                },
+                {
+                  "source": "kdv/model.py",
+                  "dependency": "kdv/linear_solvers.py"
+                },
+                {
+                  "source": "kdv/model.py",
+                  "dependency": "kdv/conditions.py"
+                },
+                {
+                  "source": "mineral/evolve.py",
+                  "dependency": "mineral/mineral_reference.py"
+                },
+                {
+                  "source": "mineral/evolve.py",
+                  "dependency": "mineral/mineral_geometry.py"
+                },
+                {
+                  "source": "mineral/evolve.py",
+                  "dependency": "mineral/mineral_evolution.py"
+                },
+                {
+                  "source": "mineral/evolve.py",
+                  "dependency": "mineral/mineral_dedalus.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_lifecycle.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_lifecycle.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_mixing.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_lifecycle.py"
+                },
+                {
+                  "source": "mineral/explicit_reference.py",
+                  "dependency": "mineral/mineral_lifecycle.py"
+                },
+                {
+                  "source": "mineral/mineral_dedalus.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/mineral_dedalus.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/mineral_dedalus.py",
+                  "dependency": "mineral/mineral_lifecycle.py"
+                },
+                {
+                  "source": "mineral/mineral_dedalus.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/mineral_dedalus.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/mineral_dedalus.py",
+                  "dependency": "mineral/mineral_lifecycle.py"
+                },
+                {
+                  "source": "mineral/mineral_dedalus.py",
+                  "dependency": "mineral/mineral_lifecycle.py"
+                },
+                {
+                  "source": "mineral/mineral_dedalus.py",
+                  "dependency": "mineral/mineral_lifecycle.py"
+                },
+                {
+                  "source": "mineral/mineral_reference.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/mineral_reference.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/mineral_reference.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "mineral/mineral_reference.py",
+                  "dependency": "mineral/mineral_mixing.py"
+                },
+                {
+                  "source": "mineral/mineral_reference.py",
+                  "dependency": "mineral/mineral_topology.py"
+                },
+                {
+                  "source": "photonic/carrier_reference.py",
+                  "dependency": "photonic/photonic_dedalus.py"
+                },
+                {
+                  "source": "photonic/carrier_reference.py",
+                  "dependency": "photonic/photonic_reference.py"
+                },
+                {
+                  "source": "photonic/eigenmodes.py",
+                  "dependency": "photonic/photonic_reference.py"
+                },
+                {
+                  "source": "photonic/eigenmodes.py",
+                  "dependency": "photonic/photonic_carrier.py"
+                },
+                {
+                  "source": "photonic/photonic_carrier.py",
+                  "dependency": "photonic/photonic_dedalus.py"
+                },
+                {
+                  "source": "photonic/photonic_carrier.py",
+                  "dependency": "photonic/photonic_reference.py"
+                },
+                {
+                  "source": "photonic/photonic_dedalus.py",
+                  "dependency": "photonic/photonic_reference.py"
+                },
+                {
+                  "source": "photonic/physical_reference.py",
+                  "dependency": "photonic/photonic_reference.py"
+                },
+                {
+                  "source": "rods/steady.py",
+                  "dependency": "rods/inputs.py"
+                },
+                {
+                  "source": "rods/transient.py",
+                  "dependency": "rods/inputs.py"
+                },
+                {
+                  "source": "rods/transient_reference.py",
+                  "dependency": "rods/inputs.py"
+                },
+                {
+                  "source": "scaling/benchmark.py",
+                  "dependency": "scaling/inputs.py"
+                },
+                {
+                  "source": "scaling/explicit_reference.py",
+                  "dependency": "scaling/inputs.py"
+                }
+              ],
+              "source_map_sha256": "adde50ccd2424e9f0a2a14b8809e7c38dbec40187e66ee173ef18a005d5418c1",
+              "review_python_sha256": {
+                "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+                "kdv/evolve.py": "5d04fce74765553f57ba54e280a24f6a6fb214a089cbcba35a55b84833f751c2",
+                "kdv/explicit_reference.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+                "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+                "kdv/model.py": "35edfd94cf0450ca26a3ac14fb74ca05537aa1c7d7da089bd5fd7e3d32021c79",
+                "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf",
+                "mineral/evolve.py": "6dd3077e7ed5b86c8675b8896d0fb9f8b4d72f2ad1c1d0b80ed4463a93f4a199",
+                "mineral/explicit_reference.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+                "mineral/mineral_dedalus.py": "e76fb70fe1cddb562e5301ab40b3889ad13163f46ebe043b6d2e758ccb574f35",
+                "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+                "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+                "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+                "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+                "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+                "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+                "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+                "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+                "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+                "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+                "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+                "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+                "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+                "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+                "rods/transient.py": "81b22cf3ddef847f6c26760d28e90056aa2caa11756a4dc66ecc82dd77d7b8cc",
+                "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd",
+                "scaling/benchmark.py": "77a216cf089af71085c83697db7d103fc14226523073997918067c2a9eb4c1fa",
+                "scaling/explicit_reference.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+                "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d"
+              },
+              "library_sha256": {
+                "dedalus/public.py": "7291fdeeb4824ea77041e7c1f1c0e3d89baa25a586ffd06cd071151f93e4e4ec",
+                "dedalus/core/arithmetic.py": "05bf2de5df0788a4b4d6741565b400fb2b2397fd03963ce69a7b8f3c4e167647",
+                "dedalus/core/basis.py": "273dfa8b4641320b58a062b5547ed833d93e525ad405930007ad047d8dc1cf50",
+                "dedalus/core/distributor.py": "5d397932a355b428b9df21af71d77de29d65b422a83ff2d08f6437b35b68cc6b",
+                "dedalus/core/evaluator.py": "735b11e24b369f0703aae3c15ec73fc2dfef817619688b7df29575b418066970",
+                "dedalus/core/field.py": "c557572e700c49926aab7a3d2e9dc26b5b1a7526f9cd4fcad8777cded636f1d3",
+                "dedalus/core/network.py": "7311401061970f427c2c1f94586a3b4ae93d7d6e518dd5c913aa1d05c1525ade",
+                "dedalus/core/network_calculus.py": "e221049a08804fc47598633b3b40841fcbb05ac4eaab584d1a48fc0e545f3eaa",
+                "dedalus/core/network_operators.py": "cba80ba48b0327b8d2bec958e6fe415dfb2e7ce001d77046af443079194c6e56",
+                "dedalus/core/operators.py": "93170d31206cf0029ca86e19297b6ab8a990f0231822f31966ee90a8e7598821",
+                "dedalus/core/problems.py": "77bf4baef2456680170d5038d25a27ba62503e8217f8843b200b3e6c96ef9334",
+                "dedalus/core/solvers.py": "6d391bb4ed5cabbb882c06f6e12b4039a5aa933a678442e2f539041f9fca908f",
+                "dedalus/core/subsystems.py": "02897488fc2a2602c3c035e194501910ebbaaf0248207abcd951ea2e3d6fd459",
+                "dedalus/core/timesteppers.py": "6330b20d8b844a1c04af192b41e91b940b6c3deca711195f295d4c6e2014c6b7",
+                "dedalus/core/network_galerkin.py": "1e9cf1ee9c382cff7f7245c1e58e1e79f65118fa0c220aa1a536b41852bf4b29"
+              },
+              "limitations": [
+                "Single process only.",
+                "No clean-environment installation tested.",
+                "Original paper data, figures and scientific provenance are retained separately."
+              ],
+              "repaired_during_checks": "Readability-only changes to scaling and mineral transport; no shared-library edits.",
+              "native_kdv_translation_checks": "kdv-native-checks.json",
+              "native_application_translation_checks": "native-interface-checks.json",
+              "previous_runs": [
+                {
+                  "scope": "Eight small serial execution checks.",
+                  "environment": {
+                    "checked_at_utc": "2026-11-06T02:19:50.853067+00:00",
+                    "python": "3.12.9",
+                    "platform": "Linux-5.14.0-687.65.1.el9_8.x86_64-x86_64-with-glibc2.34",
+                    "numpy": "2.2.4",
+                    "scipy": "1.15.2",
+                    "mpi4py": "4.0.1",
+                    "dedalus_source": "dedalus/__init__.py",
+                    "repository_head": "e6050873e952678d0d879764e12a4bd510835fc8",
+                    "numerical_threads": 1,
+                    "mpi_ranks": 1,
+                    "mpi_transport": "ob1/self,tcp for local serial checks"
+                  },
+                  "checks": [
+                    {
+                      "script": "kdv/evolve.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 4.155401747993892,
+                      "metrics": {
+                        "example": "KdV",
+                        "edges": 18,
+                        "modes": 24,
+                        "steps": 3,
+                        "time": 0.000375,
+                        "mass_drift": 9.266116926488407e-16,
+                        "constraint_max": 4.9823409693739926e-15,
+                        "mass_balance_residual": 5.130229745591041e-15,
+                        "l2_balance_residual": 3.5053240328778905e-16
+                      }
+                    },
+                    {
+                      "script": "methods/beam.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 1.4638074999966193,
+                      "metrics": {
+                        "example": "beam methods listing",
+                        "maximum_error": 1.1473044736476368e-12
+                      }
+                    },
+                    {
+                      "script": "mineral/evolve.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 1.877703995007323,
+                      "metrics": {
+                        "example": "mineral replacement",
+                        "pores": 44,
+                        "steps": 3,
+                        "scaled_time": 0.006,
+                        "water_residual": 6.590289160835668e-20,
+                        "solute_defect": 1.6523241108679088e-16,
+                        "algebraic_residual": 2.5337640064644967e-15,
+                        "inventory_defect": 1.3552527156068805e-20
+                      }
+                    },
+                    {
+                      "script": "photonic/eigenmodes.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 2.8024799220002024,
+                      "metrics": {
+                        "example": "photonic resonances",
+                        "edges": 5,
+                        "k_real": 10.18159345887768,
+                        "k_imag": -0.12541311786989146,
+                        "delta_real": -0.49840654112231936,
+                        "delta_imag": -0.07541311786989144,
+                        "carrier_real": 10.68,
+                        "carrier_imag": -0.05,
+                        "pencil": 9.626934687716982e-15,
+                        "continuity": 3.0302666127903583e-16,
+                        "vertex": 6.152635301810137e-16,
+                        "bond": 5.62526877673889e-16,
+                        "differential": 8.013086468505413e-16,
+                        "physical_interpolation": 2.2090077653674975e-15,
+                        "integral_relative": 8.177075856630302e-16,
+                        "I2": 0.1940975459504719,
+                        "I4": 0.016931608491127258,
+                        "Lpart": 2.2250607414964705,
+                        "physical_quadrature_points": 112,
+                        "envelope_coefficients": 16
+                      }
+                    },
+                    {
+                      "script": "photonic/eigenmodes.py",
+                      "arguments": [
+                        "--interval-check"
+                      ],
+                      "returncode": 0,
+                      "wall_seconds": 1.8565356170001905,
+                      "metrics": {
+                        "example": "photonic resonances",
+                        "edges": 1,
+                        "k_real": 10.681415022205297,
+                        "k_imag": -0.05364793041447001,
+                        "delta_real": 0.0014150222052977653,
+                        "delta_imag": -0.0036479304144700045,
+                        "carrier_real": 10.68,
+                        "carrier_imag": -0.05,
+                        "pencil": 2.0828799509180233e-13,
+                        "continuity": 2.0562092347217614e-16,
+                        "vertex": 3.2899347755548183e-16,
+                        "bond": 9.794724146082095e-15,
+                        "differential": 9.285223403253755e-17,
+                        "physical_interpolation": 6.076820623274008e-14,
+                        "integral_relative": 2.4776865358041223e-15,
+                        "I2": 3.773726174927556,
+                        "I4": 0.9409860036859613,
+                        "Lpart": 15.134135032348544,
+                        "physical_quadrature_points": 1632,
+                        "envelope_coefficients": 16,
+                        "analytic_eigenvalue_error": 0.0
+                      }
+                    },
+                    {
+                      "script": "rods/steady.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 11.4839012829907,
+                      "metrics": {
+                        "example": "steady rods",
+                        "modes": 16,
+                        "maximum_error": 7.771561172376096e-16
+                      }
+                    },
+                    {
+                      "script": "rods/transient.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 4.673945353992167,
+                      "metrics": {
+                        "example": "transient rods",
+                        "steps": 3,
+                        "time": 0.0234375,
+                        "vertex_residual": 2.4774019641293776e-17,
+                        "heated_vertex": 0.0021948534039735006
+                      }
+                    },
+                    {
+                      "script": "scaling/benchmark.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 6.690114452998387,
+                      "metrics": {
+                        "example": "scaling equations",
+                        "edges": 24,
+                        "coefficients": 2048,
+                        "ranks": 1,
+                        "steps": 3,
+                        "warmup": 1,
+                        "maximum_error": 1.7747931568834474e-07,
+                        "smoke_seconds": 0.19913663700572215
+                      }
+                    }
+                  ],
+                  "python_syntax_files": 22,
+                  "local_imports": [
+                    {
+                      "source": "kdv/evolve.py",
+                      "dependency": "kdv/model.py"
+                    },
+                    {
+                      "source": "kdv/model.py",
+                      "dependency": "kdv/conditions.py"
+                    },
+                    {
+                      "source": "kdv/model.py",
+                      "dependency": "kdv/linear_solvers.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_dedalus.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_evolution.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_geometry.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_reference.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_mixing.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_mixing.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "photonic/eigenmodes.py",
+                      "dependency": "photonic/photonic_carrier.py"
+                    },
+                    {
+                      "source": "photonic/eigenmodes.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "photonic/photonic_carrier.py",
+                      "dependency": "photonic/photonic_dedalus.py"
+                    },
+                    {
+                      "source": "photonic/photonic_carrier.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "photonic/photonic_dedalus.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "rods/steady.py",
+                      "dependency": "rods/inputs.py"
+                    },
+                    {
+                      "source": "rods/transient.py",
+                      "dependency": "rods/inputs.py"
+                    },
+                    {
+                      "source": "scaling/benchmark.py",
+                      "dependency": "scaling/inputs.py"
+                    }
+                  ],
+                  "source_map_sha256": "d8ca7afcf0a27f22fa0315f9483237a815e26097e2db834a2386800e928519ed",
+                  "review_python_sha256": {
+                    "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+                    "kdv/evolve.py": "95c6f4b4b984f14107fc495c51db40b8d47301a8f82f8bf3a61265e0cc0c5d19",
+                    "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+                    "kdv/model.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+                    "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf",
+                    "mineral/evolve.py": "4c3b40914b7f193c681001fab1f92e3550524edaf0d0d8810113264afd88e831",
+                    "mineral/mineral_dedalus.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+                    "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+                    "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+                    "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+                    "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+                    "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+                    "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+                    "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+                    "photonic/photonic_carrier.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+                    "photonic/photonic_dedalus.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+                    "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+                    "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+                    "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+                    "rods/transient.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd",
+                    "scaling/benchmark.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+                    "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d"
+                  },
+                  "library_sha256": {
+                    "dedalus/public.py": "7291fdeeb4824ea77041e7c1f1c0e3d89baa25a586ffd06cd071151f93e4e4ec",
+                    "dedalus/core/arithmetic.py": "05bf2de5df0788a4b4d6741565b400fb2b2397fd03963ce69a7b8f3c4e167647",
+                    "dedalus/core/basis.py": "eeb2490c60027613f8943811acedc53739ab04f51e5240f184ae834662fc7585",
+                    "dedalus/core/distributor.py": "f1d0a3b0d8127e19db0c9ff1b1e6f5ab331f18764d9663499a4f2c2d9a4462e4",
+                    "dedalus/core/evaluator.py": "735b11e24b369f0703aae3c15ec73fc2dfef817619688b7df29575b418066970",
+                    "dedalus/core/field.py": "dd1de05b137979767b10a6902d12be558b1a88dbce4a1e1f04ff5114fae9ccba",
+                    "dedalus/core/network.py": "7311401061970f427c2c1f94586a3b4ae93d7d6e518dd5c913aa1d05c1525ade",
+                    "dedalus/core/network_calculus.py": "e221049a08804fc47598633b3b40841fcbb05ac4eaab584d1a48fc0e545f3eaa",
+                    "dedalus/core/network_operators.py": "792b294b7146469df5ca7f47f33d80d9931e4c81adce54b30f9e64e0c827731f",
+                    "dedalus/core/operators.py": "93170d31206cf0029ca86e19297b6ab8a990f0231822f31966ee90a8e7598821",
+                    "dedalus/core/problems.py": "efc30062aca16b6a9cc9d7b552f997a8a4c3cbe2635b2d0960da52de0dca5ad7",
+                    "dedalus/core/solvers.py": "6d391bb4ed5cabbb882c06f6e12b4039a5aa933a678442e2f539041f9fca908f",
+                    "dedalus/core/subsystems.py": "02897488fc2a2602c3c035e194501910ebbaaf0248207abcd951ea2e3d6fd459",
+                    "dedalus/core/timesteppers.py": "6330b20d8b844a1c04af192b41e91b940b6c3deca711195f295d4c6e2014c6b7"
+                  },
+                  "limitations": [
+                    "Single process only.",
+                    "No clean-environment installation tested.",
+                    "Original paper data, figures and scientific provenance are retained separately."
+                  ],
+                  "repaired_during_checks": "Unqualified endpoint(v) on heterogeneous basis buckets selected absent vertices. Both affected scripts now select each bucket's incident vertices explicitly; their repeated runs passed."
+                },
+                {
+                  "scope": "Eight small serial execution checks.",
+                  "environment": {
+                    "checked_at_utc": "2026-11-06T03:24:24.124575+00:00",
+                    "python": "3.12.9",
+                    "platform": "Linux-5.14.0-687.65.1.el9_8.x86_64-x86_64-with-glibc2.34",
+                    "numpy": "2.2.4",
+                    "scipy": "1.15.2",
+                    "mpi4py": "4.0.1",
+                    "dedalus_source": "dedalus/__init__.py",
+                    "repository_head": "e6050873e952678d0d879764e12a4bd510835fc8",
+                    "numerical_threads": 1,
+                    "mpi_ranks": 1,
+                    "mpi_transport": "ob1/self,tcp for local serial checks"
+                  },
+                  "checks": [
+                    {
+                      "script": "kdv/evolve.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 3.279282275994774,
+                      "metrics": {
+                        "example": "KdV",
+                        "edges": 18,
+                        "modes": 24,
+                        "steps": 3,
+                        "time": 0.000375,
+                        "mass_drift": 9.266116926488407e-16,
+                        "constraint_max": 2.7657455319018975e-15,
+                        "mass_balance_residual": -1.1461121282376765e-15,
+                        "l2_balance_residual": 1.2848072905679273e-16
+                      }
+                    },
+                    {
+                      "script": "methods/beam.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 1.9224793979956303,
+                      "metrics": {
+                        "example": "beam methods listing",
+                        "maximum_error": 1.1473044736476368e-12
+                      }
+                    },
+                    {
+                      "script": "mineral/evolve.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 2.894438438001089,
+                      "metrics": {
+                        "example": "mineral replacement",
+                        "pores": 44,
+                        "steps": 3,
+                        "scaled_time": 0.006,
+                        "water_residual": 6.590289160835668e-20,
+                        "solute_defect": 1.6523241108679088e-16,
+                        "algebraic_residual": 2.5337640064644967e-15,
+                        "inventory_defect": 1.3552527156068805e-20
+                      }
+                    },
+                    {
+                      "script": "photonic/eigenmodes.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 2.4758332159981364,
+                      "metrics": {
+                        "example": "photonic resonances",
+                        "edges": 5,
+                        "k_real": 10.18159345887768,
+                        "k_imag": -0.12541311786989146,
+                        "delta_real": -0.49840654112231936,
+                        "delta_imag": -0.07541311786989144,
+                        "carrier_real": 10.68,
+                        "carrier_imag": -0.05,
+                        "pencil": 9.626934687716982e-15,
+                        "continuity": 3.0302666127903583e-16,
+                        "vertex": 6.152635301810137e-16,
+                        "bond": 5.62526877673889e-16,
+                        "differential": 8.013086468505413e-16,
+                        "physical_interpolation": 2.2090077653674975e-15,
+                        "integral_relative": 8.177075856630302e-16,
+                        "I2": 0.1940975459504719,
+                        "I4": 0.016931608491127258,
+                        "Lpart": 2.2250607414964705,
+                        "physical_quadrature_points": 112,
+                        "envelope_coefficients": 16
+                      }
+                    },
+                    {
+                      "script": "photonic/eigenmodes.py",
+                      "arguments": [
+                        "--interval-check"
+                      ],
+                      "returncode": 0,
+                      "wall_seconds": 1.5404484899918316,
+                      "metrics": {
+                        "example": "photonic resonances",
+                        "edges": 1,
+                        "k_real": 10.681415022205297,
+                        "k_imag": -0.05364793041447001,
+                        "delta_real": 0.0014150222052977653,
+                        "delta_imag": -0.0036479304144700045,
+                        "carrier_real": 10.68,
+                        "carrier_imag": -0.05,
+                        "pencil": 2.0828799509180233e-13,
+                        "continuity": 2.0562092347217614e-16,
+                        "vertex": 3.2899347755548183e-16,
+                        "bond": 9.794724146082095e-15,
+                        "differential": 9.285223403253755e-17,
+                        "physical_interpolation": 6.076820623274008e-14,
+                        "integral_relative": 2.4776865358041223e-15,
+                        "I2": 3.773726174927556,
+                        "I4": 0.9409860036859613,
+                        "Lpart": 15.134135032348544,
+                        "physical_quadrature_points": 1632,
+                        "envelope_coefficients": 16,
+                        "analytic_eigenvalue_error": 0.0
+                      }
+                    },
+                    {
+                      "script": "rods/steady.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 1.4858401739911642,
+                      "metrics": {
+                        "example": "steady rods",
+                        "modes": 16,
+                        "maximum_error": 7.771561172376096e-16
+                      }
+                    },
+                    {
+                      "script": "rods/transient.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 2.929053407002357,
+                      "metrics": {
+                        "example": "transient rods",
+                        "steps": 3,
+                        "time": 0.0234375,
+                        "vertex_residual": 2.4774019641293776e-17,
+                        "heated_vertex": 0.0021948534039735006
+                      }
+                    },
+                    {
+                      "script": "scaling/benchmark.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 3.8451868679985637,
+                      "metrics": {
+                        "example": "scaling equations",
+                        "edges": 24,
+                        "coefficients": 2048,
+                        "ranks": 1,
+                        "steps": 3,
+                        "warmup": 1,
+                        "maximum_error": 1.7747931591038935e-07,
+                        "smoke_seconds": 0.09379396900476422
+                      }
+                    }
+                  ],
+                  "python_syntax_files": 23,
+                  "local_imports": [
+                    {
+                      "source": "kdv/evolve.py",
+                      "dependency": "kdv/model.py"
+                    },
+                    {
+                      "source": "kdv/explicit_reference.py",
+                      "dependency": "kdv/conditions.py"
+                    },
+                    {
+                      "source": "kdv/explicit_reference.py",
+                      "dependency": "kdv/linear_solvers.py"
+                    },
+                    {
+                      "source": "kdv/explicit_reference.py",
+                      "dependency": "kdv/linear_solvers.py"
+                    },
+                    {
+                      "source": "kdv/model.py",
+                      "dependency": "kdv/conditions.py"
+                    },
+                    {
+                      "source": "kdv/model.py",
+                      "dependency": "kdv/linear_solvers.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_dedalus.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_evolution.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_geometry.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_reference.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_mixing.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_mixing.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "photonic/eigenmodes.py",
+                      "dependency": "photonic/photonic_carrier.py"
+                    },
+                    {
+                      "source": "photonic/eigenmodes.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "photonic/photonic_carrier.py",
+                      "dependency": "photonic/photonic_dedalus.py"
+                    },
+                    {
+                      "source": "photonic/photonic_carrier.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "photonic/photonic_dedalus.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "rods/steady.py",
+                      "dependency": "rods/inputs.py"
+                    },
+                    {
+                      "source": "rods/transient.py",
+                      "dependency": "rods/inputs.py"
+                    },
+                    {
+                      "source": "scaling/benchmark.py",
+                      "dependency": "scaling/inputs.py"
+                    }
+                  ],
+                  "source_map_sha256": "080e13571713a1a92e1047bbe5da9a6cb28a1ca471c5896c6edeeb5390acccf4",
+                  "review_python_sha256": {
+                    "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+                    "kdv/evolve.py": "5d04fce74765553f57ba54e280a24f6a6fb214a089cbcba35a55b84833f751c2",
+                    "kdv/explicit_reference.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+                    "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+                    "kdv/model.py": "35edfd94cf0450ca26a3ac14fb74ca05537aa1c7d7da089bd5fd7e3d32021c79",
+                    "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf",
+                    "mineral/evolve.py": "4c3b40914b7f193c681001fab1f92e3550524edaf0d0d8810113264afd88e831",
+                    "mineral/mineral_dedalus.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+                    "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+                    "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+                    "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+                    "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+                    "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+                    "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+                    "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+                    "photonic/photonic_carrier.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+                    "photonic/photonic_dedalus.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+                    "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+                    "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+                    "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+                    "rods/transient.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd",
+                    "scaling/benchmark.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+                    "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d"
+                  },
+                  "library_sha256": {
+                    "dedalus/public.py": "7291fdeeb4824ea77041e7c1f1c0e3d89baa25a586ffd06cd071151f93e4e4ec",
+                    "dedalus/core/arithmetic.py": "05bf2de5df0788a4b4d6741565b400fb2b2397fd03963ce69a7b8f3c4e167647",
+                    "dedalus/core/basis.py": "eeb2490c60027613f8943811acedc53739ab04f51e5240f184ae834662fc7585",
+                    "dedalus/core/distributor.py": "f1d0a3b0d8127e19db0c9ff1b1e6f5ab331f18764d9663499a4f2c2d9a4462e4",
+                    "dedalus/core/evaluator.py": "735b11e24b369f0703aae3c15ec73fc2dfef817619688b7df29575b418066970",
+                    "dedalus/core/field.py": "dd1de05b137979767b10a6902d12be558b1a88dbce4a1e1f04ff5114fae9ccba",
+                    "dedalus/core/network.py": "7311401061970f427c2c1f94586a3b4ae93d7d6e518dd5c913aa1d05c1525ade",
+                    "dedalus/core/network_calculus.py": "e221049a08804fc47598633b3b40841fcbb05ac4eaab584d1a48fc0e545f3eaa",
+                    "dedalus/core/network_operators.py": "792b294b7146469df5ca7f47f33d80d9931e4c81adce54b30f9e64e0c827731f",
+                    "dedalus/core/operators.py": "93170d31206cf0029ca86e19297b6ab8a990f0231822f31966ee90a8e7598821",
+                    "dedalus/core/problems.py": "80634e1c09fd89c9f960a0646b72216aa1663be903c4015b1e6cd04dccdeeb22",
+                    "dedalus/core/solvers.py": "6d391bb4ed5cabbb882c06f6e12b4039a5aa933a678442e2f539041f9fca908f",
+                    "dedalus/core/subsystems.py": "02897488fc2a2602c3c035e194501910ebbaaf0248207abcd951ea2e3d6fd459",
+                    "dedalus/core/timesteppers.py": "6330b20d8b844a1c04af192b41e91b940b6c3deca711195f295d4c6e2014c6b7",
+                    "dedalus/core/network_galerkin.py": "1e9cf1ee9c382cff7f7245c1e58e1e79f65118fa0c220aa1a536b41852bf4b29"
+                  },
+                  "limitations": [
+                    "Single process only.",
+                    "No clean-environment installation tested.",
+                    "Original paper data, figures and scientific provenance are retained separately."
+                  ],
+                  "repaired_during_checks": "Unqualified endpoint(v) on heterogeneous basis buckets selected absent vertices. Both affected scripts now select each bucket's incident vertices explicitly; their repeated runs passed.",
+                  "native_kdv_translation_checks": "kdv-native-checks.json"
+                },
+                {
+                  "scope": "Eight small serial execution checks.",
+                  "environment": {
+                    "checked_at_utc": "2026-11-06T04:28:44.179515+00:00",
+                    "python": "3.12.9",
+                    "platform": "Linux-5.14.0-687.65.1.el9_8.x86_64-x86_64-with-glibc2.34",
+                    "numpy": "2.2.4",
+                    "scipy": "1.15.2",
+                    "mpi4py": "4.0.1",
+                    "dedalus_source": "dedalus/__init__.py",
+                    "repository_head": "e6050873e952678d0d879764e12a4bd510835fc8",
+                    "numerical_threads": 1,
+                    "mpi_ranks": 1,
+                    "mpi_transport": "ob1/self,tcp for local serial checks"
+                  },
+                  "checks": [
+                    {
+                      "script": "kdv/evolve.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 3.7304785379965324,
+                      "metrics": {
+                        "example": "KdV",
+                        "edges": 18,
+                        "modes": 24,
+                        "steps": 3,
+                        "time": 0.000375,
+                        "mass_drift": 9.266116926488407e-16,
+                        "constraint_max": 2.7657455319018975e-15,
+                        "mass_balance_residual": -1.1461121282376765e-15,
+                        "l2_balance_residual": 1.2848072905679273e-16
+                      }
+                    },
+                    {
+                      "script": "methods/beam.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 1.613371638013632,
+                      "metrics": {
+                        "example": "beam methods listing",
+                        "maximum_error": 1.1473044736476368e-12
+                      }
+                    },
+                    {
+                      "script": "mineral/evolve.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 2.043389546990511,
+                      "metrics": {
+                        "example": "mineral replacement",
+                        "pores": 44,
+                        "steps": 3,
+                        "scaled_time": 0.006,
+                        "water_residual": 6.608690068832274e-20,
+                        "solute_defect": 1.6523241108679088e-16,
+                        "algebraic_residual": 3.908188970884133e-15,
+                        "inventory_defect": 1.3552527156068805e-20
+                      }
+                    },
+                    {
+                      "script": "photonic/eigenmodes.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 2.004403999002534,
+                      "metrics": {
+                        "example": "photonic resonances",
+                        "edges": 5,
+                        "k_real": 10.18159345887768,
+                        "k_imag": -0.12541311786989146,
+                        "delta_real": -0.49840654112231936,
+                        "delta_imag": -0.07541311786989144,
+                        "carrier_real": 10.68,
+                        "carrier_imag": -0.05,
+                        "pencil": 9.626934687716982e-15,
+                        "continuity": 3.0302666127903583e-16,
+                        "vertex": 6.152635301810137e-16,
+                        "bond": 5.62526877673889e-16,
+                        "differential": 8.013086468505413e-16,
+                        "physical_interpolation": 2.2090077653674975e-15,
+                        "integral_relative": 8.177075856630302e-16,
+                        "I2": 0.1940975459504719,
+                        "I4": 0.016931608491127258,
+                        "Lpart": 2.2250607414964705,
+                        "physical_quadrature_points": 112,
+                        "envelope_coefficients": 16
+                      }
+                    },
+                    {
+                      "script": "photonic/eigenmodes.py",
+                      "arguments": [
+                        "--interval-check"
+                      ],
+                      "returncode": 0,
+                      "wall_seconds": 3.309435449002194,
+                      "metrics": {
+                        "example": "photonic resonances",
+                        "edges": 1,
+                        "k_real": 10.681415022205297,
+                        "k_imag": -0.05364793041447001,
+                        "delta_real": 0.0014150222052977653,
+                        "delta_imag": -0.0036479304144700045,
+                        "carrier_real": 10.68,
+                        "carrier_imag": -0.05,
+                        "pencil": 2.0828799509180233e-13,
+                        "continuity": 2.0562092347217614e-16,
+                        "vertex": 3.2899347755548183e-16,
+                        "bond": 9.794724146082095e-15,
+                        "differential": 9.285223403253755e-17,
+                        "physical_interpolation": 6.076820623274008e-14,
+                        "integral_relative": 2.4776865358041223e-15,
+                        "I2": 3.773726174927556,
+                        "I4": 0.9409860036859613,
+                        "Lpart": 15.134135032348544,
+                        "physical_quadrature_points": 1632,
+                        "envelope_coefficients": 16,
+                        "analytic_eigenvalue_error": 0.0
+                      }
+                    },
+                    {
+                      "script": "rods/steady.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 2.3832301079964964,
+                      "metrics": {
+                        "example": "steady rods",
+                        "modes": 16,
+                        "maximum_error": 7.771561172376096e-16
+                      }
+                    },
+                    {
+                      "script": "rods/transient.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 3.0734618720016442,
+                      "metrics": {
+                        "example": "transient rods",
+                        "steps": 3,
+                        "time": 0.0234375,
+                        "vertex_residual": 3.344763702117781e-17,
+                        "heated_vertex": 0.0021948534039735006
+                      }
+                    },
+                    {
+                      "script": "scaling/benchmark.py",
+                      "arguments": [],
+                      "returncode": 0,
+                      "wall_seconds": 2.7078637959930347,
+                      "metrics": {
+                        "example": "scaling equations",
+                        "edges": 24,
+                        "coefficients": 2048,
+                        "ranks": 1,
+                        "steps": 3,
+                        "warmup": 1,
+                        "maximum_error": 1.7747931613243395e-07,
+                        "smoke_seconds": 0.045319365002796985
+                      }
+                    }
+                  ],
+                  "python_syntax_files": 28,
+                  "local_imports": [
+                    {
+                      "source": "kdv/evolve.py",
+                      "dependency": "kdv/model.py"
+                    },
+                    {
+                      "source": "kdv/explicit_reference.py",
+                      "dependency": "kdv/linear_solvers.py"
+                    },
+                    {
+                      "source": "kdv/explicit_reference.py",
+                      "dependency": "kdv/conditions.py"
+                    },
+                    {
+                      "source": "kdv/explicit_reference.py",
+                      "dependency": "kdv/linear_solvers.py"
+                    },
+                    {
+                      "source": "kdv/model.py",
+                      "dependency": "kdv/linear_solvers.py"
+                    },
+                    {
+                      "source": "kdv/model.py",
+                      "dependency": "kdv/conditions.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_reference.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_geometry.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_evolution.py"
+                    },
+                    {
+                      "source": "mineral/evolve.py",
+                      "dependency": "mineral/mineral_dedalus.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_mixing.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/explicit_reference.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_mixing.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_dedalus.py",
+                      "dependency": "mineral/mineral_lifecycle.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_mixing.py"
+                    },
+                    {
+                      "source": "mineral/mineral_reference.py",
+                      "dependency": "mineral/mineral_topology.py"
+                    },
+                    {
+                      "source": "photonic/carrier_reference.py",
+                      "dependency": "photonic/photonic_dedalus.py"
+                    },
+                    {
+                      "source": "photonic/carrier_reference.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "photonic/eigenmodes.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "photonic/eigenmodes.py",
+                      "dependency": "photonic/photonic_carrier.py"
+                    },
+                    {
+                      "source": "photonic/photonic_carrier.py",
+                      "dependency": "photonic/photonic_dedalus.py"
+                    },
+                    {
+                      "source": "photonic/photonic_carrier.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "photonic/photonic_dedalus.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "photonic/physical_reference.py",
+                      "dependency": "photonic/photonic_reference.py"
+                    },
+                    {
+                      "source": "rods/steady.py",
+                      "dependency": "rods/inputs.py"
+                    },
+                    {
+                      "source": "rods/transient.py",
+                      "dependency": "rods/inputs.py"
+                    },
+                    {
+                      "source": "rods/transient_reference.py",
+                      "dependency": "rods/inputs.py"
+                    },
+                    {
+                      "source": "scaling/benchmark.py",
+                      "dependency": "scaling/inputs.py"
+                    },
+                    {
+                      "source": "scaling/explicit_reference.py",
+                      "dependency": "scaling/inputs.py"
+                    }
+                  ],
+                  "source_map_sha256": "bcda8af3ff2096ab09149568769e6efee0d587bb4c6cc0089de331b053b6e59d",
+                  "review_python_sha256": {
+                    "kdv/conditions.py": "541e24f8448bccd5fb661ece9ed9a1361d19adaa7cd0aebfc1d3587382c79f18",
+                    "kdv/evolve.py": "5d04fce74765553f57ba54e280a24f6a6fb214a089cbcba35a55b84833f751c2",
+                    "kdv/explicit_reference.py": "117aeedafb01a307ded5904b18feeb6b60b808532eec7eac6e196e79fcad6079",
+                    "kdv/linear_solvers.py": "d5be0cbe1e7491176e8502f172a585074187dbdd13f320d0bc5ec3f734ee7b18",
+                    "kdv/model.py": "35edfd94cf0450ca26a3ac14fb74ca05537aa1c7d7da089bd5fd7e3d32021c79",
+                    "methods/beam.py": "50c7e09155a2c993d966e57f144f1d59bbef3d26bfb339b4503e9c3862bac6bf",
+                    "mineral/evolve.py": "4c3b40914b7f193c681001fab1f92e3550524edaf0d0d8810113264afd88e831",
+                    "mineral/explicit_reference.py": "d708312096b41f25b01fd6c1776d912fa2f0e81d537f40aa9c6abf435fe68fc4",
+                    "mineral/mineral_dedalus.py": "4b57210936373278383cfd9c238b0e26461e1e19ccf982327f6d11907551ef03",
+                    "mineral/mineral_evolution.py": "b877434b2abcce4df64cfbde080b26857ac364833dd2a295f1e9711fa436a5aa",
+                    "mineral/mineral_geometry.py": "00227fee860d9fe48f8f26271a496dede97eb6eddf5e5843b5d11eab8f02840b",
+                    "mineral/mineral_lifecycle.py": "33db7fa4238413fe03367a7f341aa7957679500e59b4415a6eac55a4e9e6a0d3",
+                    "mineral/mineral_mixing.py": "325bf8669bb5f3d145d67f1174a001eef82a3a16fc73a311af6e44181620ebe3",
+                    "mineral/mineral_reference.py": "7c7dd85e0392b30891f7ba4ecfd3be660394614b53774770cb12120494711824",
+                    "mineral/mineral_topology.py": "019cd284b833b3be78363cd8e272d97475bf3f67e7997c47b1ecc61a7f42e2e9",
+                    "photonic/carrier_reference.py": "fa9fb4cf55ef1da7879d316920d21d0cf7371fa39a60be704447683e4247cab3",
+                    "photonic/eigenmodes.py": "83494af154161c67dec473907d13de8515d750ffcdb4fe26b84a85a25dfacf87",
+                    "photonic/photonic_carrier.py": "531462ed5d6eebbe127f4028e541fe491f6c9b4bde91fb80b93b2389c0a7e9ec",
+                    "photonic/photonic_dedalus.py": "a2780b9237ee6859aa17a6a8fa37d116fe8adc7ce59fc538747203eb202b3283",
+                    "photonic/photonic_reference.py": "7b593d1f94d3ee6e2505686c9f5abff7841fe84696e45c8d881168afae82f07f",
+                    "photonic/physical_reference.py": "f27e081409f91ed1005ab4995a341b3e09a343f1b574abd6660ec35e0db35f93",
+                    "rods/inputs.py": "97e4029aa3194ff44b0ba6d2eb9a2c95948eae98177b4eb599d9343f4d2d1213",
+                    "rods/steady.py": "914f83fcedc863604d9fe68f9e4ef434650f5d16076a3d469ce6014dd4f42ac0",
+                    "rods/transient.py": "81b22cf3ddef847f6c26760d28e90056aa2caa11756a4dc66ecc82dd77d7b8cc",
+                    "rods/transient_reference.py": "a059661fdfabb2c4ea847d5afeb16e500a10f1046dd3d5ed1e9a230fac0d55bd",
+                    "scaling/benchmark.py": "777e38e87937576374e3d273bce47518195feac384dc90f7296b90aa0a2f7e0c",
+                    "scaling/explicit_reference.py": "800e0c21d323962a31e8a0040c19e5b16b4a5f05877c5aa9ee909a7df91ef63b",
+                    "scaling/inputs.py": "348774e2105aa070e2271381a5e01e1b9a2a1f5e478860c0f95b2e8a500d133d"
+                  },
+                  "library_sha256": {
+                    "dedalus/public.py": "7291fdeeb4824ea77041e7c1f1c0e3d89baa25a586ffd06cd071151f93e4e4ec",
+                    "dedalus/core/arithmetic.py": "05bf2de5df0788a4b4d6741565b400fb2b2397fd03963ce69a7b8f3c4e167647",
+                    "dedalus/core/basis.py": "273dfa8b4641320b58a062b5547ed833d93e525ad405930007ad047d8dc1cf50",
+                    "dedalus/core/distributor.py": "5d397932a355b428b9df21af71d77de29d65b422a83ff2d08f6437b35b68cc6b",
+                    "dedalus/core/evaluator.py": "735b11e24b369f0703aae3c15ec73fc2dfef817619688b7df29575b418066970",
+                    "dedalus/core/field.py": "c557572e700c49926aab7a3d2e9dc26b5b1a7526f9cd4fcad8777cded636f1d3",
+                    "dedalus/core/network.py": "7311401061970f427c2c1f94586a3b4ae93d7d6e518dd5c913aa1d05c1525ade",
+                    "dedalus/core/network_calculus.py": "e221049a08804fc47598633b3b40841fcbb05ac4eaab584d1a48fc0e545f3eaa",
+                    "dedalus/core/network_operators.py": "cba80ba48b0327b8d2bec958e6fe415dfb2e7ce001d77046af443079194c6e56",
+                    "dedalus/core/operators.py": "93170d31206cf0029ca86e19297b6ab8a990f0231822f31966ee90a8e7598821",
+                    "dedalus/core/problems.py": "77bf4baef2456680170d5038d25a27ba62503e8217f8843b200b3e6c96ef9334",
+                    "dedalus/core/solvers.py": "6d391bb4ed5cabbb882c06f6e12b4039a5aa933a678442e2f539041f9fca908f",
+                    "dedalus/core/subsystems.py": "02897488fc2a2602c3c035e194501910ebbaaf0248207abcd951ea2e3d6fd459",
+                    "dedalus/core/timesteppers.py": "6330b20d8b844a1c04af192b41e91b940b6c3deca711195f295d4c6e2014c6b7",
+                    "dedalus/core/network_galerkin.py": "1e9cf1ee9c382cff7f7245c1e58e1e79f65118fa0c220aa1a536b41852bf4b29"
+                  },
+                  "limitations": [
+                    "Single process only.",
+                    "No clean-environment installation tested.",
+                    "Original paper data, figures and scientific provenance are retained separately."
+                  ],
+                  "repaired_during_checks": "Native heterogeneous vertex assembly, fixed IVP constraints, vertex data and per-edge endpoint selections, selected owned/ghost vertex storage, and preservation of mineral pressure defect forcing. See native-interface-checks.json.",
+                  "native_kdv_translation_checks": "kdv-native-checks.json",
+                  "native_application_translation_checks": "native-interface-checks.json"
+                }
+              ]
+            }
+          ],
+          "current_regression_receipt": "native-interface-checks.json"
+        }
+      ]
+    }
+  ]
+}

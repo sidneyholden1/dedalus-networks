@@ -1014,8 +1014,8 @@ class ApplyCardinalMap(operators.SpectralOperator1D):
                 )
                 output_view = np.moveaxis(out.data, data_axis, 0)
                 output_view[~target_owned] = 0
-                self.dist.network_vertex_exchange_plan.forward(
-                    out.data,
+                self.dist.exchange_network_vertex_data(
+                    out.data, out.domain,
                     axis=data_axis,
                 )
             return
@@ -1035,9 +1035,9 @@ class ApplyCardinalMap(operators.SpectralOperator1D):
                 )
             else:
                 out.data.fill(0)
-            self.dist.network_vertex_exchange_plan.reduce_add(
-                out.data,
-                axis=data_axis,
+            self.dist.exchange_network_vertex_data(
+                out.data, out.domain,
+                axis=data_axis, add=True,
             )
             return
 
@@ -1980,6 +1980,9 @@ class LiftJacobi(operators.Lift, operators.Copy):
         if n < 0:
             n += basis.size
         P = dist.Field(bases=basis)
+        # LiftJacobi dispatches to multiplication, so retain its provenance for
+        # automatic network tau assembly without inspecting coefficient values.
+        P._lift_polynomial = (basis, n)
         axis = dist.get_basis_axis(basis)
         P['c'][axslice(axis, n, n+1)] = 1
         return P

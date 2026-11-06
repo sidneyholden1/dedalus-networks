@@ -64,6 +64,8 @@ jobs:
           conda activate dedalus
           # Preserve the report even when pytest returns a failure status.
           trap 'if [[ -f dedalus-test-junit.xml ]]; then cp dedalus-test-junit.xml "$GITHUB_WORKSPACE"; fi' EXIT
+          export DEDALUS_PAPER_DIR="$GITHUB_WORKSPACE/paper"
+          test -d "$DEDALUS_PAPER_DIR"
           python3 -m dedalus test --report
       - name: Report test results
         uses: dorny/test-reporter@v1

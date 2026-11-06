@@ -1,0 +1,7350 @@
+{
+  "timed_steps": 1000,
+  "mean_timestep_seconds": 0.09003403352206805,
+  "sim_time": 1.0099999999999996,
+  "restart": null,
+  "parameters": {
+    "family": "junctions",
+    "hubs": 8,
+    "scale": 256,
+    "policy": "mt-kahypar",
+    "workload": "ivp",
+    "fields": 2,
+    "steps": 1000,
+    "dt": 0.001,
+    "homogeneous": false,
+    "direct": false,
+    "output": "/mnt/ceph/users/sholden/dedalus-network-pdes/paper-scaling-20261026/matched-study-01/jobs/matched-full-scaling-recovery-20261101-v1/attempts/rerun-weak-small-163840-junctions-p64-r1-a1/result.json",
+    "model": "coefficient",
+    "graph_seed": 20261026,
+    "partition_seed": 20261026,
+    "preset": "quality",
+    "epsilon": 0.05,
+    "resolution": 0,
+    "calibration": null,
+    "coupling": 0.2,
+    "nonlinear": 0.1,
+    "profile": false,
+    "scheme": "RK222",
+    "memory_every": 0,
+    "vary_dt": false,
+    "checkpoint_every": 0,
+    "save_every": 0,
+    "owners": "/mnt/ceph/users/sholden/dedalus-network-pdes/paper-scaling-20261026/matched-study-01/partitions/junctions-s256-p64-n1-67c0750dbd0b3b7c.npy",
+    "local_input": null,
+    "instrument": false,
+    "separator_rtol": 1e-13,
+    "separator_atol": 1e-14,
+    "node_size": 96,
+    "separator": "gmres",
+    "warmup": 10,
+    "mode_factor": 1,
+    "pause_at": 0,
+    "restart": null,
+    "sample_all": false
+  },
+  "partition_info": {
+    "policy": "mt-kahypar",
+    "model": "coefficient",
+    "fields": 2,
+    "seed": 20261026,
+    "preset": "quality",
+    "epsilon": 0.05,
+    "threads": 1,
+    "weight_seconds": 0.0008304649963974953,
+    "public_api": {
+      "package": "mtkahypar",
+      "version": "1.7.post1",
+      "objective": "km1",
+      "preset": "quality",
+      "seed": 20261026,
+      "threads": 1,
+      "epsilon": 0.05,
+      "num_parts": 64,
+      "weight_conversion": {
+        "scale": 27.77777777777778,
+        "maximum_relative_rounding_error": 0.0003076923076922311
+      },
+      "package_metrics": {
+        "cut": 324,
+        "km1": 326,
+        "soed": 650
+      },
+      "estimated_loads": [
+        172144.0,
+        172848.0,
+        170568.0,
+        172900.0,
+        169368.0,
+        172504.0,
+        171888.0,
+        171056.0,
+        172760.0,
+        173084.0,
+        173552.0,
+        173968.0,
+        176988.0,
+        179996.0,
+        172528.0,
+        177508.0,
+        169960.0,
+        172936.0,
+        169112.0,
+        172376.0,
+        172636.0,
+        170424.0,
+        172588.0,
+        171936.0,
+        171712.0,
+        170248.0,
+        171004.0,
+        171084.0,
+        171928.0,
+        171904.0,
+        172040.0,
+        172728.0,
+        172496.0,
+        174072.0,
+        170968.0,
+        171120.0,
+        171848.0,
+        151816.0,
+        171104.0,
+        173144.0,
+        171388.0,
+        170904.0,
+        171872.0,
+        174568.0,
+        171664.0,
+        173024.0,
+        170728.0,
+        171476.0,
+        172584.0,
+        171280.0,
+        173944.0,
+        171040.0,
+        172248.0,
+        172216.0,
+        172088.0,
+        170408.0,
+        171648.0,
+        171336.0,
+        173064.0,
+        172176.0,
+        170720.0,
+        171084.0,
+        173304.0,
+        171720.0
+      ],
+      "estimated_imbalance": 1.0471230382368384,
+      "conversion_and_import_seconds": 0.318082259997027,
+      "partition_seconds": 1.8510105710010976,
+      "total_seconds": 2.2062501440232154
+    },
+    "package_seconds": 1.8510105710010976,
+    "construction_seconds": 0.027107863017590716,
+    "cut": 324,
+    "km1": 326,
+    "soed": 650,
+    "model_load": [
+      172144.0,
+      172848.0,
+      170568.0,
+      172900.0,
+      169368.0,
+      172504.0,
+      171888.0,
+      171056.0,
+      172760.0,
+      173084.0,
+      173552.0,
+      173968.0,
+      176988.0,
+      179996.0,
+      172528.0,
+      177508.0,
+      169960.0,
+      172936.0,
+      169112.0,
+      172376.0,
+      172636.0,
+      170424.0,
+      172588.0,
+      171936.0,
+      171712.0,
+      170248.0,
+      171004.0,
+      171084.0,
+      171928.0,
+      171904.0,
+      172040.0,
+      172728.0,
+      172496.0,
+      174072.0,
+      170968.0,
+      171120.0,
+      171848.0,
+      151816.0,
+      171104.0,
+      173144.0,
+      171388.0,
+      170904.0,
+      171872.0,
+      174568.0,
+      171664.0,
+      173024.0,
+      170728.0,
+      171476.0,
+      172584.0,
+      171280.0,
+      173944.0,
+      171040.0,
+      172248.0,
+      172216.0,
+      172088.0,
+      170408.0,
+      171648.0,
+      171336.0,
+      173064.0,
+      172176.0,
+      170720.0,
+      171084.0,
+      173304.0,
+      171720.0
+    ],
+    "coefficient_load": [
+      172144.0,
+      172848.0,
+      170568.0,
+      172900.0,
+      169368.0,
+      172504.0,
+      171888.0,
+      171056.0,
+      172760.0,
+      173084.0,
+      173552.0,
+      173968.0,
+      176988.0,
+      179996.0,
+      172528.0,
+      177508.0,
+      169960.0,
+      172936.0,
+      169112.0,
+      172376.0,
+      172636.0,
+      170424.0,
+      172588.0,
+      171936.0,
+      171712.0,
+      170248.0,
+      171004.0,
+      171084.0,
+      171928.0,
+      171904.0,
+      172040.0,
+      172728.0,
+      172496.0,
+      174072.0,
+      170968.0,
+      171120.0,
+      171848.0,
+      151816.0,
+      171104.0,
+      173144.0,
+      171388.0,
+      170904.0,
+      171872.0,
+      174568.0,
+      171664.0,
+      173024.0,
+      170728.0,
+      171476.0,
+      172584.0,
+      171280.0,
+      173944.0,
+      171040.0,
+      172248.0,
+      172216.0,
+      172088.0,
+      170408.0,
+      171648.0,
+      171336.0,
+      173064.0,
+      172176.0,
+      170720.0,
+      171084.0,
+      173304.0,
+      171720.0
+    ],
+    "model_imbalance": 1.0471230382368384,
+    "coefficient_imbalance": 1.0471230382368384,
+    "interface_per_rank": [
+      8,
+      8,
+      8,
+      12,
+      8,
+      8,
+      8,
+      10,
+      8,
+      8,
+      8,
+      8,
+      38,
+      54,
+      8,
+      36,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      10,
+      8,
+      14,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      16,
+      8,
+      8,
+      8,
+      16,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      10,
+      4,
+      8,
+      14
+    ],
+    "peer_counts": [
+      2,
+      2,
+      1,
+      2,
+      2,
+      2,
+      2,
+      3,
+      2,
+      3,
+      2,
+      2,
+      2,
+      3,
+      2,
+      5,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      2,
+      4,
+      2,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      4,
+      2,
+      2,
+      2,
+      4,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      1,
+      2,
+      4
+    ],
+    "owners_sha256": "2f438375a962787c0353ea42e4157c6a950332714f321cc5ed795f88df98bd5d",
+    "diagnostic_seconds": 0.2230874889937695,
+    "input_sha256": "f91d621ffdf5ddbe474809c33c463641105b29ea0aad1ddf61d6110514570f7e",
+    "num_parts": 64,
+    "prepared_construction_seconds": 2.223190133983735,
+    "reused_owners": true
+  },
+  "trajectories": [],
+  "rank_records": [
+    {
+      "evolved_coefficients": 163952,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 400093184
+        },
+        {
+          "step": 10,
+          "rss_bytes": 551608320
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 551608320
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 0,
+      "host": "worker7206",
+      "affinity": [
+        0
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 550531072,
+      "phase_seconds": {
+        "graph": 0.36483046400826424,
+        "partition": 0.10622189799323678,
+        "fields_equations_build": 1.8235540839959867,
+        "first_step": 1.4820374670089222,
+        "warmup": 0.8560516409925185,
+        "repeated_solve": 90.03403352206806,
+        "validation": 0.056121483008610085
+      },
+      "solver_seconds": 96.2991421110055,
+      "local_edges": 2048,
+      "work": 172144.0,
+      "transform_work": 888553.3340650278,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174188,
+          "interior_nnz": 1592752,
+          "lu_nnz": 3240121,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1393504,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174188,
+            8
+          ],
+          "stored_response_nnz": 1393504
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164656,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 382058496
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532615168
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532615168
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 1,
+      "host": "worker7206",
+      "affinity": [
+        1
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 532344832,
+      "phase_seconds": {
+        "graph": 0.36484322501928546,
+        "partition": 0.10623468799167313,
+        "fields_equations_build": 1.8235454530222341,
+        "first_step": 1.4820429669925943,
+        "warmup": 0.8560366010060534,
+        "repeated_solve": 90.03402466810076,
+        "validation": 0.05612215300789103
+      },
+      "solver_seconds": 98.36933703697287,
+      "local_edges": 2048,
+      "work": 172848.0,
+      "transform_work": 892806.0594205708,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174892,
+          "interior_nnz": 1600000,
+          "lu_nnz": 3259826,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1399136,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174892,
+            8
+          ],
+          "stored_response_nnz": 1399136
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162368,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2056,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 376565760
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532025344
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532029440
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 2,
+      "host": "worker7206",
+      "affinity": [
+        2
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531599360,
+      "phase_seconds": {
+        "graph": 0.36483806499745697,
+        "partition": 0.10623337799916044,
+        "fields_equations_build": 1.8235415230155922,
+        "first_step": 1.48204266699031,
+        "warmup": 0.8560512709955219,
+        "repeated_solve": 90.03396195691312,
+        "validation": 0.056120702996850014
+      },
+      "solver_seconds": 96.27414842799772,
+      "local_edges": 2050,
+      "work": 170568.0,
+      "transform_work": 877735.3269960748,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 172616,
+          "interior_nnz": 1582312,
+          "lu_nnz": 3250720,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 80,
+          "owned_schur_rows": 8,
+          "ghost_count": 4,
+          "local_separator_nnz": 64,
+          "response_nnz": 1380928,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            172616,
+            8
+          ],
+          "stored_response_nnz": 1380928
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164720,
+      "tau_unknowns": 8180,
+      "owned_vertex_unknowns": 2036,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 383336448
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531533824
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531533824
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 3,
+      "host": "worker7206",
+      "affinity": [
+        3
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531341312,
+      "phase_seconds": {
+        "graph": 0.3648578560096212,
+        "partition": 0.1062352079898119,
+        "fields_equations_build": 1.8235383029968943,
+        "first_step": 1.4820494670129847,
+        "warmup": 0.8560588319960516,
+        "repeated_solve": 90.03397582791513,
+        "validation": 0.05612309300340712
+      },
+      "solver_seconds": 96.61907234697719,
+      "local_edges": 2045,
+      "work": 172900.0,
+      "transform_work": 893369.1537078272,
+      "components": 2,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174936,
+          "interior_nnz": 1594908,
+          "lu_nnz": 3207344,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 80,
+          "response_nnz": 1139424,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174936,
+            12
+          ],
+          "stored_response_nnz": 1139424
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 161168,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 371560448
+        },
+        {
+          "step": 10,
+          "rss_bytes": 518569984
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 518574080
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 4,
+      "host": "worker7206",
+      "affinity": [
+        4
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 517812224,
+      "phase_seconds": {
+        "graph": 0.3648410149908159,
+        "partition": 0.10624169898801483,
+        "fields_equations_build": 1.8235542740148958,
+        "first_step": 1.4820344469917472,
+        "warmup": 0.8560481109889224,
+        "repeated_solve": 90.03397096999106,
+        "validation": 0.05612175300484523
+      },
+      "solver_seconds": 96.27730438101571,
+      "local_edges": 2050,
+      "work": 169368.0,
+      "transform_work": 869529.1388772146,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 171416,
+          "interior_nnz": 1570424,
+          "lu_nnz": 3230742,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1371328,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            171416,
+            8
+          ],
+          "stored_response_nnz": 1371328
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164320,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 385163264
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531709952
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531714048
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 5,
+      "host": "worker7206",
+      "affinity": [
+        5
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531410944,
+      "phase_seconds": {
+        "graph": 0.36485837600775994,
+        "partition": 0.10623495798790827,
+        "fields_equations_build": 1.8235400329867844,
+        "first_step": 1.482057546993019,
+        "warmup": 0.8560445409966633,
+        "repeated_solve": 90.03397723796661,
+        "validation": 0.05612234299769625
+      },
+      "solver_seconds": 96.303679130011,
+      "local_edges": 2046,
+      "work": 172504.0,
+      "transform_work": 890973.878527964,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174544,
+          "interior_nnz": 1596552,
+          "lu_nnz": 3229181,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1396352,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174544,
+            8
+          ],
+          "stored_response_nnz": 1396352
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163696,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 385069056
+        },
+        {
+          "step": 10,
+          "rss_bytes": 536432640
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 536440832
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 6,
+      "host": "worker7206",
+      "affinity": [
+        6
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 535699456,
+      "phase_seconds": {
+        "graph": 0.3648380439844914,
+        "partition": 0.1062322280195076,
+        "fields_equations_build": 1.8235422330035362,
+        "first_step": 1.4820481770148035,
+        "warmup": 0.8560483310138807,
+        "repeated_solve": 90.0339944070729,
+        "validation": 0.05612129298970103
+      },
+      "solver_seconds": 96.54359448101604,
+      "local_edges": 2048,
+      "work": 171888.0,
+      "transform_work": 886517.7981024792,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173932,
+          "interior_nnz": 1590512,
+          "lu_nnz": 3240445,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 56,
+          "owned_schur_rows": 4,
+          "ghost_count": 10,
+          "local_separator_nnz": 64,
+          "response_nnz": 1391456,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173932,
+            8
+          ],
+          "stored_response_nnz": 1391456
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162848,
+      "tau_unknowns": 8208,
+      "owned_vertex_unknowns": 2056,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 379600896
+        },
+        {
+          "step": 10,
+          "rss_bytes": 543846400
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 543846400
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 7,
+      "host": "worker7206",
+      "affinity": [
+        7
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 543002624,
+      "phase_seconds": {
+        "graph": 0.3648540359863546,
+        "partition": 0.1062356379989069,
+        "fields_equations_build": 1.8235405230079778,
+        "first_step": 1.482049696991453,
+        "warmup": 0.8560626020189375,
+        "repeated_solve": 90.03396438912023,
+        "validation": 0.05612387298606336
+      },
+      "solver_seconds": 96.56449793899083,
+      "local_edges": 2052,
+      "work": 171056.0,
+      "transform_work": 879730.3530470044,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173106,
+          "interior_nnz": 1587024,
+          "lu_nnz": 3290546,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 80,
+          "owned_schur_rows": 6,
+          "ghost_count": 10,
+          "local_separator_nnz": 100,
+          "response_nnz": 1731060,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173106,
+            10
+          ],
+          "stored_response_nnz": 1731060
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164560,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2056,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 384323584
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531582976
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531591168
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 8,
+      "host": "worker7206",
+      "affinity": [
+        8
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531419136,
+      "phase_seconds": {
+        "graph": 0.36483566398965195,
+        "partition": 0.10623929800931364,
+        "fields_equations_build": 1.8235556640138384,
+        "first_step": 1.4820345669868402,
+        "warmup": 0.8560490810195915,
+        "repeated_solve": 90.03393061709357,
+        "validation": 0.05612126298365183
+      },
+      "solver_seconds": 97.7871042219922,
+      "local_edges": 2050,
+      "work": 172760.0,
+      "transform_work": 892165.2063794809,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174808,
+          "interior_nnz": 1604344,
+          "lu_nnz": 3300647,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1398464,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174808,
+            8
+          ],
+          "stored_response_nnz": 1398464
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164896,
+      "tau_unknowns": 8188,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 383377408
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531607552
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531611648
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 9,
+      "host": "worker7206",
+      "affinity": [
+        9
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531476480,
+      "phase_seconds": {
+        "graph": 0.36485268600517884,
+        "partition": 0.10623281798325479,
+        "fields_equations_build": 1.8235437329858541,
+        "first_step": 1.4820417670125607,
+        "warmup": 0.8560345110017806,
+        "repeated_solve": 90.03392147499835,
+        "validation": 0.05612234299769625
+      },
+      "solver_seconds": 96.5416338169889,
+      "local_edges": 2047,
+      "work": 173084.0,
+      "transform_work": 895370.9011203027,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 175126,
+          "interior_nnz": 1602548,
+          "lu_nnz": 3255927,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 24,
+          "owned_schur_rows": 2,
+          "ghost_count": 10,
+          "local_separator_nnz": 64,
+          "response_nnz": 1401008,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            175126,
+            8
+          ],
+          "stored_response_nnz": 1401008
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 165360,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 384479232
+        },
+        {
+          "step": 10,
+          "rss_bytes": 537038848
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 537047040
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 10,
+      "host": "worker7206",
+      "affinity": [
+        10
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 536305664,
+      "phase_seconds": {
+        "graph": 0.364835944987135,
+        "partition": 0.10623177801608108,
+        "fields_equations_build": 1.8235408629989251,
+        "first_step": 1.4820459769980516,
+        "warmup": 0.8560476610145997,
+        "repeated_solve": 90.03390728597878,
+        "validation": 0.05612069298513234
+      },
+      "solver_seconds": 96.56860789499478,
+      "local_edges": 2048,
+      "work": 173552.0,
+      "transform_work": 897864.1696165802,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 175596,
+          "interior_nnz": 1612144,
+          "lu_nnz": 3283595,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1404768,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            175596,
+            8
+          ],
+          "stored_response_nnz": 1404768
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 165776,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 374968320
+        },
+        {
+          "step": 10,
+          "rss_bytes": 526176256
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 526180352
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 11,
+      "host": "worker7206",
+      "affinity": [
+        11
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 525619200,
+      "phase_seconds": {
+        "graph": 0.364835785003379,
+        "partition": 0.10623838900937699,
+        "fields_equations_build": 1.8235406230087392,
+        "first_step": 1.4820489769917913,
+        "warmup": 0.8560607920226175,
+        "repeated_solve": 90.0339531058562,
+        "validation": 0.056123143003787845
+      },
+      "solver_seconds": 98.8545819070132,
+      "local_edges": 2048,
+      "work": 173968.0,
+      "transform_work": 900046.9084545254,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 176012,
+          "interior_nnz": 1616352,
+          "lu_nnz": 3309429,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1408096,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            176012,
+            8
+          ],
+          "stored_response_nnz": 1408096
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 168528,
+      "tau_unknowns": 8460,
+      "owned_vertex_unknowns": 2134,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 385015808
+        },
+        {
+          "step": 10,
+          "rss_bytes": 545689600
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 545710080
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 12,
+      "host": "worker7206",
+      "affinity": [
+        12
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 573374464,
+      "phase_seconds": {
+        "graph": 0.3648346340050921,
+        "partition": 0.10624197800643742,
+        "fields_equations_build": 1.8235534940031357,
+        "first_step": 1.4820287369948346,
+        "warmup": 0.8560470909869764,
+        "repeated_solve": 90.03388969608932,
+        "validation": 0.05612117299460806
+      },
+      "solver_seconds": 96.9739712550072,
+      "local_edges": 2115,
+      "work": 176988.0,
+      "transform_work": 911920.021546741,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 179084,
+          "interior_nnz": 1639380,
+          "lu_nnz": 3352010,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 1556,
+          "owned_schur_rows": 38,
+          "ghost_count": 26,
+          "local_separator_nnz": 996,
+          "response_nnz": 1890736,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            179084,
+            38
+          ],
+          "stored_response_nnz": 1890736
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 171376,
+      "tau_unknowns": 8620,
+      "owned_vertex_unknowns": 2146,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 389017600
+        },
+        {
+          "step": 10,
+          "rss_bytes": 540983296
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 542359552
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 13,
+      "host": "worker7206",
+      "affinity": [
+        13
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 576663552,
+      "phase_seconds": {
+        "graph": 0.36484508600551635,
+        "partition": 0.10623597900848836,
+        "fields_equations_build": 1.8235414329974446,
+        "first_step": 1.482048667006893,
+        "warmup": 0.8560445210023317,
+        "repeated_solve": 90.03390236303676,
+        "validation": 0.056123212998500094
+      },
+      "solver_seconds": 96.55728847201681,
+      "local_edges": 2155,
+      "work": 179996.0,
+      "transform_work": 927973.0141666846,
+      "components": 2,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 182124,
+          "interior_nnz": 1659556,
+          "lu_nnz": 3371099,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 868,
+          "owned_schur_rows": 18,
+          "ghost_count": 38,
+          "local_separator_nnz": 1860,
+          "response_nnz": 1725184,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            182124,
+            54
+          ],
+          "stored_response_nnz": 1725184
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164336,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 385527808
+        },
+        {
+          "step": 10,
+          "rss_bytes": 530952192
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 530964480
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 14,
+      "host": "worker7206",
+      "affinity": [
+        14
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530706432,
+      "phase_seconds": {
+        "graph": 0.3648324940004386,
+        "partition": 0.10623392800334841,
+        "fields_equations_build": 1.823542283003917,
+        "first_step": 1.4820595170021988,
+        "warmup": 0.856048790999921,
+        "repeated_solve": 90.03392306703608,
+        "validation": 0.056122062989743426
+      },
+      "solver_seconds": 96.55169800799922,
+      "local_edges": 2048,
+      "work": 172528.0,
+      "transform_work": 891367.8565204026,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174572,
+          "interior_nnz": 1597168,
+          "lu_nnz": 3248171,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1396576,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174572,
+            8
+          ],
+          "stored_response_nnz": 1396576
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 169008,
+      "tau_unknowns": 8500,
+      "owned_vertex_unknowns": 2104,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 393187328
+        },
+        {
+          "step": 10,
+          "rss_bytes": 539856896
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 540692480
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 15,
+      "host": "worker7206",
+      "affinity": [
+        15
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 575225856,
+      "phase_seconds": {
+        "graph": 0.3648456959926989,
+        "partition": 0.1062363289820496,
+        "fields_equations_build": 1.8235405230079778,
+        "first_step": 1.4820488069963176,
+        "warmup": 0.8560588120017201,
+        "repeated_solve": 90.03396694504772,
+        "validation": 0.05612419301178306
+      },
+      "solver_seconds": 96.5721030900022,
+      "local_edges": 2125,
+      "work": 177508.0,
+      "transform_work": 914331.1892199689,
+      "components": 2,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 179612,
+          "interior_nnz": 1632700,
+          "lu_nnz": 3295752,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 672,
+          "response_nnz": 1494608,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            179612,
+            36
+          ],
+          "stored_response_nnz": 1494608
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 161760,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 371015680
+        },
+        {
+          "step": 10,
+          "rss_bytes": 522797056
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 522809344
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 16,
+      "host": "worker7206",
+      "affinity": [
+        16
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 521863168,
+      "phase_seconds": {
+        "graph": 0.36483282400877215,
+        "partition": 0.10622400799184106,
+        "fields_equations_build": 1.8235554739949293,
+        "first_step": 1.482036736997543,
+        "warmup": 0.8560467210190836,
+        "repeated_solve": 90.03397150893579,
+        "validation": 0.05612101301085204
+      },
+      "solver_seconds": 96.55646650498966,
+      "local_edges": 2050,
+      "work": 169960.0,
+      "transform_work": 873309.4539181218,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 172008,
+          "interior_nnz": 1576296,
+          "lu_nnz": 3228684,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1376064,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            172008,
+            8
+          ],
+          "stored_response_nnz": 1376064
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164752,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381509632
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531492864
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531496960
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 17,
+      "host": "worker7206",
+      "affinity": [
+        17
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531013632,
+      "phase_seconds": {
+        "graph": 0.36484670598292723,
+        "partition": 0.10623550799209625,
+        "fields_equations_build": 1.8235426830069628,
+        "first_step": 1.4820480470079929,
+        "warmup": 0.8560305710125249,
+        "repeated_solve": 90.03400541486917,
+        "validation": 0.05612286299583502
+      },
+      "solver_seconds": 96.31995012599509,
+      "local_edges": 2046,
+      "work": 172936.0,
+      "transform_work": 893359.8762426252,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174976,
+          "interior_nnz": 1600440,
+          "lu_nnz": 3226289,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1399808,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174976,
+            8
+          ],
+          "stored_response_nnz": 1399808
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 160912,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 379441152
+        },
+        {
+          "step": 10,
+          "rss_bytes": 523243520
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 523251712
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 18,
+      "host": "worker7206",
+      "affinity": [
+        18
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 522928128,
+      "phase_seconds": {
+        "graph": 0.3648395139898639,
+        "partition": 0.10623367800144479,
+        "fields_equations_build": 1.8235390830086544,
+        "first_step": 1.4820471570128575,
+        "warmup": 0.8560452610254288,
+        "repeated_solve": 90.03394184698118,
+        "validation": 0.05612157299765386
+      },
+      "solver_seconds": 96.27436814500834,
+      "local_edges": 2050,
+      "work": 169112.0,
+      "transform_work": 867951.393832359,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 171160,
+          "interior_nnz": 1567688,
+          "lu_nnz": 3249791,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1369280,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            171160,
+            8
+          ],
+          "stored_response_nnz": 1369280
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164192,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381083648
+        },
+        {
+          "step": 10,
+          "rss_bytes": 530690048
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 530690048
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 19,
+      "host": "worker7206",
+      "affinity": [
+        19
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530284544,
+      "phase_seconds": {
+        "graph": 0.3648581160232425,
+        "partition": 0.10623687799670734,
+        "fields_equations_build": 1.8235386129817925,
+        "first_step": 1.4820495269959792,
+        "warmup": 0.8560568610264454,
+        "repeated_solve": 90.03395435694256,
+        "validation": 0.056122983020031825
+      },
+      "solver_seconds": 96.81339882701286,
+      "local_edges": 2046,
+      "work": 172376.0,
+      "transform_work": 890029.2056243583,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174416,
+          "interior_nnz": 1595048,
+          "lu_nnz": 3249841,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1395328,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174416,
+            8
+          ],
+          "stored_response_nnz": 1395328
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164448,
+      "tau_unknowns": 8188,
+      "owned_vertex_unknowns": 2050,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381485056
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532512768
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532529152
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 20,
+      "host": "worker7206",
+      "affinity": [
+        20
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531648512,
+      "phase_seconds": {
+        "graph": 0.3648365839908365,
+        "partition": 0.10624453902710229,
+        "fields_equations_build": 1.8235552940168418,
+        "first_step": 1.4820294170058332,
+        "warmup": 0.8560455910046585,
+        "repeated_solve": 90.03392368910136,
+        "validation": 0.05612116298289038
+      },
+      "solver_seconds": 97.1725966160011,
+      "local_edges": 2047,
+      "work": 172636.0,
+      "transform_work": 891781.3727903557,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174678,
+          "interior_nnz": 1597540,
+          "lu_nnz": 3261343,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1397424,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174678,
+            8
+          ],
+          "stored_response_nnz": 1397424
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162224,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381292544
+        },
+        {
+          "step": 10,
+          "rss_bytes": 533745664
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 533745664
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 21,
+      "host": "worker7206",
+      "affinity": [
+        21
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 533622784,
+      "phase_seconds": {
+        "graph": 0.36485797600471415,
+        "partition": 0.10623576800571755,
+        "fields_equations_build": 1.8235403829894494,
+        "first_step": 1.4820493270235602,
+        "warmup": 0.8560446009796578,
+        "repeated_solve": 90.03390559490072,
+        "validation": 0.056122623005649075
+      },
+      "solver_seconds": 96.31631324600312,
+      "local_edges": 2050,
+      "work": 170424.0,
+      "transform_work": 876845.0494098318,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 172472,
+          "interior_nnz": 1580856,
+          "lu_nnz": 3256226,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 64,
+          "response_nnz": 1379776,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            172472,
+            8
+          ],
+          "stored_response_nnz": 1379776
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164400,
+      "tau_unknowns": 8188,
+      "owned_vertex_unknowns": 2046,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381362176
+        },
+        {
+          "step": 10,
+          "rss_bytes": 528932864
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 528945152
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 22,
+      "host": "worker7206",
+      "affinity": [
+        22
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 528515072,
+      "phase_seconds": {
+        "graph": 0.3648379539954476,
+        "partition": 0.1062344079837203,
+        "fields_equations_build": 1.8235410430061165,
+        "first_step": 1.4820410370011814,
+        "warmup": 0.8560461510205641,
+        "repeated_solve": 90.0339162259479,
+        "validation": 0.056122292997315526
+      },
+      "solver_seconds": 96.8989797749964,
+      "local_edges": 2047,
+      "work": 172588.0,
+      "transform_work": 891794.881493446,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174630,
+          "interior_nnz": 1597364,
+          "lu_nnz": 3233595,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1397040,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174630,
+            8
+          ],
+          "stored_response_nnz": 1397040
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163744,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 383270912
+        },
+        {
+          "step": 10,
+          "rss_bytes": 524435456
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 524443648
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 23,
+      "host": "worker7206",
+      "affinity": [
+        23
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 527708160,
+      "phase_seconds": {
+        "graph": 0.36485526600154117,
+        "partition": 0.10623690800275654,
+        "fields_equations_build": 1.8235419430129696,
+        "first_step": 1.48204698698828,
+        "warmup": 0.8560640020004939,
+        "repeated_solve": 90.03393184798188,
+        "validation": 0.05612447299063206
+      },
+      "solver_seconds": 96.30036714099697,
+      "local_edges": 2048,
+      "work": 171936.0,
+      "transform_work": 887092.8766348124,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173980,
+          "interior_nnz": 1590864,
+          "lu_nnz": 3249443,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1391840,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173980,
+            8
+          ],
+          "stored_response_nnz": 1391840
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163520,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 379043840
+        },
+        {
+          "step": 10,
+          "rss_bytes": 530853888
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 530862080
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 24,
+      "host": "worker7206",
+      "affinity": [
+        24
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530231296,
+      "phase_seconds": {
+        "graph": 0.3648350539733656,
+        "partition": 0.10624136799015105,
+        "fields_equations_build": 1.823554934002459,
+        "first_step": 1.4820386770006735,
+        "warmup": 0.8560457310231868,
+        "repeated_solve": 90.03391018885304,
+        "validation": 0.05612136301351711
+      },
+      "solver_seconds": 96.55309272400336,
+      "local_edges": 2048,
+      "work": 171712.0,
+      "transform_work": 885595.03810597,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173756,
+          "interior_nnz": 1588736,
+          "lu_nnz": 3246967,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1390048,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173756,
+            8
+          ],
+          "stored_response_nnz": 1390048
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162048,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 379895808
+        },
+        {
+          "step": 10,
+          "rss_bytes": 527048704
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 527052800
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 25,
+      "host": "worker7206",
+      "affinity": [
+        25
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 526520320,
+      "phase_seconds": {
+        "graph": 0.364852956001414,
+        "partition": 0.10623548799776472,
+        "fields_equations_build": 1.823541613004636,
+        "first_step": 1.482045487005962,
+        "warmup": 0.8560270110028796,
+        "repeated_solve": 90.0339302860666,
+        "validation": 0.05612253298750147
+      },
+      "solver_seconds": 96.3009228289884,
+      "local_edges": 2050,
+      "work": 170248.0,
+      "transform_work": 875498.7087066452,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 172296,
+          "interior_nnz": 1579208,
+          "lu_nnz": 3226993,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1378368,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            172296,
+            8
+          ],
+          "stored_response_nnz": 1378368
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162816,
+      "tau_unknowns": 8188,
+      "owned_vertex_unknowns": 2046,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 378667008
+        },
+        {
+          "step": 10,
+          "rss_bytes": 527564800
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 527572992
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 26,
+      "host": "worker7206",
+      "affinity": [
+        26
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 527470592,
+      "phase_seconds": {
+        "graph": 0.36483527498785406,
+        "partition": 0.10623623800347559,
+        "fields_equations_build": 1.8235423029982485,
+        "first_step": 1.4820386770006735,
+        "warmup": 0.8560450410004705,
+        "repeated_solve": 90.03391130597447,
+        "validation": 0.056121453002560884
+      },
+      "solver_seconds": 97.70113626198145,
+      "local_edges": 2047,
+      "work": 171004.0,
+      "transform_work": 880911.6933768592,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173046,
+          "interior_nnz": 1581492,
+          "lu_nnz": 3242601,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 56,
+          "owned_schur_rows": 4,
+          "ghost_count": 10,
+          "local_separator_nnz": 64,
+          "response_nnz": 1384368,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173046,
+            8
+          ],
+          "stored_response_nnz": 1384368
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162880,
+      "tau_unknowns": 8204,
+      "owned_vertex_unknowns": 2054,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 378961920
+        },
+        {
+          "step": 10,
+          "rss_bytes": 557780992
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 557789184
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 27,
+      "host": "worker7206",
+      "affinity": [
+        27
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 557047808,
+      "phase_seconds": {
+        "graph": 0.36485521600116044,
+        "partition": 0.10623541800305247,
+        "fields_equations_build": 1.8235410829947796,
+        "first_step": 1.4820510169956833,
+        "warmup": 0.8560557210003026,
+        "repeated_solve": 90.03392519807676,
+        "validation": 0.05612345298868604
+      },
+      "solver_seconds": 96.92284624101012,
+      "local_edges": 2051,
+      "work": 171084.0,
+      "transform_work": 880610.9770913501,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173132,
+          "interior_nnz": 1587268,
+          "lu_nnz": 3231351,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 80,
+          "owned_schur_rows": 6,
+          "ghost_count": 10,
+          "local_separator_nnz": 100,
+          "response_nnz": 1731320,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173132,
+            10
+          ],
+          "stored_response_nnz": 1731320
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163728,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2056,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381341696
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531087360
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531091456
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 28,
+      "host": "worker7206",
+      "affinity": [
+        28
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530046976,
+      "phase_seconds": {
+        "graph": 0.36483592400327325,
+        "partition": 0.1062437390210107,
+        "fields_equations_build": 1.8235540440073237,
+        "first_step": 1.4820283069857396,
+        "warmup": 0.8560451009834651,
+        "repeated_solve": 90.03387258495786,
+        "validation": 0.05612198301241733
+      },
+      "solver_seconds": 96.95059700400452,
+      "local_edges": 2050,
+      "work": 171928.0,
+      "transform_work": 886022.3083790923,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173976,
+          "interior_nnz": 1596008,
+          "lu_nnz": 3280613,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1391808,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173976,
+            8
+          ],
+          "stored_response_nnz": 1391808
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163728,
+      "tau_unknowns": 8176,
+      "owned_vertex_unknowns": 2040,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 382480384
+        },
+        {
+          "step": 10,
+          "rss_bytes": 526417920
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 526430208
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 29,
+      "host": "worker7206",
+      "affinity": [
+        29
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 526135296,
+      "phase_seconds": {
+        "graph": 0.36484664599993266,
+        "partition": 0.10623657802352682,
+        "fields_equations_build": 1.8235413530201185,
+        "first_step": 1.482046827004524,
+        "warmup": 0.8560460910084657,
+        "repeated_solve": 90.0338808959932,
+        "validation": 0.05612375302007422
+      },
+      "solver_seconds": 96.29338635099703,
+      "local_edges": 2044,
+      "work": 171904.0,
+      "transform_work": 887103.9266393365,
+      "components": 2,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173938,
+          "interior_nnz": 1590448,
+          "lu_nnz": 3222678,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 72,
+          "owned_schur_rows": 6,
+          "ghost_count": 14,
+          "local_separator_nnz": 100,
+          "response_nnz": 1349516,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173938,
+            14
+          ],
+          "stored_response_nnz": 1349516
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163840,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 383123456
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531128320
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531140608
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 30,
+      "host": "worker7206",
+      "affinity": [
+        30
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530952192,
+      "phase_seconds": {
+        "graph": 0.36483191399020143,
+        "partition": 0.1062350379943382,
+        "fields_equations_build": 1.823541613004636,
+        "first_step": 1.482052876992384,
+        "warmup": 0.8560470110096503,
+        "repeated_solve": 90.03391461496358,
+        "validation": 0.05612322301021777
+      },
+      "solver_seconds": 96.57706411299296,
+      "local_edges": 2050,
+      "work": 172040.0,
+      "transform_work": 887136.5212160564,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174088,
+          "interior_nnz": 1597064,
+          "lu_nnz": 3299644,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1392704,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174088,
+            8
+          ],
+          "stored_response_nnz": 1392704
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164544,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2040,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 384679936
+        },
+        {
+          "step": 10,
+          "rss_bytes": 530575360
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 530579456
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 31,
+      "host": "worker7206",
+      "affinity": [
+        31
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530505728,
+      "phase_seconds": {
+        "graph": 0.3648435150098521,
+        "partition": 0.10623738801223226,
+        "fields_equations_build": 1.8235404829902109,
+        "first_step": 1.482047097000759,
+        "warmup": 0.8560602920188103,
+        "repeated_solve": 90.03397927712649,
+        "validation": 0.05612519301939756
+      },
+      "solver_seconds": 97.39287675000378,
+      "local_edges": 2046,
+      "work": 172728.0,
+      "transform_work": 892464.4531843155,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174768,
+          "interior_nnz": 1598664,
+          "lu_nnz": 3244691,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 64,
+          "response_nnz": 1398144,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174768,
+            8
+          ],
+          "stored_response_nnz": 1398144
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164304,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 383926272
+        },
+        {
+          "step": 10,
+          "rss_bytes": 533258240
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 533262336
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 32,
+      "host": "worker7206",
+      "affinity": [
+        32
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 532811776,
+      "phase_seconds": {
+        "graph": 0.3648287740070373,
+        "partition": 0.1062237780133728,
+        "fields_equations_build": 1.8235548240190838,
+        "first_step": 1.4820360369922128,
+        "warmup": 0.8560472409881186,
+        "repeated_solve": 90.03400473995134,
+        "validation": 0.05612212300184183
+      },
+      "solver_seconds": 97.75963676799438,
+      "local_edges": 2048,
+      "work": 172496.0,
+      "transform_work": 890655.6320697371,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174540,
+          "interior_nnz": 1596336,
+          "lu_nnz": 3245440,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1396320,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174540,
+            8
+          ],
+          "stored_response_nnz": 1396320
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 165888,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2040,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 384561152
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532398080
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532398080
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 33,
+      "host": "worker7206",
+      "affinity": [
+        33
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531308544,
+      "phase_seconds": {
+        "graph": 0.36484558501979336,
+        "partition": 0.10623590799514204,
+        "fields_equations_build": 1.8235440030111931,
+        "first_step": 1.4820465670200065,
+        "warmup": 0.8560326209990308,
+        "repeated_solve": 90.03398785501486,
+        "validation": 0.0561226129939314
+      },
+      "solver_seconds": 98.97097910000593,
+      "local_edges": 2046,
+      "work": 174072.0,
+      "transform_work": 901319.4486310416,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 176112,
+          "interior_nnz": 1611848,
+          "lu_nnz": 3255862,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 64,
+          "response_nnz": 1408896,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            176112,
+            8
+          ],
+          "stored_response_nnz": 1408896
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162768,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381906944
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531578880
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531582976
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 34,
+      "host": "worker7206",
+      "affinity": [
+        34
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530702336,
+      "phase_seconds": {
+        "graph": 0.3648193549888674,
+        "partition": 0.10623473799205385,
+        "fields_equations_build": 1.8235430130152963,
+        "first_step": 1.482042346993694,
+        "warmup": 0.856047491019126,
+        "repeated_solve": 90.03393096593209,
+        "validation": 0.05612123300670646
+      },
+      "solver_seconds": 98.18687702802708,
+      "local_edges": 2050,
+      "work": 170968.0,
+      "transform_work": 880672.2997859874,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173016,
+          "interior_nnz": 1586360,
+          "lu_nnz": 3276409,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1384128,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173016,
+            8
+          ],
+          "stored_response_nnz": 1384128
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162928,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 378904576
+        },
+        {
+          "step": 10,
+          "rss_bytes": 528248832
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 528248832
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 35,
+      "host": "worker7206",
+      "affinity": [
+        35
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 527761408,
+      "phase_seconds": {
+        "graph": 0.3648549659992568,
+        "partition": 0.10623650799971074,
+        "fields_equations_build": 1.8235393529757857,
+        "first_step": 1.48204862701823,
+        "warmup": 0.8560576020099688,
+        "repeated_solve": 90.03395622808603,
+        "validation": 0.056123043003026396
+      },
+      "solver_seconds": 97.73217870399822,
+      "local_edges": 2048,
+      "work": 171120.0,
+      "transform_work": 881302.2142421289,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173164,
+          "interior_nnz": 1587888,
+          "lu_nnz": 3263692,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1385312,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173164,
+            8
+          ],
+          "stored_response_nnz": 1385312
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163664,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381771776
+        },
+        {
+          "step": 10,
+          "rss_bytes": 536563712
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 536567808
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 36,
+      "host": "worker7206",
+      "affinity": [
+        36
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 535330816,
+      "phase_seconds": {
+        "graph": 0.3648371839954052,
+        "partition": 0.10624403899419121,
+        "fields_equations_build": 1.8235539740126114,
+        "first_step": 1.482034846994793,
+        "warmup": 0.8560462309978902,
+        "repeated_solve": 90.03390982700512,
+        "validation": 0.05612211299012415
+      },
+      "solver_seconds": 96.9221414969943,
+      "local_edges": 2046,
+      "work": 171848.0,
+      "transform_work": 886649.9468347636,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173888,
+          "interior_nnz": 1589672,
+          "lu_nnz": 3218010,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1391104,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173888,
+            8
+          ],
+          "stored_response_nnz": 1391104
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 144640,
+      "tau_unknowns": 7176,
+      "owned_vertex_unknowns": 1796,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 360984576
+        },
+        {
+          "step": 10,
+          "rss_bytes": 493600768
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 493600768
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 37,
+      "host": "worker7206",
+      "affinity": [
+        37
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 492945408,
+      "phase_seconds": {
+        "graph": 0.3648560759902466,
+        "partition": 0.10623641801066697,
+        "fields_equations_build": 1.8235404530132655,
+        "first_step": 1.4820477169996593,
+        "warmup": 0.8560441409936175,
+        "repeated_solve": 90.03390790490084,
+        "validation": 0.05612215300789103
+      },
+      "solver_seconds": 96.30167256400455,
+      "local_edges": 1794,
+      "work": 151816.0,
+      "transform_work": 784967.4429794138,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 153608,
+          "interior_nnz": 1410152,
+          "lu_nnz": 2880410,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1228864,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            153608,
+            8
+          ],
+          "stored_response_nnz": 1228864
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162912,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 379850752
+        },
+        {
+          "step": 10,
+          "rss_bytes": 529244160
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 529256448
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 38,
+      "host": "worker7206",
+      "affinity": [
+        38
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 528998400,
+      "phase_seconds": {
+        "graph": 0.36483785402379,
+        "partition": 0.10623374799615704,
+        "fields_equations_build": 1.8235418029944412,
+        "first_step": 1.482042777002789,
+        "warmup": 0.8560516510042362,
+        "repeated_solve": 90.03394855707302,
+        "validation": 0.056121713016182184
+      },
+      "solver_seconds": 96.55848213101854,
+      "local_edges": 2048,
+      "work": 171104.0,
+      "transform_work": 881895.4243321035,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173148,
+          "interior_nnz": 1587504,
+          "lu_nnz": 3275632,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1385184,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173148,
+            8
+          ],
+          "stored_response_nnz": 1385184
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164960,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 382963712
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532344832
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532344832
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 39,
+      "host": "worker7206",
+      "affinity": [
+        39
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531963904,
+      "phase_seconds": {
+        "graph": 0.3648539860150777,
+        "partition": 0.10623682799632661,
+        "fields_equations_build": 1.8235389929905068,
+        "first_step": 1.48205413800315,
+        "warmup": 0.8560618119954597,
+        "repeated_solve": 90.03391943706083,
+        "validation": 0.056124123017070815
+      },
+      "solver_seconds": 96.9100857799931,
+      "local_edges": 2046,
+      "work": 173144.0,
+      "transform_work": 895308.1134991265,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 175184,
+          "interior_nnz": 1603160,
+          "lu_nnz": 3268260,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 44,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1401472,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            175184,
+            8
+          ],
+          "stored_response_nnz": 1401472
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163200,
+      "tau_unknowns": 8188,
+      "owned_vertex_unknowns": 2050,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 377503744
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531697664
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531701760
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 40,
+      "host": "worker7206",
+      "affinity": [
+        40
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530698240,
+      "phase_seconds": {
+        "graph": 0.3648359839862678,
+        "partition": 0.1062411880120635,
+        "fields_equations_build": 1.8235540540190414,
+        "first_step": 1.4820412269909866,
+        "warmup": 0.8560467309725937,
+        "repeated_solve": 90.0339459090319,
+        "validation": 0.056121322995750234
+      },
+      "solver_seconds": 96.53609899399453,
+      "local_edges": 2047,
+      "work": 171388.0,
+      "transform_work": 882921.9320157447,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173430,
+          "interior_nnz": 1585476,
+          "lu_nnz": 3194373,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 92,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1387440,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173430,
+            8
+          ],
+          "stored_response_nnz": 1387440
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162704,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381263872
+        },
+        {
+          "step": 10,
+          "rss_bytes": 527831040
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 527831040
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 41,
+      "host": "worker7206",
+      "affinity": [
+        41
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 527093760,
+      "phase_seconds": {
+        "graph": 0.3648516160028521,
+        "partition": 0.10623214798397385,
+        "fields_equations_build": 1.823542792990338,
+        "first_step": 1.4820399369928055,
+        "warmup": 0.8560288810112979,
+        "repeated_solve": 90.03392733389046,
+        "validation": 0.05612306299735792
+      },
+      "solver_seconds": 96.74936474699643,
+      "local_edges": 2050,
+      "work": 170904.0,
+      "transform_work": 879762.0385087414,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 172952,
+          "interior_nnz": 1585800,
+          "lu_nnz": 3300231,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1383616,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            172952,
+            8
+          ],
+          "stored_response_nnz": 1383616
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163680,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 382373888
+        },
+        {
+          "step": 10,
+          "rss_bytes": 529727488
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 529735680
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 42,
+      "host": "worker7206",
+      "affinity": [
+        42
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 528879616,
+      "phase_seconds": {
+        "graph": 0.36483542498899624,
+        "partition": 0.10623099800432101,
+        "fields_equations_build": 1.8235408829932567,
+        "first_step": 1.4820406069920864,
+        "warmup": 0.8560463409812655,
+        "repeated_solve": 90.03389636593056,
+        "validation": 0.05612055299570784
+      },
+      "solver_seconds": 97.12052450102055,
+      "local_edges": 2048,
+      "work": 171872.0,
+      "transform_work": 886574.3208680144,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173916,
+          "interior_nnz": 1595408,
+          "lu_nnz": 3248485,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1391328,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173916,
+            8
+          ],
+          "stored_response_nnz": 1391328
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 166384,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 388268032
+        },
+        {
+          "step": 10,
+          "rss_bytes": 537030656
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 537034752
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 43,
+      "host": "worker7206",
+      "affinity": [
+        43
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 536842240,
+      "phase_seconds": {
+        "graph": 0.3648530060017947,
+        "partition": 0.10623328801011667,
+        "fields_equations_build": 1.8235424830054399,
+        "first_step": 1.4820482869981788,
+        "warmup": 0.8560591019922867,
+        "repeated_solve": 90.03392887598602,
+        "validation": 0.056124183000065386
+      },
+      "solver_seconds": 96.54854674398666,
+      "local_edges": 2046,
+      "work": 174568.0,
+      "transform_work": 904359.9139756704,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 176608,
+          "interior_nnz": 1617160,
+          "lu_nnz": 3262321,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1412864,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            176608,
+            8
+          ],
+          "stored_response_nnz": 1412864
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163472,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 385765376
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532672512
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532676608
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 44,
+      "host": "worker7206",
+      "affinity": [
+        44
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531681280,
+      "phase_seconds": {
+        "graph": 0.3648326140246354,
+        "partition": 0.1062412180181127,
+        "fields_equations_build": 1.8235531539830845,
+        "first_step": 1.4820287670008838,
+        "warmup": 0.8560453609970864,
+        "repeated_solve": 90.0338682270085,
+        "validation": 0.05612123297760263
+      },
+      "solver_seconds": 96.81747531099245,
+      "local_edges": 2048,
+      "work": 171664.0,
+      "transform_work": 884745.9148892091,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173708,
+          "interior_nnz": 1587488,
+          "lu_nnz": 3237565,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1389664,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173708,
+            8
+          ],
+          "stored_response_nnz": 1389664
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164832,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 382398464
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531820544
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531824640
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 45,
+      "host": "worker7206",
+      "affinity": [
+        45
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531628032,
+      "phase_seconds": {
+        "graph": 0.36484267498599365,
+        "partition": 0.10623462899820879,
+        "fields_equations_build": 1.8235414029913954,
+        "first_step": 1.4820541470253374,
+        "warmup": 0.8560418310225941,
+        "repeated_solve": 90.03387382513029,
+        "validation": 0.056123603018932045
+      },
+      "solver_seconds": 96.56453055000748,
+      "local_edges": 2048,
+      "work": 173024.0,
+      "transform_work": 892950.7687372267,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 175068,
+          "interior_nnz": 1601728,
+          "lu_nnz": 3209683,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 64,
+          "response_nnz": 1400544,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            175068,
+            8
+          ],
+          "stored_response_nnz": 1400544
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162528,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 382099456
+        },
+        {
+          "step": 10,
+          "rss_bytes": 530763776
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 530776064
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 46,
+      "host": "worker7206",
+      "affinity": [
+        46
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530145280,
+      "phase_seconds": {
+        "graph": 0.3648311540018767,
+        "partition": 0.10623168799793348,
+        "fields_equations_build": 1.82354137301445,
+        "first_step": 1.4820528970158193,
+        "warmup": 0.8560480809828732,
+        "repeated_solve": 90.0339034149365,
+        "validation": 0.056124694005120546
+      },
+      "solver_seconds": 96.54453263201867,
+      "local_edges": 2050,
+      "work": 170728.0,
+      "transform_work": 878610.7057164977,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 172776,
+          "interior_nnz": 1583912,
+          "lu_nnz": 3275818,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1382208,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            172776,
+            8
+          ],
+          "stored_response_nnz": 1382208
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163280,
+      "tau_unknowns": 8196,
+      "owned_vertex_unknowns": 2046,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 382676992
+        },
+        {
+          "step": 10,
+          "rss_bytes": 528678912
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 528691200
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 47,
+      "host": "worker7206",
+      "affinity": [
+        47
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 528158720,
+      "phase_seconds": {
+        "graph": 0.3648459860123694,
+        "partition": 0.10623379799653776,
+        "fields_equations_build": 1.8235399930272251,
+        "first_step": 1.4820544269750826,
+        "warmup": 0.8560596720199101,
+        "repeated_solve": 90.03394078696147,
+        "validation": 0.05612616299185902
+      },
+      "solver_seconds": 96.28112322700326,
+      "local_edges": 2049,
+      "work": 171476.0,
+      "transform_work": 883436.3138179168,
+      "components": 2,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173518,
+          "interior_nnz": 1590924,
+          "lu_nnz": 3259986,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 112,
+          "response_nnz": 1347396,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173518,
+            16
+          ],
+          "stored_response_nnz": 1347396
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164400,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 385716224
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532254720
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532258816
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 48,
+      "host": "worker7206",
+      "affinity": [
+        48
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531722240,
+      "phase_seconds": {
+        "graph": 0.3648320039792452,
+        "partition": 0.10622216798947193,
+        "fields_equations_build": 1.823554273985792,
+        "first_step": 1.4820429270039313,
+        "warmup": 0.8560471610107925,
+        "repeated_solve": 90.03393886695267,
+        "validation": 0.0561225030105561
+      },
+      "solver_seconds": 96.29509701800998,
+      "local_edges": 2046,
+      "work": 172584.0,
+      "transform_work": 891400.1433670628,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174624,
+          "interior_nnz": 1597432,
+          "lu_nnz": 3225041,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1396992,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174624,
+            8
+          ],
+          "stored_response_nnz": 1396992
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163088,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 379330560
+        },
+        {
+          "step": 10,
+          "rss_bytes": 525905920
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 525910016
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 49,
+      "host": "worker7206",
+      "affinity": [
+        49
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 525672448,
+      "phase_seconds": {
+        "graph": 0.36484446498798206,
+        "partition": 0.10623402800410986,
+        "fields_equations_build": 1.8235422229918186,
+        "first_step": 1.4820475669985171,
+        "warmup": 0.856030961003853,
+        "repeated_solve": 90.03395266496227,
+        "validation": 0.05612397301592864
+      },
+      "solver_seconds": 96.54231844900642,
+      "local_edges": 2048,
+      "work": 171280.0,
+      "transform_work": 882649.9723935938,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173324,
+          "interior_nnz": 1584480,
+          "lu_nnz": 3235359,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1386592,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173324,
+            8
+          ],
+          "stored_response_nnz": 1386592
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 165760,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 387170304
+        },
+        {
+          "step": 10,
+          "rss_bytes": 535203840
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 535207936
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 50,
+      "host": "worker7206",
+      "affinity": [
+        50
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 534204416,
+      "phase_seconds": {
+        "graph": 0.3648357339843642,
+        "partition": 0.10623172798659652,
+        "fields_equations_build": 1.8235387029999401,
+        "first_step": 1.4820417469891254,
+        "warmup": 0.8560458510182798,
+        "repeated_solve": 90.03390093607595,
+        "validation": 0.05612309300340712
+      },
+      "solver_seconds": 97.10706937802024,
+      "local_edges": 2046,
+      "work": 173944.0,
+      "transform_work": 901018.7625339197,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 175984,
+          "interior_nnz": 1610728,
+          "lu_nnz": 3245605,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1407872,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            175984,
+            8
+          ],
+          "stored_response_nnz": 1407872
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162832,
+      "tau_unknowns": 8208,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 380850176
+        },
+        {
+          "step": 10,
+          "rss_bytes": 528531456
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 528539648
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 51,
+      "host": "worker7206",
+      "affinity": [
+        51
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 528404480,
+      "phase_seconds": {
+        "graph": 0.36485327599802986,
+        "partition": 0.10623491799924523,
+        "fields_equations_build": 1.8235379929828923,
+        "first_step": 1.482048826990649,
+        "warmup": 0.8560567119857296,
+        "repeated_solve": 90.03392248606542,
+        "validation": 0.0561252030020114
+      },
+      "solver_seconds": 96.7726706849935,
+      "local_edges": 2052,
+      "work": 171040.0,
+      "transform_work": 880551.0792787776,
+      "components": 2,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173088,
+          "interior_nnz": 1586784,
+          "lu_nnz": 3271694,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 128,
+          "response_nnz": 1384704,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173088,
+            16
+          ],
+          "stored_response_nnz": 1384704
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164048,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381091840
+        },
+        {
+          "step": 10,
+          "rss_bytes": 529764352
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 529772544
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 52,
+      "host": "worker7206",
+      "affinity": [
+        52
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 528769024,
+      "phase_seconds": {
+        "graph": 0.3648360040097032,
+        "partition": 0.10624245900544338,
+        "fields_equations_build": 1.823554073984269,
+        "first_step": 1.4820290570205543,
+        "warmup": 0.8560457009880338,
+        "repeated_solve": 90.0338838880125,
+        "validation": 0.05612263301736675
+      },
+      "solver_seconds": 96.64781549299369,
+      "local_edges": 2050,
+      "work": 172248.0,
+      "transform_work": 888142.5284387729,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174296,
+          "interior_nnz": 1599208,
+          "lu_nnz": 3278050,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1394368,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174296,
+            8
+          ],
+          "stored_response_nnz": 1394368
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164032,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 385224704
+        },
+        {
+          "step": 10,
+          "rss_bytes": 529772544
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 529776640
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 53,
+      "host": "worker7206",
+      "affinity": [
+        53
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 529260544,
+      "phase_seconds": {
+        "graph": 0.36485293597797863,
+        "partition": 0.10623353798291646,
+        "fields_equations_build": 1.8235400929988828,
+        "first_step": 1.4820486470125616,
+        "warmup": 0.8560438709973823,
+        "repeated_solve": 90.03388060402358,
+        "validation": 0.056124313006876037
+      },
+      "solver_seconds": 97.9668262610212,
+      "local_edges": 2046,
+      "work": 172216.0,
+      "transform_work": 889209.8615058875,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174256,
+          "interior_nnz": 1593528,
+          "lu_nnz": 3272517,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1394048,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174256,
+            8
+          ],
+          "stored_response_nnz": 1394048
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163904,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 379015168
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532234240
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532258816
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 54,
+      "host": "worker7206",
+      "affinity": [
+        54
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 532230144,
+      "phase_seconds": {
+        "graph": 0.3648372740135528,
+        "partition": 0.10623178799869493,
+        "fields_equations_build": 1.8235415729868691,
+        "first_step": 1.482041367009515,
+        "warmup": 0.8560473209945485,
+        "repeated_solve": 90.03388486595941,
+        "validation": 0.05612361300154589
+      },
+      "solver_seconds": 96.29632682798547,
+      "local_edges": 2046,
+      "work": 172088.0,
+      "transform_work": 888611.0056743138,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174128,
+          "interior_nnz": 1592360,
+          "lu_nnz": 3255292,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1393024,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174128,
+            8
+          ],
+          "stored_response_nnz": 1393024
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162208,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 378441728
+        },
+        {
+          "step": 10,
+          "rss_bytes": 530612224
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 530620416
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 55,
+      "host": "worker7206",
+      "affinity": [
+        55
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530284544,
+      "phase_seconds": {
+        "graph": 0.36485228600213304,
+        "partition": 0.10623474800377153,
+        "fields_equations_build": 1.8235397330136038,
+        "first_step": 1.482054797001183,
+        "warmup": 0.8560616519825999,
+        "repeated_solve": 90.033908697078,
+        "validation": 0.05612579299486242
+      },
+      "solver_seconds": 96.31678057200043,
+      "local_edges": 2050,
+      "work": 170408.0,
+      "transform_work": 876695.6345136797,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 172456,
+          "interior_nnz": 1580664,
+          "lu_nnz": 3258787,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 64,
+          "response_nnz": 1379648,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            172456,
+            8
+          ],
+          "stored_response_nnz": 1379648
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163456,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2052,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 368947200
+        },
+        {
+          "step": 10,
+          "rss_bytes": 522964992
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 522977280
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 56,
+      "host": "worker7206",
+      "affinity": [
+        56
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 522170368,
+      "phase_seconds": {
+        "graph": 0.3648319540079683,
+        "partition": 0.10624000802636147,
+        "fields_equations_build": 1.8235549239907414,
+        "first_step": 1.4820348669891246,
+        "warmup": 0.8560464809997939,
+        "repeated_solve": 90.03389221598627,
+        "validation": 0.056123272981494665
+      },
+      "solver_seconds": 96.91602577600861,
+      "local_edges": 2048,
+      "work": 171648.0,
+      "transform_work": 884501.8899926365,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173692,
+          "interior_nnz": 1593040,
+          "lu_nnz": 3286156,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 96,
+          "owned_schur_rows": 8,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1389536,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173692,
+            8
+          ],
+          "stored_response_nnz": 1389536
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163136,
+      "tau_unknowns": 8200,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 380928000
+        },
+        {
+          "step": 10,
+          "rss_bytes": 528896000
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 528904192
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 57,
+      "host": "worker7206",
+      "affinity": [
+        57
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 528474112,
+      "phase_seconds": {
+        "graph": 0.36484969602315687,
+        "partition": 0.10623309802031144,
+        "fields_equations_build": 1.8235418229887728,
+        "first_step": 1.4820478670008015,
+        "warmup": 0.8560270010202657,
+        "repeated_solve": 90.03390755303553,
+        "validation": 0.056123502989066765
+      },
+      "solver_seconds": 96.64600172301289,
+      "local_edges": 2050,
+      "work": 171336.0,
+      "transform_work": 882177.325822796,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173384,
+          "interior_nnz": 1590056,
+          "lu_nnz": 3228792,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 64,
+          "response_nnz": 1387072,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173384,
+            8
+          ],
+          "stored_response_nnz": 1387072
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 164880,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 382259200
+        },
+        {
+          "step": 10,
+          "rss_bytes": 531640320
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 531652608
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 58,
+      "host": "worker7206",
+      "affinity": [
+        58
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 531046400,
+      "phase_seconds": {
+        "graph": 0.36483478400623426,
+        "partition": 0.1062320479832124,
+        "fields_equations_build": 1.8235409329936374,
+        "first_step": 1.4820457670139149,
+        "warmup": 0.8560457409766968,
+        "repeated_solve": 90.03388547402574,
+        "validation": 0.05612322301021777
+      },
+      "solver_seconds": 96.3216932840005,
+      "local_edges": 2046,
+      "work": 173064.0,
+      "transform_work": 894424.3094632307,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 175104,
+          "interior_nnz": 1601848,
+          "lu_nnz": 3242327,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1400832,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            175104,
+            8
+          ],
+          "stored_response_nnz": 1400832
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163984,
+      "tau_unknowns": 8192,
+      "owned_vertex_unknowns": 2048,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 383582208
+        },
+        {
+          "step": 10,
+          "rss_bytes": 530956288
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 530960384
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 59,
+      "host": "worker7206",
+      "affinity": [
+        59
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 530587648,
+      "phase_seconds": {
+        "graph": 0.3648517559922766,
+        "partition": 0.10623357800068334,
+        "fields_equations_build": 1.8235392829810735,
+        "first_step": 1.4820527469855733,
+        "warmup": 0.8560554310097359,
+        "repeated_solve": 90.03392248600721,
+        "validation": 0.056125392991816625
+      },
+      "solver_seconds": 96.57306359201903,
+      "local_edges": 2048,
+      "work": 172176.0,
+      "transform_work": 888481.8237541744,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 174220,
+          "interior_nnz": 1593296,
+          "lu_nnz": 3220772,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 56,
+          "owned_schur_rows": 4,
+          "ghost_count": 12,
+          "local_separator_nnz": 64,
+          "response_nnz": 1393760,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            174220,
+            8
+          ],
+          "stored_response_nnz": 1393760
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162512,
+      "tau_unknowns": 8208,
+      "owned_vertex_unknowns": 2058,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 379883520
+        },
+        {
+          "step": 10,
+          "rss_bytes": 546459648
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 546467840
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 60,
+      "host": "worker7206",
+      "affinity": [
+        60
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 545849344,
+      "phase_seconds": {
+        "graph": 0.3648326039838139,
+        "partition": 0.10624205801286735,
+        "fields_equations_build": 1.8235536840220448,
+        "first_step": 1.4820284669985995,
+        "warmup": 0.8560453709797002,
+        "repeated_solve": 90.03385744403931,
+        "validation": 0.05612341300002299
+      },
+      "solver_seconds": 97.16861854400486,
+      "local_edges": 2052,
+      "work": 170720.0,
+      "transform_work": 878624.0210262779,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 172770,
+          "interior_nnz": 1583648,
+          "lu_nnz": 3275170,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 88,
+          "owned_schur_rows": 8,
+          "ghost_count": 4,
+          "local_separator_nnz": 100,
+          "response_nnz": 1727700,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            172770,
+            10
+          ],
+          "stored_response_nnz": 1727700
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 162896,
+      "tau_unknowns": 8188,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 374292480
+        },
+        {
+          "step": 10,
+          "rss_bytes": 503865344
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 503869440
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 61,
+      "host": "worker7206",
+      "affinity": [
+        61
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 506994688,
+      "phase_seconds": {
+        "graph": 0.3648392749892082,
+        "partition": 0.1062352980079595,
+        "fields_equations_build": 1.8235402129939757,
+        "first_step": 1.4820554170000833,
+        "warmup": 0.8560440510045737,
+        "repeated_solve": 90.03387848395505,
+        "validation": 0.056124772992916405
+      },
+      "solver_seconds": 96.71680743500474,
+      "local_edges": 2047,
+      "work": 171084.0,
+      "transform_work": 881191.6018964808,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173128,
+          "interior_nnz": 1587716,
+          "lu_nnz": 3272181,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 16,
+          "response_nnz": 692512,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173128,
+            4
+          ],
+          "stored_response_nnz": 692512
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 165120,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2044,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 383721472
+        },
+        {
+          "step": 10,
+          "rss_bytes": 532766720
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 532787200
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 62,
+      "host": "worker7206",
+      "affinity": [
+        62
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 532385792,
+      "phase_seconds": {
+        "graph": 0.3648297539912164,
+        "partition": 0.10623293797834776,
+        "fields_equations_build": 1.8235417730174959,
+        "first_step": 1.4820533769961912,
+        "warmup": 0.8560487310169265,
+        "repeated_solve": 90.03390938602388,
+        "validation": 0.05612463300349191
+      },
+      "solver_seconds": 97.13612461401499,
+      "local_edges": 2046,
+      "work": 173304.0,
+      "transform_work": 896445.3079048386,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 175344,
+          "interior_nnz": 1604312,
+          "lu_nnz": 3259379,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 48,
+          "owned_schur_rows": 4,
+          "ghost_count": 8,
+          "local_separator_nnz": 64,
+          "response_nnz": 1402752,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            175344,
+            8
+          ],
+          "stored_response_nnz": 1402752
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 163536,
+      "tau_unknowns": 8184,
+      "owned_vertex_unknowns": 2038,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 381853696
+        },
+        {
+          "step": 10,
+          "rss_bytes": 522465280
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 522473472
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 3,
+          "restart_cycles": 1,
+          "residual_norm": 3.2837601602341366e-13,
+          "relative_residual": 9.57299792803772e-14,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 63,
+      "host": "worker7206",
+      "affinity": [
+        63
+      ],
+      "separator_iterations": 3,
+      "peak_rss_bytes": 521203712,
+      "phase_seconds": {
+        "graph": 0.3648403350089211,
+        "partition": 0.10623459800262935,
+        "fields_equations_build": 1.823541422985727,
+        "first_step": 1.4820486969838385,
+        "warmup": 0.8560648819839116,
+        "repeated_solve": 90.0340047981008,
+        "validation": 0.056126602983567864
+      },
+      "solver_seconds": 98.44246059498983,
+      "local_edges": 2046,
+      "work": 171720.0,
+      "transform_work": 886043.7587652081,
+      "components": 2,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 173758,
+          "interior_nnz": 1588520,
+          "lu_nnz": 3223648,
+          "separator_size": 324,
+          "retained_unknowns": 324,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 100,
+          "response_nnz": 1347244,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            173758,
+            14
+          ],
+          "stored_response_nnz": 1347244
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    }
+  ],
+  "mode_counts": {
+    "16": 10856,
+    "24": 21876,
+    "32": 22005,
+    "40": 21929,
+    "48": 21834,
+    "56": 21770,
+    "64": 10802
+  },
+  "topology_sha256": "6d8f486222663196bcecdd15e67f2494807d57d2dbb7a022cfccc916892e8d0d",
+  "equation_input_sha256": "741d625d812ba4d3ef8563e111bf9ad1ab0301a8c886ed4e2c31e918fb165192",
+  "separator_vertices": 162,
+  "interface_dofs": 324,
+  "edge_coefficients": 10477040,
+  "num_edges": 131072,
+  "num_vertices": 65536,
+  "degree_histogram": {
+    "3": 32256,
+    "4": 32768,
+    "67": 512
+  },
+  "excess_participation": 326,
+  "samples": [
+    [
+      0,
+      0,
+      [
+        0.4205759441887486,
+        0.40326721255551323,
+        0.36336686538994745,
+        0.32147469394094824,
+        0.3016050228208369
+      ]
+    ],
+    [
+      0,
+      1,
+      [
+        0.30160502282085405,
+        0.30961132745134645,
+        0.32540410884321574,
+        0.3392050684277158,
+        0.3446504630271845
+      ]
+    ],
+    [
+      0,
+      2,
+      [
+        0.2913896820035879,
+        0.30706024571115853,
+        0.33971434462495465,
+        0.3703766301389658,
+        0.3834862998626763
+      ]
+    ],
+    [
+      0,
+      3,
+      [
+        0.38348629986267474,
+        0.3901878963810933,
+        0.4031102422371924,
+        0.41404076802246864,
+        0.41818141288940647
+      ]
+    ],
+    [
+      0,
+      4,
+      [
+        0.4181814128894084,
+        0.41993866659460244,
+        0.42198350866732603,
+        0.42203653217844084,
+        0.4212328670327594
+      ]
+    ],
+    [
+      0,
+      5,
+      [
+        0.4212328670327589,
+        0.4209866599308868,
+        0.41862393692624716,
+        0.4142694005312075,
+        0.4114623001166446
+      ]
+    ],
+    [
+      0,
+      6,
+      [
+        0.4114623001166457,
+        0.4132472913962789,
+        0.415353203581819,
+        0.41546730087653905,
+        0.4146913846750043
+      ]
+    ],
+    [
+      0,
+      7,
+      [
+        0.4146913846750053,
+        0.3999751372562231,
+        0.36577836280224063,
+        0.32958977164734204,
+        0.31231263152969524
+      ]
+    ],
+    [
+      0,
+      8,
+      [
+        0.31231263152969707,
+        0.3157185484103489,
+        0.32139051449771394,
+        0.32507066477477164,
+        0.325915727640589
+      ]
+    ],
+    [
+      0,
+      9,
+      [
+        0.3259157276405891,
+        0.34433663141247134,
+        0.38304144686187774,
+        0.4197544472177245,
+        0.43561444310225184
+      ]
+    ],
+    [
+      0,
+      10,
+      [
+        0.4356144431022514,
+        0.4239492793232743,
+        0.3964648046629643,
+        0.3669885098156811,
+        0.3527624084274378
+      ]
+    ],
+    [
+      0,
+      11,
+      [
+        0.3527624084274376,
+        0.3448590949851278,
+        0.32565076303709256,
+        0.30445061331169,
+        0.2939864231855901
+      ]
+    ],
+    [
+      0,
+      12,
+      [
+        0.29398642318559026,
+        0.3097502252137617,
+        0.3426094740472188,
+        0.3734769063130138,
+        0.38667981527789963
+      ]
+    ],
+    [
+      0,
+      13,
+      [
+        0.38667981527790074,
+        0.39192442288738893,
+        0.4016414278721671,
+        0.4093666103632473,
+        0.41205027925417737
+      ]
+    ],
+    [
+      0,
+      14,
+      [
+        0.412050279254177,
+        0.4169992996660005,
+        0.42606602675183525,
+        0.4331409306173657,
+        0.43552901976693625
+      ]
+    ],
+    [
+      0,
+      15,
+      [
+        0.4355290197669349,
+        0.4184709515309071,
+        0.3791221179590274,
+        0.33778146378516877,
+        0.3181624983580861
+      ]
+    ],
+    [
+      1,
+      0,
+      [
+        0.43350526278441787,
+        0.4235680818474307,
+        0.399885174294685,
+        0.3742104458809056,
+        0.3617123325206708
+      ]
+    ],
+    [
+      1,
+      1,
+      [
+        0.3617123325206882,
+        0.35250699156112364,
+        0.33043416435823164,
+        0.3063695188623152,
+        0.2946033006468615
+      ]
+    ],
+    [
+      1,
+      2,
+      [
+        0.3260893954542587,
+        0.3257177797677642,
+        0.3230791889254097,
+        0.3184487930730239,
+        0.3155163130628846
+      ]
+    ],
+    [
+      1,
+      3,
+      [
+        0.3155163130628825,
+        0.33539566748405225,
+        0.3773091399688772,
+        0.41723079485614434,
+        0.43454924267027917
+      ]
+    ],
+    [
+      1,
+      4,
+      [
+        0.43454924267028144,
+        0.42369266548026463,
+        0.3979870903882607,
+        0.37028969773850506,
+        0.3568722161165762
+      ]
+    ],
+    [
+      1,
+      5,
+      [
+        0.35687221611657705,
+        0.37057906434191584,
+        0.398912989344494,
+        0.42525510060326094,
+        0.43640106167512954
+      ]
+    ],
+    [
+      1,
+      6,
+      [
+        0.43640106167513115,
+        0.4375698979505561,
+        0.4383202156715476,
+        0.4370787160465847,
+        0.43568661123636876
+      ]
+    ],
+    [
+      1,
+      7,
+      [
+        0.43568661123637065,
+        0.4146986246754656,
+        0.36670399737730114,
+        0.31671755029786597,
+        0.2931686514087329
+      ]
+    ],
+    [
+      1,
+      8,
+      [
+        0.2931686514087351,
+        0.2941705313670301,
+        0.29455361458581875,
+        0.2929448786267981,
+        0.29138588743562155
+      ]
+    ],
+    [
+      1,
+      9,
+      [
+        0.29138588743562055,
+        0.31197422773990485,
+        0.35544744579854876,
+        0.3969288450956223,
+        0.4149562778368869
+      ]
+    ],
+    [
+      1,
+      10,
+      [
+        0.41495627783688427,
+        0.3978835523982345,
+        0.3585024589095894,
+        0.3171295441062314,
+        0.2974959187141537
+      ]
+    ],
+    [
+      1,
+      11,
+      [
+        0.29749591871415426,
+        0.300731297261792,
+        0.3060281035588457,
+        0.30933309120423635,
+        0.3100075938136905
+      ]
+    ],
+    [
+      1,
+      12,
+      [
+        0.310007593813691,
+        0.31254394034899574,
+        0.3163028123403741,
+        0.31806986747029437,
+        0.31804531122856106
+      ]
+    ],
+    [
+      1,
+      13,
+      [
+        0.3180453112285618,
+        0.3233549461172576,
+        0.33321505571467835,
+        0.34108334480245567,
+        0.3438320775601913
+      ]
+    ],
+    [
+      1,
+      14,
+      [
+        0.34383207756019174,
+        0.35627315316606745,
+        0.38182242169784286,
+        0.4053798691163622,
+        0.41526002425413305
+      ]
+    ],
+    [
+      1,
+      15,
+      [
+        0.41526002425413133,
+        0.39725693611299245,
+        0.35582905340785886,
+        0.3124093506810861,
+        0.29184537479858436
+      ]
+    ]
+  ],
+  "correctness": {
+    "passed": true,
+    "max_error": 2.9244273536122023e-07,
+    "max_continuity": 1.0582967583379538e-09,
+    "assembled_residual": null,
+    "tolerance": 2e-06
+  },
+  "solver_seconds": 98.97097910000593,
+  "python_seconds": 98.07622208498651,
+  "reconstruction_counts": {
+    "response": 64,
+    "solve": 0,
+    "none": 0
+  },
+  "reconstruction_count_scope": "unique local factors across ranks; excludes shared stage aliases; none means no nonzero response application",
+  "optimization": {
+    "variant": "auto",
+    "response_setup_by_rank": [
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1393504,
+          "schur_nnz": 64,
+          "seconds": 0.22073818001081236
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1399136,
+          "schur_nnz": 64,
+          "seconds": 0.22350078000454232
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1380928,
+          "schur_nnz": 64,
+          "seconds": 0.21087325501139276
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1139424,
+          "schur_nnz": 80,
+          "seconds": 0.2510542579984758
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1371328,
+          "schur_nnz": 64,
+          "seconds": 0.21959162098937668
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1396352,
+          "schur_nnz": 64,
+          "seconds": 0.21802358000422828
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1391456,
+          "schur_nnz": 64,
+          "seconds": 0.2132812140043825
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1731060,
+          "schur_nnz": 100,
+          "seconds": 0.23532219001208432
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1398464,
+          "schur_nnz": 64,
+          "seconds": 0.21039046900114045
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1401008,
+          "schur_nnz": 64,
+          "seconds": 0.21895234999828972
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1404768,
+          "schur_nnz": 64,
+          "seconds": 0.21231878202524967
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1408096,
+          "schur_nnz": 64,
+          "seconds": 0.21341130801010877
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1890736,
+          "schur_nnz": 996,
+          "seconds": 0.5302744930086192
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1725184,
+          "schur_nnz": 1860,
+          "seconds": 0.6608298920036759
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1396576,
+          "schur_nnz": 64,
+          "seconds": 0.21323247198597528
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1494608,
+          "schur_nnz": 672,
+          "seconds": 0.47640274901641533
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1376064,
+          "schur_nnz": 64,
+          "seconds": 0.2110963020240888
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1399808,
+          "schur_nnz": 64,
+          "seconds": 0.21448208298534155
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1369280,
+          "schur_nnz": 64,
+          "seconds": 0.21344910000334494
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1395328,
+          "schur_nnz": 64,
+          "seconds": 0.21621923099155538
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1397424,
+          "schur_nnz": 64,
+          "seconds": 0.21975619799923152
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1379776,
+          "schur_nnz": 64,
+          "seconds": 0.2091133359936066
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1397040,
+          "schur_nnz": 64,
+          "seconds": 0.21554716801620089
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1391840,
+          "schur_nnz": 64,
+          "seconds": 0.21881366599700414
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1390048,
+          "schur_nnz": 64,
+          "seconds": 0.2126542929909192
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1378368,
+          "schur_nnz": 64,
+          "seconds": 0.2103448770067189
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1384368,
+          "schur_nnz": 64,
+          "seconds": 0.21774013998219743
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1731320,
+          "schur_nnz": 100,
+          "seconds": 0.23341647698543966
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1391808,
+          "schur_nnz": 64,
+          "seconds": 0.2114060019957833
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1349516,
+          "schur_nnz": 100,
+          "seconds": 0.2605423200002406
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1392704,
+          "schur_nnz": 64,
+          "seconds": 0.20562630202039145
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1398144,
+          "schur_nnz": 64,
+          "seconds": 0.21374035900225863
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1396320,
+          "schur_nnz": 64,
+          "seconds": 0.21124611599952914
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1408896,
+          "schur_nnz": 64,
+          "seconds": 0.210643906990299
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1384128,
+          "schur_nnz": 64,
+          "seconds": 0.21173849300248548
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1385312,
+          "schur_nnz": 64,
+          "seconds": 0.2111136220046319
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1391104,
+          "schur_nnz": 64,
+          "seconds": 0.19552252898574807
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1228864,
+          "schur_nnz": 64,
+          "seconds": 0.14068427300662734
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1385184,
+          "schur_nnz": 64,
+          "seconds": 0.2027384570101276
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1401472,
+          "schur_nnz": 64,
+          "seconds": 0.20327625499339774
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1387440,
+          "schur_nnz": 64,
+          "seconds": 0.1979872900119517
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1383616,
+          "schur_nnz": 64,
+          "seconds": 0.2059408019995317
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1391328,
+          "schur_nnz": 64,
+          "seconds": 0.2080008900084067
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1412864,
+          "schur_nnz": 64,
+          "seconds": 0.21201055200072005
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1389664,
+          "schur_nnz": 64,
+          "seconds": 0.21546908598975278
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1400544,
+          "schur_nnz": 64,
+          "seconds": 0.21762500700424425
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1382208,
+          "schur_nnz": 64,
+          "seconds": 0.20948454897734337
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1347396,
+          "schur_nnz": 112,
+          "seconds": 0.27261744800489396
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1396992,
+          "schur_nnz": 64,
+          "seconds": 0.1666376979846973
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1386592,
+          "schur_nnz": 64,
+          "seconds": 0.16909555898746476
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1407872,
+          "schur_nnz": 64,
+          "seconds": 0.16534526500618085
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1384704,
+          "schur_nnz": 128,
+          "seconds": 0.23371118601062335
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1394368,
+          "schur_nnz": 64,
+          "seconds": 0.1652927830000408
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1394048,
+          "schur_nnz": 64,
+          "seconds": 0.16768934301217087
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1393024,
+          "schur_nnz": 64,
+          "seconds": 0.16224792299908586
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1379648,
+          "schur_nnz": 64,
+          "seconds": 0.16234690698911436
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1389536,
+          "schur_nnz": 64,
+          "seconds": 0.16408280399627984
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1387072,
+          "schur_nnz": 64,
+          "seconds": 0.1565033740189392
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1400832,
+          "schur_nnz": 64,
+          "seconds": 0.16276706001372077
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1393760,
+          "schur_nnz": 64,
+          "seconds": 0.1623859179962892
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1727700,
+          "schur_nnz": 100,
+          "seconds": 0.1658030700054951
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 692512,
+          "schur_nnz": 16,
+          "seconds": 0.08429076601169072
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1402752,
+          "schur_nnz": 64,
+          "seconds": 0.14339477199246176
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1347244,
+          "schur_nnz": 100,
+          "seconds": 0.18666749700787477
+        }
+      ]
+    ],
+    "source_manifest": "de279b2135fbe750c01934aa2e47e7938d634a8185d82ecf59c77026cfff52dd"
+  }
+}

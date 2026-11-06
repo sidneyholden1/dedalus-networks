@@ -609,6 +609,13 @@ class Network(CoordinateSystem):
         object.__setattr__(self, name, value)
 
     @property
+    def tangent(self):
+        """The intrinsic one-dimensional tangent, distinct from storage axes."""
+        if '_tangent' not in self.__dict__:
+            object.__setattr__(self, '_tangent', Coordinate('__network_tangent'))
+        return self._tangent
+
+    @property
     def restriction_matrix(self):
         if '_restriction_matrix' not in self.__dict__:
             ports = self.endpoints.ravel()
@@ -1774,6 +1781,17 @@ class NetworkBasis(metaclass=CachedClass):
         """Return the ordinary bases used internally by a Field domain."""
         return (self.edges, self.interval)
 
+    @CachedAttribute
+    def dirac(self):
+        """One Dirac measure per vertex, with weights in coefficient layout."""
+        from .network_operators import NetworkDiracBasis
+        return NetworkDiracBasis(self)
+
+    def endpoint_dirac(self, order=0):
+        """Endpoint-labelled Dirac derivatives; both ends of loops stay distinct."""
+        from .network_operators import NetworkDiracBasis
+        return NetworkDiracBasis(self, order=order, endpoints=True)
+
     def local_grids(self, dist, scales):
         """Return canonical edge indices and the normalized reference grid."""
         logical_edge_grid = dist.local_grid(self.edges, scale=scales[0])
@@ -1864,7 +1882,7 @@ class NetworkBasis(metaclass=CachedClass):
 
     dx = derivative
 
-    def dtrace(self, operand):
+    def dtrace(self, operand, *, on=None, sum=False):
         """Return endpoint values in canonical port order.
 
         Parameters
@@ -1878,6 +1896,9 @@ class NetworkBasis(metaclass=CachedClass):
         Operand
             Port expression ordered ``(edge 0 left, edge 0 right, ...)``.
         """
+        if on is not None or sum:
+            from .network_operators import DirichletTrace
+            return DirichletTrace(operand, on=on, sum=sum)
         if operand.domain.get_basis(self.network.position_coord) is None:
             return self.edge_to_ports @ operand
         left = operators.Interpolate(
@@ -1892,7 +1913,7 @@ class NetworkBasis(metaclass=CachedClass):
         )
         return (self._left_trace @ left) + (self._right_trace @ right)
 
-    def ntrace(self, operand):
+    def ntrace(self, operand, *, on=None, sum=False):
         r"""Return outward physical derivatives in canonical port order.
 
         The result is :math:`-\partial_x u` at each oriented edge tail and
@@ -1908,6 +1929,9 @@ class NetworkBasis(metaclass=CachedClass):
         Operand
             Outward physical derivative on ``ports``.
         """
+        if on is not None or sum:
+            from .network_operators import NeumannTrace
+            return NeumannTrace(operand, on=on, sum=sum)
         derivative = operators.Differentiate(
             operand,
             self.network.position_coord,
@@ -2839,7 +2863,8 @@ def apply_distributed_network_subproblem_matrix(
                      "Distributed Network matrix-application validation",
                      error=input_error)
 
-    interface_input = np.ascontiguousarray(values[layout.interface_columns])
+    original_interface = np.ascontiguousarray(values[layout.interface_columns])
+    interface_input = original_interface.copy()
     if layout.resident:
         layout.column_dofs.forward(interface_input)
     else:
@@ -2847,8 +2872,11 @@ def apply_distributed_network_subproblem_matrix(
     # Local edge values remain resident. Refresh only the interface part of a
     # private input, then apply the original assembled sparse operator once.
     # No numerical matrix blocks are cached, so changed entries are observed.
-    synchronized = values.copy()
-    synchronized[layout.interface_columns] = interface_input
+    if np.array_equal(interface_input, original_interface):
+        synchronized = values
+    else:
+        synchronized = values.copy()
+        synchronized[layout.interface_columns] = interface_input
     result = np.asarray(local_matrix @ synchronized)
     interface_output = np.ascontiguousarray(result[layout.interface_rows])
     if layout.resident:
@@ -3284,8 +3312,8 @@ def _validate_collective_signature(comm, signature, stage, root=0):
             )
 
 
-def _sparse_factor_response(factorization, matrix, operator=None,
-                            workspace_bytes=32 * 1024**2):
+def _sparse_factor_response_chunks(factorization, matrix, operator=None,
+                                   workspace_bytes=32 * 1024**2):
     """Apply a factor with bounded dense RHSs, packing disconnected components.
 
     Components share RHS slots because a block-diagonal inverse cannot mix
@@ -3295,7 +3323,7 @@ def _sparse_factor_response(factorization, matrix, operator=None,
     """
     matrix = sparse.csr_matrix(matrix)
     if not matrix.nnz:
-        return sparse.csr_matrix(matrix.shape, dtype=matrix.dtype)
+        return
     n = matrix.shape[0]
     if operator is None:
         component_count, labels = 1, np.zeros(n, dtype=int)
@@ -3318,7 +3346,6 @@ def _sparse_factor_response(factorization, matrix, operator=None,
     width = int(counts.max())
     packed = sparse.csr_matrix((rhs.data, (rhs.row, slots)), shape=(n, width))
     chunk_width = max(1, workspace_bytes // max(1, n * matrix.dtype.itemsize))
-    data, rows, cols = [], [], []
     for start in range(0, width, chunk_width):
         stop = min(width, start + chunk_width)
         response = sparse.coo_matrix(_rhs_matrix(
@@ -3326,12 +3353,104 @@ def _sparse_factor_response(factorization, matrix, operator=None,
         local_slots = response.col + start
         row_components = labels[response.row]
         valid = local_slots < counts[row_components]
-        data.append(response.data[valid])
-        rows.append(response.row[valid])
-        cols.append(columns[offsets[row_components[valid]] + local_slots[valid]])
+        yield sparse.coo_matrix(
+            (response.data[valid],
+             (response.row[valid],
+              columns[offsets[row_components[valid]] + local_slots[valid]])),
+            shape=matrix.shape)
+
+
+def _sparse_factor_response(factorization, matrix, operator=None,
+                            workspace_bytes=32 * 1024**2):
+    """Materialize the response, retaining every nonzero from each chunk."""
+    chunks = list(_sparse_factor_response_chunks(
+        factorization, matrix, operator, workspace_bytes))
+    if not chunks:
+        return sparse.csr_matrix(matrix.shape, dtype=matrix.dtype)
     return sparse.csr_matrix(
-        (np.concatenate(data), (np.concatenate(rows), np.concatenate(cols))),
+        (np.concatenate([r.data for r in chunks]),
+         (np.concatenate([r.row for r in chunks]),
+          np.concatenate([r.col for r in chunks]))),
         shape=matrix.shape)
+
+
+def _sparse_factor_schur(factorization, coupling, projection, operator,
+                        workspace_bytes=32 * 1024**2):
+    """Accumulate C A^{-1} B without retaining the full interior response."""
+    result = sparse.csr_matrix(
+        (projection.shape[0], coupling.shape[1]),
+        dtype=np.result_type(operator.dtype, coupling.dtype, projection.dtype))
+    for response in _sparse_factor_response_chunks(
+            factorization, coupling, operator, workspace_bytes):
+        result = result + projection @ response.tocsr()
+    return result.tocsr()
+
+
+class _FactoredResponse:
+    """Apply A^{-1} B using existing factors, with no stored response entries."""
+
+    def __init__(self, factorization, coupling):
+        self.factorization = factorization
+        self.coupling = coupling
+        self.shape = coupling.shape
+        self.dtype = coupling.dtype
+
+    def __matmul__(self, values):
+        rhs = self.coupling @ values
+        if not self.coupling.nnz or not rhs.size:
+            return rhs
+        return _rhs_matrix(self.factorization.solve(rhs), self.shape[0], values.shape[1])
+
+
+def _subgraph_response(factorization, coupling, projection, operator, method):
+    if method == "solve":
+        return (_FactoredResponse(factorization, coupling),
+                _sparse_factor_schur(factorization, coupling, projection, operator))
+    if method == "auto":
+        # Small responses can cost less than a second triangular solve. Bound
+        # retained storage by both the factors and a fixed per-subgraph cap.
+        factor_nnz = getattr(getattr(factorization, "LU", None), "nnz", operator.nnz)
+        entry_bytes = np.dtype(operator.dtype).itemsize + 2*np.dtype(np.int64).itemsize
+        limit = min(3*factor_nnz, 256*1024**2 // entry_bytes)
+        retained, count = [], 0
+        schur = sparse.csr_matrix(
+            (projection.shape[0], coupling.shape[1]),
+            dtype=np.result_type(operator.dtype, coupling.dtype, projection.dtype))
+        for chunk in _sparse_factor_response_chunks(factorization, coupling, operator):
+            schur = schur + projection @ chunk.tocsr()
+            count += chunk.nnz
+            if retained is not None:
+                if count <= limit:
+                    retained.append(chunk)
+                else:
+                    retained = None
+        if retained is None:
+            response = _FactoredResponse(factorization, coupling)
+        elif retained:
+            response = sparse.csr_matrix(
+                (np.concatenate([r.data for r in retained]),
+                 (np.concatenate([r.row for r in retained]),
+                  np.concatenate([r.col for r in retained]))), shape=coupling.shape)
+        else:
+            response = sparse.csr_matrix(coupling.shape, dtype=operator.dtype)
+        return response, schur.tocsr()
+    response = _sparse_factor_response(factorization, coupling, operator)
+    return response, (projection @ response).tocsr()
+
+
+def _reconstruct_subgraph(factor, free_interior, separator_solution):
+    error = None
+    try:
+        if separator_solution.size:
+            solution = free_interior - factor.interior_response @ separator_solution
+        else:
+            solution = free_interior
+    except Exception as exc:
+        solution = None
+        error = f"{type(exc).__name__}: {exc}"
+    # A failed local triangular solve must not strand peers in the next stage.
+    _raise_collective_error(factor.comm, error, "Subgraph interior reconstruction")
+    return solution
 
 
 class _SubgraphDtNFactorization:
@@ -3538,15 +3657,14 @@ class _SubgraphDtNFactorization:
         if I_rows.size:
             try:
                 self.interior_solver = matsolver(self.interior_matrix, solver)
-                self.interior_response = _sparse_factor_response(
+                self.interior_response, schur_correction = _subgraph_response(
                     self.interior_solver,
                     self.interior_to_separator,
+                    self.separator_to_interior,
                     self.interior_matrix,
+                    getattr(solver, "network_subgraph_reconstruction", "auto"),
                 )
-                local_separator = (
-                    local_separator
-                    - self.separator_to_interior @ self.interior_response
-                ).tocsr()
+                local_separator = (local_separator - schur_correction).tocsr()
             except Exception as error:
                 self.interior_solver = None
                 factor_error = f"{type(error).__name__}: {error}"
@@ -3664,10 +3782,8 @@ class _SubgraphDtNFactorization:
             "Collective separator solve",
         )
 
-        interior_solution = (
-            free_interior
-            - self.interior_response @ separator_solution
-        )
+        interior_solution = _reconstruct_subgraph(
+            self, free_interior, separator_solution)
         local_solution = np.zeros(
             (interface_rhs.shape[0], interface_rhs.shape[1]),
             dtype=interface_rhs.dtype,
@@ -3833,6 +3949,9 @@ class _ResidentSubgraphDtNFactorization:
             self.full_interior_columns = I_columns
             self.full_separator_rows = G_rows
             self.full_separator_columns = G_columns
+        self._solution_fully_covered = np.array_equal(
+            np.sort(np.concatenate((I_columns, G_columns))),
+            np.arange(self.solution_size))
         self.interior_matrix = local_matrix[I_rows][:, I_columns].tocsr()
         self.interior_to_separator = local_matrix[I_rows][
             :, G_columns
@@ -3846,15 +3965,14 @@ class _ResidentSubgraphDtNFactorization:
         if I_rows.size:
             try:
                 self.interior_solver = matsolver(self.interior_matrix, solver)
-                self.interior_response = _sparse_factor_response(
+                self.interior_response, schur_correction = _subgraph_response(
                     self.interior_solver,
                     self.interior_to_separator,
+                    self.separator_to_interior,
                     self.interior_matrix,
+                    getattr(solver, "network_subgraph_reconstruction", "auto"),
                 )
-                local_separator = (
-                    local_separator
-                    - self.separator_to_interior @ self.interior_response
-                ).tocsr()
+                local_separator = (local_separator - schur_correction).tocsr()
             except Exception as error:
                 self.interior_solver = None
                 self.interior_response = None
@@ -3986,20 +4104,24 @@ class _ResidentSubgraphDtNFactorization:
 
         I_rows, I_columns = self.interior_rows, self.interior_columns
         G_rows, G_columns = self.separator_rows, self.separator_columns
+        local_separator_rhs = local_rhs[G_rows].copy()
         if self.coupled is not None:
             full, edge_rows, edge_columns, vertex_rows, vertex_columns = self.coupled
-            rhs = np.zeros((full.shape[0], columns), dtype=dtype)
-            rhs[vertex_rows] = local_rhs
-            rhs[edge_rows] = edge_rhs
-            local_rhs = rhs
+            interior_rhs = np.empty(
+                (edge_rows.size + I_rows.size, columns),
+                dtype=np.result_type(dtype, edge_rhs.dtype))
+            interior_rhs[:edge_rows.size] = edge_rhs
+            interior_rhs[edge_rows.size:] = local_rhs[I_rows]
             I_rows, I_columns = self.full_interior_rows, self.full_interior_columns
             G_rows, G_columns = self.full_separator_rows, self.full_separator_columns
+        else:
+            interior_rhs = local_rhs[I_rows]
         interior_error = None
         if I_rows.size:
             try:
                 free_interior = _rhs_matrix(
                     self.interior_solver.solve(
-                        local_rhs[I_rows]
+                        interior_rhs
                     ),
                     I_columns.size,
                     columns,
@@ -4015,10 +4137,7 @@ class _ResidentSubgraphDtNFactorization:
             "Resident subgraph interior solve",
         )
 
-        local_separator_rhs = (
-            local_rhs[G_rows]
-            - self.separator_to_interior @ free_interior
-        )
+        local_separator_rhs = local_separator_rhs - self.separator_to_interior @ free_interior
         separator_size = self.separator_keys.shape[0]
         separator_error = None
         local_separator_solution = None
@@ -4036,11 +4155,10 @@ class _ResidentSubgraphDtNFactorization:
             separator_error = f"{type(error).__name__}: {error}"
         _raise_collective_error(self.comm, separator_error, "Resident collective separator solve")
 
-        interior_solution = (
-            free_interior
-            - self.interior_response @ local_separator_solution
-        )
-        solution = np.zeros(
+        interior_solution = _reconstruct_subgraph(
+            self, free_interior, local_separator_solution)
+        allocate = np.empty if self._solution_fully_covered else np.zeros
+        solution = allocate(
             (self.solution_size, columns),
             dtype=np.result_type(
                 dtype,

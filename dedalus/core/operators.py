@@ -2438,6 +2438,12 @@ class Gradient(LinearOperator, metaclass=MultiClass):
     def _preprocess_args(cls, operand, coordsys=None, out=None):
         if isinstance(operand, Number):
             raise SkipDispatchException(output=0)
+        network = getattr(operand.dist, 'network', None)
+        if network is not None and (coordsys is None or coordsys is network):
+            from .network_operators import NetworkExpression
+            if out is not None:
+                raise ValueError("Network gradients do not accept an output buffer.")
+            raise SkipDispatchException(output=NetworkExpression('grad', operand))
         if coordsys is None:
             coordsys = operand.dist.single_coordsys
             if coordsys is False:
@@ -3540,6 +3546,12 @@ class Divergence(LinearOperator, metaclass=MultiClass):
     def _preprocess_args(cls, operand, index=0, out=None):
         if isinstance(operand, Number):
             raise SkipDispatchException(output=0)
+        network = getattr(operand.dist, 'network', None)
+        if network is not None and operand.tensorsig == (network.tangent,):
+            from .network_operators import NetworkExpression
+            if index != 0 or out is not None:
+                raise ValueError("Network divergence contracts its one tangent component.")
+            raise SkipDispatchException(output=NetworkExpression('div', operand))
         return [operand], {'index': index, 'out': out}
 
     @classmethod

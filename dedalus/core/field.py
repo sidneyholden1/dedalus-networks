@@ -172,25 +172,21 @@ def synchronize_network_vertex_inputs(dist, fields):
         if len(group) == 1:
             dist.synchronize_network_vertex_ghosts(group[0])
             continue
-        for field in group:
-            canonical = dist.network_vertex_canonical_elements(field.domain)
-            if not np.array_equal(canonical, dist.network_vertex_exchange_plan.resident):
-                raise NotImplementedError(
-                    "Owned/ghost exchange currently requires the canonical full "
-                    "Network vertex basis."
-                )
+        positions = [np.searchsorted(dist.network_vertex_exchange_plan.resident,
+                                    dist.network_vertex_canonical_elements(field.domain))
+                     for field in group]
         views = [np.moveaxis(field.data, len(field.tensorsig), 0) for field in group]
         widths = [int(np.prod(view.shape[1:])) for view in views]
         resident = dist.network_vertex_exchange_plan.resident.size
-        packed = np.empty((resident, sum(widths)), dtype=group[0].data.dtype)
+        packed = np.zeros((resident, sum(widths)), dtype=group[0].data.dtype)
         offset = 0
-        for view, width in zip(views, widths):
-            packed[:, offset:offset+width] = view.reshape(resident, width)
+        for view, width, indices in zip(views, widths, positions):
+            packed[indices, offset:offset+width] = view.reshape(len(indices), width)
             offset += width
         dist.network_vertex_exchange_plan.forward(packed)
         offset = 0
-        for view, width in zip(views, widths):
-            view[...] = packed[:, offset:offset+width].reshape(view.shape)
+        for view, width, indices in zip(views, widths, positions):
+            view[...] = packed[indices, offset:offset+width].reshape(view.shape)
             offset += width
 
 
@@ -843,6 +839,16 @@ def _validate_network_restart_task(dset, field):
         return
 
     errors = []
+    semantics = _network_field_semantics(field)
+    saved_kind = dset.attrs.get('network_field_kind', 'regular')
+    if saved_kind != semantics['network_field_kind']:
+        errors.append('saved field/Dirac measure semantics do not match the target Field')
+    if 'network_dirac_order' in semantics:
+        if dset.attrs.get('network_dirac_order', -1) != semantics['network_dirac_order']:
+            errors.append('saved Dirac derivative order does not match the target Field')
+    if 'network_regularity' in dset.attrs:
+        if dset.attrs['network_regularity'] != semantics.get('network_regularity', 'piecewise'):
+            errors.append('saved field regularity does not match the target Field')
     if "network_axis_roles" not in dset.attrs:
         saved_roles = None
         errors.append("task is missing network_axis_roles")
@@ -929,6 +935,31 @@ def _collective_network_restart_validation(file, task, field, comm):
     return dset
 
 
+def _network_field_semantics(value):
+    """Metadata distinguishes point weights from ordinary vertex data."""
+    from .operators import Copy
+    while isinstance(value, Copy):
+        value = value.operand
+    descriptor = getattr(value, '_network_dirac', None)
+    if descriptor is not None:
+        return {'network_field_kind': 'endpoint_dirac' if descriptor.endpoints else 'vertex_dirac',
+                'network_dirac_order': descriptor.order}
+    result = {'network_field_kind': 'regular'}
+    regularity = getattr(value, 'regularity', None)
+    if regularity is not None:
+        result['network_regularity'] = regularity
+    return result
+
+
+def network_algebra_required(value):
+    """Whether an operand contains graph-valued differential/distribution terms."""
+    if getattr(value, '_network_coefficient', False):
+        return False
+    if getattr(value, '_network_symbolic', False) or getattr(value, '_network_dirac', None) is not None:
+        return True
+    return any(network_algebra_required(arg) for arg in getattr(value, 'args', ()))
+
+
 class Operand:
     """Base class for operand classes."""
 
@@ -1006,6 +1037,9 @@ class Operand:
 
     def __matmul__(self, other):
         # Call: self @ other
+        if network_algebra_required(self) or network_algebra_required(other):
+            from .network_operators import NetworkExpression
+            return NetworkExpression('dot', self, other)
         from .arithmetic import DotProduct
         return DotProduct(self, other)
 
@@ -1450,14 +1484,26 @@ class Field(Current):
 
     """
 
-    def __init__(self, dist, bases=None, name=None, tensorsig=None, dtype=None):
+    def __init__(self, dist, bases=None, name=None, tensorsig=None, dtype=None, regularity=None):
+        self.regularity = regularity
+        self._network_dirac = getattr(bases, '_network_dirac_descriptor', None)
+        self._network_original_bases = bases
+        self._network_vertex = None
         if bases is None:
             bases = tuple()
         # Accept single basis in place of tuple/list
         if not isinstance(bases, (tuple, list)):
             bases = (bases,)
+        descriptors = [getattr(b, '_network_dirac_descriptor', None) for b in bases]
+        descriptors = [descriptor for descriptor in descriptors if descriptor is not None]
+        if descriptors:
+            if len(bases) != 1:
+                raise ValueError('A Dirac coefficient Field takes only its companion basis.')
+            self._network_dirac = descriptors[0]
         if tensorsig is None:
             tensorsig = tuple()
+        if self._network_dirac is not None and tensorsig:
+            raise ValueError('Dirac coefficient Fields currently require scalar weights.')
         if dtype is None:
             if dist.dtype is None:
                 raise ValueError("dtype must be specified for Distributor or Field.")
@@ -1469,6 +1515,15 @@ class Field(Current):
         self.dtype = dtype
         # Build domain
         self.domain = Domain(dist, bases)
+        if regularity is not None:
+            if regularity not in ('continuous', 'piecewise'):
+                raise ValueError("regularity must be 'continuous' or 'piecewise'.")
+            if getattr(dist, 'network', None) is None or self._network_dirac is not None:
+                raise ValueError("Field regularity applies to regular Network edge fields.")
+            network_basis = next((getattr(b, '_network_basis', None) for b in self.domain.bases
+                                  if getattr(b, '_network_role', None) == 'edges'), None)
+            if network_basis is None or self.domain.get_basis(dist.network.position_coord) is None or self.tensorsig:
+                raise ValueError("Continuous/piecewise declarations require scalar Network edge expansions.")
         # Set initial scales and layout
         self.scales = None
         self.buffer_size = -1
@@ -1519,7 +1574,8 @@ class Field(Current):
         return self.layout.global_shape(self.domain, self.scales)
 
     def copy(self):
-        copy = Field(self.dist, bases=self.domain.bases, tensorsig=self.tensorsig, dtype=self.dtype)
+        copy = Field(self.dist, bases=self._network_original_bases or self.domain.bases,
+                     tensorsig=self.tensorsig, dtype=self.dtype, regularity=self.regularity)
         copy.preset_scales(self.scales)
         copy[self.layout] = self.data
         return copy

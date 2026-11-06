@@ -15,7 +15,7 @@ from collections import defaultdict
 from math import prod
 
 from .domain import Domain
-from .field import Operand, Field
+from .field import Operand, Field, network_algebra_required
 from .future import Future, FutureField
 from .basis import Basis
 from .operators import convert
@@ -55,6 +55,9 @@ class Add(Future, metaclass=MultiClass):
 
     @classmethod
     def _preprocess_args(cls, *args, **kw):
+        if any(network_algebra_required(arg) for arg in args):
+            from .network_operators import NetworkExpression
+            raise SkipDispatchException(output=NetworkExpression('add', *args))
         # Drop zeros
         args = [arg for arg in args if arg != 0]
         # Flatten additions
@@ -799,6 +802,9 @@ class Multiply(Product, metaclass=MultiClass):
 
     @classmethod
     def _preprocess_args(cls, *args, **kw):
+        if any(network_algebra_required(arg) for arg in args):
+            from .network_operators import NetworkExpression
+            raise SkipDispatchException(output=NetworkExpression('mul', *args))
         # Drop ones
         args = [arg for arg in args if arg != 1]
         # Flatten multiplications

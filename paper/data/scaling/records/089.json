@@ -1,0 +1,717 @@
+{
+  "timed_steps": 1000,
+  "mean_timestep_seconds": 0.026340321145995403,
+  "sim_time": 1.0099999999999996,
+  "restart": null,
+  "parameters": {
+    "family": "junctions",
+    "hubs": 8,
+    "scale": 29,
+    "policy": "mt-kahypar",
+    "workload": "ivp",
+    "fields": 2,
+    "steps": 1000,
+    "dt": 0.001,
+    "homogeneous": false,
+    "direct": false,
+    "output": "/mnt/ceph/users/sholden/dedalus-network-pdes/paper-scaling-20261026/matched-study-01/jobs/matched-full-scaling-recovery-20261101-v1/attempts/rerun-weak-small-65536-junctions-p2-r1-a1/result.json",
+    "model": "coefficient",
+    "graph_seed": 20261026,
+    "partition_seed": 20261026,
+    "preset": "quality",
+    "epsilon": 0.05,
+    "resolution": 0,
+    "calibration": null,
+    "coupling": 0.2,
+    "nonlinear": 0.1,
+    "profile": false,
+    "scheme": "RK222",
+    "memory_every": 0,
+    "vary_dt": false,
+    "checkpoint_every": 0,
+    "save_every": 0,
+    "owners": "/mnt/ceph/users/sholden/dedalus-network-pdes/paper-scaling-20261026/matched-study-01/partitions/junctions-s29-p2-n1-67c0750dbd0b3b7c.npy",
+    "local_input": null,
+    "instrument": false,
+    "separator_rtol": 1e-13,
+    "separator_atol": 1e-14,
+    "node_size": 96,
+    "separator": "gmres",
+    "warmup": 10,
+    "mode_factor": 1,
+    "pause_at": 0,
+    "restart": null,
+    "sample_all": false
+  },
+  "partition_info": {
+    "policy": "mt-kahypar",
+    "model": "coefficient",
+    "fields": 2,
+    "seed": 20261026,
+    "preset": "quality",
+    "epsilon": 0.05,
+    "threads": 1,
+    "weight_seconds": 8.369999704882503e-06,
+    "public_api": {
+      "package": "mtkahypar",
+      "version": "1.7.post1",
+      "objective": "km1",
+      "preset": "quality",
+      "seed": 20261026,
+      "threads": 1,
+      "epsilon": 0.05,
+      "num_parts": 2,
+      "weight_conversion": {
+        "scale": 27.77777777777778,
+        "maximum_relative_rounding_error": 0.0003076923076922311
+      },
+      "package_metrics": {
+        "cut": 18,
+        "km1": 18,
+        "soed": 36
+      },
+      "estimated_loads": [
+        67676.0,
+        72676.0
+      ],
+      "estimated_imbalance": 1.03562471500228,
+      "conversion_and_import_seconds": 1.142812539008446,
+      "partition_seconds": 0.1509400120121427,
+      "total_seconds": 1.3030053180118557
+    },
+    "package_seconds": 0.1509400120121427,
+    "construction_seconds": 0.016065193005488254,
+    "cut": 18,
+    "km1": 18,
+    "soed": 36,
+    "model_load": [
+      67676.0,
+      72676.0
+    ],
+    "coefficient_load": [
+      67676.0,
+      72676.0
+    ],
+    "model_imbalance": 1.03562471500228,
+    "coefficient_imbalance": 1.03562471500228,
+    "interface_per_rank": [
+      18,
+      18
+    ],
+    "peer_counts": [
+      1,
+      1
+    ],
+    "owners_sha256": "b0d59e56c7039f1fb95bcd0511bb7acf4ec12e81b354d0ff1a6cea1b2503257c",
+    "diagnostic_seconds": 0.002683124999748543,
+    "input_sha256": "708cbddb7fb33605c4805521a36b094aa7aff89cca5a29291ae460999c1cb255",
+    "num_parts": 2,
+    "prepared_construction_seconds": 1.3099892350146547,
+    "reused_owners": true
+  },
+  "trajectories": [],
+  "rank_records": [
+    {
+      "evolved_coefficients": 64480,
+      "tau_unknowns": 3196,
+      "owned_vertex_unknowns": 808,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 294273024
+        },
+        {
+          "step": 10,
+          "rss_bytes": 362373120
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 365891584
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 4,
+          "restart_cycles": 1,
+          "residual_norm": 3.873564108098073e-16,
+          "relative_residual": 4.423444540861873e-16,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 0,
+      "host": "worker7327",
+      "affinity": [
+        0
+      ],
+      "separator_iterations": 4,
+      "peak_rss_bytes": 367427584,
+      "phase_seconds": {
+        "graph": 0.014805084007093683,
+        "partition": 0.03900072300166357,
+        "fields_equations_build": 0.727623205006239,
+        "first_step": 0.3919639599916991,
+        "warmup": 0.24051444100041408,
+        "repeated_solve": 26.340272195011494,
+        "validation": 0.044684652995783836
+      },
+      "solver_seconds": 29.260282190007274,
+      "local_edges": 799,
+      "work": 67676.0,
+      "transform_work": 350159.5513517384,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 68466,
+          "interior_nnz": 626836,
+          "lu_nnz": 1284724,
+          "separator_size": 18,
+          "retained_unknowns": 18,
+          "owned_schur_nnz": 324,
+          "owned_schur_rows": 18,
+          "ghost_count": 0,
+          "local_separator_nnz": 228,
+          "response_nnz": 425700,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            68466,
+            18
+          ],
+          "stored_response_nnz": 425700
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    },
+    {
+      "evolved_coefficients": 69136,
+      "tau_unknowns": 3540,
+      "owned_vertex_unknowns": 876,
+      "memory_samples": [
+        {
+          "step": 0,
+          "rss_bytes": 301670400
+        },
+        {
+          "step": 10,
+          "rss_bytes": 406155264
+        },
+        {
+          "step": 1010,
+          "rss_bytes": 406908928
+        }
+      ],
+      "factor_slots": 2,
+      "unique_factor_count": 1,
+      "factor_build_count": 1,
+      "factor_rebuilds": 0,
+      "output_sample_seconds": 0.0,
+      "completed_steps": 1010,
+      "separator_residuals": [
+        {
+          "method": "gmres",
+          "converged": true,
+          "iterations": 4,
+          "restart_cycles": 1,
+          "residual_norm": 3.873564108098073e-16,
+          "relative_residual": 4.423444540861873e-16,
+          "reason": "residual tolerance reached"
+        }
+      ],
+      "factor_count": 1,
+      "component_seconds": {},
+      "component_calls": {},
+      "separator_iteration_history": [],
+      "rank": 1,
+      "host": "worker7327",
+      "affinity": [
+        1
+      ],
+      "separator_iterations": 4,
+      "peak_rss_bytes": 405458944,
+      "phase_seconds": {
+        "graph": 0.022797413999796845,
+        "partition": 0.039001923010800965,
+        "fields_equations_build": 0.727623245009454,
+        "first_step": 0.3919652899930952,
+        "warmup": 0.24051733099622652,
+        "repeated_solve": 26.340321145995404,
+        "validation": 0.044684573003905825
+      },
+      "solver_seconds": 29.26034604200686,
+      "local_edges": 885,
+      "work": 72676.0,
+      "transform_work": 372381.9092368027,
+      "components": 1,
+      "factors": [
+        {
+          "coupled": true,
+          "interior_size": 73552,
+          "interior_nnz": 662748,
+          "lu_nnz": 1302198,
+          "separator_size": 18,
+          "retained_unknowns": 18,
+          "owned_schur_nnz": 0,
+          "owned_schur_rows": 0,
+          "ghost_count": 0,
+          "local_separator_nnz": 324,
+          "response_nnz": 1323936,
+          "reconstruction": "response",
+          "response_representation": "stored",
+          "response_shape": [
+            73552,
+            18
+          ],
+          "stored_response_nnz": 1323936
+        }
+      ],
+      "separator_methods": [
+        "gmres"
+      ],
+      "separator_converged": true,
+      "reconstruction_counts": {
+        "response": 1,
+        "solve": 0,
+        "none": 0
+      },
+      "reconstruction_requested": "auto"
+    }
+  ],
+  "mode_counts": {
+    "16": 148,
+    "24": 290,
+    "32": 283,
+    "40": 268,
+    "48": 284,
+    "56": 279,
+    "64": 132
+  },
+  "topology_sha256": "46622d7eed6ffee1aee7ffff838a5f00ac8f0306daf1c18e2ed8350910ecd26d",
+  "equation_input_sha256": "90d485bd59aeb36ce81707a65a1d715a62a8534e2a8b94ac7076a8d50499431c",
+  "separator_vertices": 9,
+  "interface_dofs": 18,
+  "edge_coefficients": 133616,
+  "num_edges": 1684,
+  "num_vertices": 842,
+  "degree_histogram": {
+    "3": 414,
+    "4": 421,
+    "40": 1,
+    "67": 6
+  },
+  "excess_participation": 18,
+  "samples": [
+    [
+      0,
+      0,
+      [
+        0.3520050412638871,
+        0.34398066494862645,
+        0.32450595778676156,
+        0.30303942864739686,
+        0.2924541520925248
+      ]
+    ],
+    [
+      0,
+      1,
+      [
+        0.29245415209253844,
+        0.31619487741801294,
+        0.3666033811742564,
+        0.4150200616490478,
+        0.4361998433408507
+      ]
+    ],
+    [
+      0,
+      2,
+      [
+        0.35785300725267705,
+        0.37040682388569784,
+        0.39620405190879615,
+        0.4200094662849725,
+        0.4300023623353613
+      ]
+    ],
+    [
+      0,
+      3,
+      [
+        0.4300023623353586,
+        0.43049360663678077,
+        0.42975319606066076,
+        0.4270209651078123,
+        0.4249512532283731
+      ]
+    ],
+    [
+      0,
+      4,
+      [
+        0.42495125322837446,
+        0.40573878206490754,
+        0.36165029781793107,
+        0.3155699952045934,
+        0.29379664241063713
+      ]
+    ],
+    [
+      0,
+      5,
+      [
+        0.2937966424106393,
+        0.3113018286126998,
+        0.3479920884895743,
+        0.38269053507611156,
+        0.3976348262284418
+      ]
+    ],
+    [
+      0,
+      6,
+      [
+        0.39763482622844165,
+        0.38737192119404446,
+        0.3629724621599898,
+        0.3365811882812927,
+        0.32375738576157453
+      ]
+    ],
+    [
+      0,
+      7,
+      [
+        0.32375738576157476,
+        0.3411794071917827,
+        0.3776867621307893,
+        0.4122023002095894,
+        0.427063417557331
+      ]
+    ],
+    [
+      0,
+      8,
+      [
+        0.427063417557331,
+        0.40989537054475444,
+        0.3703046132908124,
+        0.32872204004695,
+        0.3089930928435425
+      ]
+    ],
+    [
+      0,
+      9,
+      [
+        0.30899309284354415,
+        0.32859969807709005,
+        0.369913087899802,
+        0.4092346626500744,
+        0.42628036959657184
+      ]
+    ],
+    [
+      0,
+      10,
+      [
+        0.42628036959656845,
+        0.41227639414624895,
+        0.3796465205919568,
+        0.3450248269544295,
+        0.3284599318648043
+      ]
+    ],
+    [
+      0,
+      11,
+      [
+        0.3284599318648047,
+        0.3409155552112956,
+        0.3664968347574786,
+        0.39008629631861064,
+        0.3999810236209145
+      ]
+    ],
+    [
+      0,
+      12,
+      [
+        0.3999810236209154,
+        0.398367476021399,
+        0.3929965686479701,
+        0.3856338445238816,
+        0.3814593791176231
+      ]
+    ],
+    [
+      0,
+      13,
+      [
+        0.381459379117623,
+        0.3789036597744939,
+        0.3714600032579243,
+        0.36202452438172683,
+        0.3569078910504242
+      ]
+    ],
+    [
+      0,
+      14,
+      [
+        0.35690789105042187,
+        0.34910389502115097,
+        0.33011401051668193,
+        0.3091323048350144,
+        0.2987673993287013
+      ]
+    ],
+    [
+      0,
+      15,
+      [
+        0.2987673993287005,
+        0.30553434108074473,
+        0.3186005330454706,
+        0.3296749051556986,
+        0.3338809645076773
+      ]
+    ],
+    [
+      1,
+      0,
+      [
+        0.41804788823090794,
+        0.4065013331996035,
+        0.3792778238262702,
+        0.3500624944344735,
+        0.33595503739754323
+      ]
+    ],
+    [
+      1,
+      1,
+      [
+        0.3359550373975585,
+        0.34625870267981923,
+        0.3671057032741008,
+        0.38596088525337197,
+        0.3937036621819496
+      ]
+    ],
+    [
+      1,
+      2,
+      [
+        0.42184078359294946,
+        0.4155580288391121,
+        0.3999149414313182,
+        0.3822800489236341,
+        0.3734363853197628
+      ]
+    ],
+    [
+      1,
+      3,
+      [
+        0.3734363853197599,
+        0.37311536857209426,
+        0.3705881176607381,
+        0.36606904916025723,
+        0.36318718125743443
+      ]
+    ],
+    [
+      1,
+      4,
+      [
+        0.363187181257436,
+        0.35623474590594467,
+        0.3391183838618197,
+        0.3200102044201202,
+        0.3104969303671904
+      ]
+    ],
+    [
+      1,
+      5,
+      [
+        0.3104969303671912,
+        0.3315028286724827,
+        0.3758946209330416,
+        0.4182945995347172,
+        0.4367396058464454
+      ]
+    ],
+    [
+      1,
+      6,
+      [
+        0.4367396058464455,
+        0.4312369794021873,
+        0.4173100805730996,
+        0.40139136447261176,
+        0.3933278051500955
+      ]
+    ],
+    [
+      1,
+      7,
+      [
+        0.39332780515009685,
+        0.400208490544051,
+        0.4135248994787377,
+        0.4248494882763646,
+        0.42916924816769525
+      ]
+    ],
+    [
+      1,
+      8,
+      [
+        0.4291692481676961,
+        0.4093935416065093,
+        0.36406593036510226,
+        0.31674649951040507,
+        0.2944098922035263
+      ]
+    ],
+    [
+      1,
+      9,
+      [
+        0.294409892203528,
+        0.3168519198952793,
+        0.3644032625829457,
+        0.4099627865224462,
+        0.4298439074635634
+      ]
+    ],
+    [
+      1,
+      10,
+      [
+        0.4298439074635625,
+        0.4095075626456427,
+        0.36294649313898186,
+        0.3143936024112248,
+        0.29149637340401213
+      ]
+    ],
+    [
+      1,
+      11,
+      [
+        0.29149637340401263,
+        0.29881497178047867,
+        0.31309489716051814,
+        0.325383003763813,
+        0.3301407652231594
+      ]
+    ],
+    [
+      1,
+      12,
+      [
+        0.33014076522316,
+        0.3475068039605123,
+        0.38389094780476524,
+        0.41828327461643994,
+        0.4330883920799698
+      ]
+    ],
+    [
+      1,
+      13,
+      [
+        0.43308839207996713,
+        0.41346167158917124,
+        0.3684617566942605,
+        0.32147002047993317,
+        0.29928236597306046
+      ]
+    ],
+    [
+      1,
+      14,
+      [
+        0.29928236597306007,
+        0.3009797147556879,
+        0.30289280874241054,
+        0.3028140832846163,
+        0.3019505407043408
+      ]
+    ],
+    [
+      1,
+      15,
+      [
+        0.3019505407043402,
+        0.30169190334006896,
+        0.29930183290300144,
+        0.2949199432438495,
+        0.2921004392097079
+      ]
+    ]
+  ],
+  "correctness": {
+    "passed": true,
+    "max_error": 2.824983234006595e-07,
+    "max_continuity": 8.443198851388386e-12,
+    "assembled_residual": null,
+    "tolerance": 2e-06
+  },
+  "solver_seconds": 29.26034604200686,
+  "python_seconds": 29.55260213300062,
+  "reconstruction_counts": {
+    "response": 2,
+    "solve": 0,
+    "none": 0
+  },
+  "reconstruction_count_scope": "unique local factors across ranks; excludes shared stage aliases; none means no nonzero response application",
+  "optimization": {
+    "variant": "auto",
+    "response_setup_by_rank": [
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 425700,
+          "schur_nnz": 228,
+          "seconds": 0.07807391798996832
+        }
+      ],
+      [
+        {
+          "method": "auto",
+          "retained": true,
+          "stored_response_nnz": 1323936,
+          "schur_nnz": 324,
+          "seconds": 0.10750596100115217
+        }
+      ]
+    ],
+    "source_manifest": "342c2a72fee0294c8f237714a4cb0b1f388a4813781df80410b18795f64de426"
+  }
+}

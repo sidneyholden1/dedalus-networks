@@ -1,0 +1,290 @@
+[
+  {
+    "name": "verify-data",
+    "exit_code": 0,
+    "seconds": 0.42031311099708546,
+    "command": [
+      "python",
+      "paper/verify_data.py"
+    ],
+    "isolation_passed": true,
+    "metrics": []
+  },
+  {
+    "name": "regressions",
+    "exit_code": 0,
+    "seconds": 30.098578246004763,
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "dedalus/tests/test_network_test_inference.py",
+      "dedalus/tests/test_paper_native_interfaces.py",
+      "dedalus/tests/test_network_native_ordinary_kdv.py",
+      "dedalus/tests/test_network_galerkin.py",
+      "dedalus/tests/test_network_auto_tau.py",
+      "dedalus/tests/test_network_selected_traces.py",
+      "dedalus/tests/test_network_hidden_interface.py",
+      "dedalus/tests/test_network_native_calculus.py"
+    ],
+    "isolation_passed": true,
+    "metrics": []
+  },
+  {
+    "name": "methods-beam",
+    "exit_code": 0,
+    "seconds": 1.66738681300194,
+    "command": [
+      "python",
+      "paper/methods/beam.py"
+    ],
+    "isolation_passed": true,
+    "metrics": [
+      {
+        "example": "beam methods listing",
+        "maximum_error": 1.1473044736476368e-12
+      }
+    ]
+  },
+  {
+    "name": "rods-steady",
+    "exit_code": 0,
+    "seconds": 1.6682663059909828,
+    "command": [
+      "python",
+      "paper/rods/steady.py"
+    ],
+    "isolation_passed": true,
+    "metrics": [
+      {
+        "example": "steady rods",
+        "modes": 16,
+        "maximum_error": 7.771561172376096e-16
+      }
+    ]
+  },
+  {
+    "name": "rods-transient",
+    "exit_code": 0,
+    "seconds": 3.1703400330006843,
+    "command": [
+      "python",
+      "paper/rods/transient.py"
+    ],
+    "isolation_passed": true,
+    "metrics": [
+      {
+        "example": "transient rods",
+        "steps": 3,
+        "time": 0.0234375,
+        "vertex_residual": 3.344763702117781e-17,
+        "heated_vertex": 0.0021948534039735006
+      }
+    ]
+  },
+  {
+    "name": "scaling-benchmark",
+    "exit_code": 0,
+    "seconds": 2.8189738809887785,
+    "command": [
+      "python",
+      "paper/scaling/benchmark.py"
+    ],
+    "isolation_passed": true,
+    "metrics": [
+      {
+        "example": "scaling equations",
+        "edges": 24,
+        "coefficients": 2048,
+        "ranks": 1,
+        "steps": 3,
+        "warmup": 1,
+        "maximum_error": 1.7747931579936704e-07,
+        "smoke_seconds": 0.04505247400084045
+      }
+    ]
+  },
+  {
+    "name": "photonic-eigenmodes",
+    "exit_code": 0,
+    "seconds": 1.667608030998963,
+    "command": [
+      "python",
+      "paper/photonic/eigenmodes.py"
+    ],
+    "isolation_passed": true,
+    "metrics": [
+      {
+        "example": "photonic resonances",
+        "edges": 5,
+        "k_real": 10.18159345887768,
+        "k_imag": -0.12541311786989146,
+        "delta_real": -0.49840654112231936,
+        "delta_imag": -0.07541311786989144,
+        "carrier_real": 10.68,
+        "carrier_imag": -0.05,
+        "pencil": 9.626934687716982e-15,
+        "continuity": 3.0302666127903583e-16,
+        "vertex": 6.152635301810137e-16,
+        "bond": 5.62526877673889e-16,
+        "differential": 8.013086468505413e-16,
+        "physical_interpolation": 2.2090077653674975e-15,
+        "integral_relative": 8.177075856630302e-16,
+        "I2": 0.1940975459504719,
+        "I4": 0.016931608491127258,
+        "Lpart": 2.2250607414964705,
+        "physical_quadrature_points": 112,
+        "envelope_coefficients": 16
+      }
+    ]
+  },
+  {
+    "name": "mineral-evolve",
+    "exit_code": 0,
+    "seconds": 2.2183395229949383,
+    "command": [
+      "python",
+      "paper/mineral/evolve.py"
+    ],
+    "isolation_passed": true,
+    "metrics": [
+      {
+        "example": "mineral replacement",
+        "pores": 44,
+        "steps": 3,
+        "scaled_time": 0.006,
+        "water_residual": 6.608690068832274e-20,
+        "solute_defect": 1.6523241108679088e-16,
+        "algebraic_residual": 3.908188970884133e-15,
+        "inventory_defect": 1.3552527156068805e-20
+      }
+    ]
+  },
+  {
+    "name": "kdv-evolve",
+    "exit_code": 0,
+    "seconds": 2.2195843369991053,
+    "command": [
+      "python",
+      "paper/kdv/evolve.py"
+    ],
+    "isolation_passed": true,
+    "metrics": [
+      {
+        "example": "KdV",
+        "edges": 18,
+        "modes": 24,
+        "steps": 3,
+        "time": 0.000375,
+        "mass_drift": 9.266116926488407e-16,
+        "constraint_max": 2.7657455319018975e-15,
+        "mass_balance_residual": -1.1461121282376765e-15,
+        "l2_balance_residual": 1.2848072905679273e-16
+      }
+    ]
+  },
+  {
+    "name": "photonic-interval",
+    "exit_code": 0,
+    "seconds": 1.6175322180060903,
+    "command": [
+      "python",
+      "paper/photonic/eigenmodes.py",
+      "--interval-check"
+    ],
+    "isolation_passed": true,
+    "metrics": [
+      {
+        "example": "photonic resonances",
+        "edges": 1,
+        "k_real": 10.681415022205297,
+        "k_imag": -0.05364793041447001,
+        "delta_real": 0.0014150222052977653,
+        "delta_imag": -0.0036479304144700045,
+        "carrier_real": 10.68,
+        "carrier_imag": -0.05,
+        "pencil": 2.0828799509180233e-13,
+        "continuity": 2.0562092347217614e-16,
+        "vertex": 3.2899347755548183e-16,
+        "bond": 9.794724146082095e-15,
+        "differential": 9.285223403253755e-17,
+        "physical_interpolation": 6.076820623274008e-14,
+        "integral_relative": 2.4776865358041223e-15,
+        "I2": 3.773726174927556,
+        "I4": 0.9409860036859613,
+        "Lpart": 15.134135032348544,
+        "physical_quadrature_points": 1632,
+        "envelope_coefficients": 16,
+        "analytic_eigenvalue_error": 0.0
+      }
+    ]
+  },
+  {
+    "name": "plot-rods",
+    "exit_code": 0,
+    "seconds": 5.093597387007321,
+    "command": [
+      "python",
+      "paper/rods/plot.py",
+      "--output",
+      "redrawn/rods"
+    ],
+    "isolation_passed": true,
+    "metrics": []
+  },
+  {
+    "name": "plot-scaling",
+    "exit_code": 0,
+    "seconds": 2.7703598819934996,
+    "command": [
+      "python",
+      "paper/scaling/plot.py",
+      "--output",
+      "redrawn/scaling"
+    ],
+    "isolation_passed": true,
+    "metrics": []
+  },
+  {
+    "name": "plot-photonic",
+    "exit_code": 0,
+    "seconds": 7.174256596001214,
+    "command": [
+      "python",
+      "paper/photonic/plot.py",
+      "--output",
+      "redrawn/photonic"
+    ],
+    "isolation_passed": true,
+    "metrics": []
+  },
+  {
+    "name": "plot-mineral",
+    "exit_code": 0,
+    "seconds": 6.1234086959884735,
+    "command": [
+      "python",
+      "paper/mineral/plot.py",
+      "--output",
+      "redrawn/mineral"
+    ],
+    "isolation_passed": true,
+    "metrics": []
+  },
+  {
+    "name": "plot-kdv",
+    "exit_code": 0,
+    "seconds": 32.55195172900858,
+    "command": [
+      "python",
+      "paper/kdv/plot.py",
+      "--output",
+      "redrawn/kdv"
+    ],
+    "isolation_passed": true,
+    "metrics": []
+  }
+]

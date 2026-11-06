@@ -1,0 +1,173 @@
+{
+  "config": {
+    "geometry": "a14f6de1d7abd6ae7da7d44235ee9054599770297808f02d70c656396fe7f167",
+    "chemistry": {
+      "gamma": 0.3,
+      "kappa": 1.0,
+      "da": 0.627201506132748,
+      "d0": 0.1,
+      "g1": 1.0,
+      "g2": 1.0,
+      "k1": 1.0,
+      "mu": 1.0
+    },
+    "backend": "dedalus-fitted-reuse",
+    "modes": 2,
+    "relative_step": 0.08,
+    "max_dt": 0.2,
+    "max_steps": 200000,
+    "max_time": 100.0,
+    "dmin": 0.0001,
+    "fixture": "regular",
+    "initialization": "uniform-equation21",
+    "stop_on_breakthrough": true,
+    "partition": "spatial",
+    "integrator": "midpoint",
+    "mineral_access": "channel",
+    "mixing_fraction": 1.0,
+    "mixing_rule": "complete"
+  },
+  "ranks": 16,
+  "controller": {
+    "backend": "dedalus-fitted-reuse",
+    "modes": 2,
+    "relative_step": 0.08,
+    "max_dt": 0.2,
+    "dmin": 0.0001,
+    "total_flow": 64.84413939429024,
+    "initial_pressure": 14098640.770787328,
+    "initial_primary": 3541.9678017140395,
+    "stop_on_breakthrough": true,
+    "max_time": 100.0,
+    "max_steps": 200000,
+    "integrator": "midpoint",
+    "mineral_access": "channel",
+    "mixing_fraction": 1.0,
+    "mixing_rule": "complete",
+    "ownership": {
+      "method": "spatial",
+      "parts": 16,
+      "original_edge_counts": [
+        1874,
+        1875,
+        1875,
+        1875,
+        1874,
+        1875,
+        1875,
+        1875,
+        1874,
+        1875,
+        1875,
+        1875,
+        1874,
+        1875,
+        1875,
+        1875
+      ],
+      "sha256": "1a7adacb053ec98c5e2a5c1c855f45f8772f3c625998c30ed0ad13af1b78b61c",
+      "policy": "Original-pore ownership retained through closure; cold rebuild; no physical metric change"
+    },
+    "cache_policy": "rebuild immutable graph on cold restart; rebuild/refactor pressure matrix every geometry state"
+  },
+  "geometry": {
+    "vertices": 10000,
+    "pores": 29996,
+    "grains": 19996
+  },
+  "geometry_metadata": {
+    "boundary_rule": "one normalized mean-node-distance inlet/outlet bands",
+    "kind": "random",
+    "nx": 100,
+    "ny": 100,
+    "original_mean_node_distance": 1.166146059340112,
+    "periodicity": "x only; triplicated Delaunay, centroid strip selection",
+    "point_generator": "NumPy default_rng PCG64",
+    "random_process": "independent uniform points",
+    "removed_periodic_reservoir_cap_faces": 2,
+    "seed": 14532648273451780016,
+    "source_equivalence": "reconstruction, not author graph inputs",
+    "thickness": 0.5
+  },
+  "total_flow": 64.84413939429024,
+  "source_sha256": "3d4dc94415eb51a5f510b4b0f4c1960ae7713f8683e877bc67f3c292218abca8",
+  "input_sha256": "d0beb4c74583756ab4f4a97ddb7c96fd995333171c81aeca54a27e50b4dcfd4b",
+  "original_record_sha256": "79d9dba2a45aaff60318971a2080691e0cbd7d8c82e3a87a93e3f80674ce4fc3",
+  "runtime": {
+    "python": "3.12.9 (main, Jun 12 2025, 02:14:33) [GCC 13.3.0]",
+    "numpy": "2.2.4",
+    "scipy": "1.15.2",
+    "mpi": "Open MPI v5.0.6, package: Open MPI nixbld1@rustyadm2 Distribution, ident: 5.0.6, repo rev: v5.0.6, Nov 15, 2024\u0000",
+    "executable": "/mnt/home/sholden/envs/dedalus-network-pdes/bin/python",
+    "host": "worker7211",
+    "affinity": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "figure_scope": "One qualitative Gamma=0.3 example on the reconstructed network; not the authors exact realization.",
+  "normalization": "Preserve recorded chemistry.da=0.627201506132748 and total_flow=64.84413939429024; the paper labels Da=0.5 in its length/flow convention. Do not substitute 0.5 in this historical configuration.",
+  "state_provenance": [
+    {
+      "index": "/mnt/ceph/users/sholden/dedalus-network-pdes/runs/mineral-replacement-jgr2025-v1/jobs/distributed-session-4-structure-02/manuscript-snapshot-replay-01.retained-001958.json",
+      "index_sha256": "244650c388667fe8aaa28e6e360d779b3dbba8108472905db05e755f21a6f8da",
+      "paper_time": 50.0469042684096,
+      "path": "/mnt/ceph/users/sholden/dedalus-network-pdes/runs/mineral-replacement-jgr2025-v1/jobs/distributed-session-4-structure-02/manuscript-snapshot-replay-01.retained-001958.slot0.npz",
+      "permeability_ratio": 1.2207274835816204,
+      "sha256": "49be59a816be31f200e38afe620378f01258e967afc0710a1cdf57b0ead4365f",
+      "source": "accepted-source output-retention replay",
+      "step": 1958
+    },
+    {
+      "index": "/mnt/ceph/users/sholden/dedalus-network-pdes/runs/mineral-replacement-jgr2025-v1/jobs/distributed-session-4-structure-02/manuscript-snapshot-replay-01.retained-004995.json",
+      "index_sha256": "14a45a6f37895f2fd73e707dd7c9c2101635a75b20d32adf5d7adecca4731adb",
+      "paper_time": 120.02610898095757,
+      "path": "/mnt/ceph/users/sholden/dedalus-network-pdes/runs/mineral-replacement-jgr2025-v1/jobs/distributed-session-4-structure-02/manuscript-snapshot-replay-01.retained-004995.slot0.npz",
+      "permeability_ratio": 1.6921688442658989,
+      "sha256": "c8b69c5fca157ee86b66d6ad4a934f94589142c8e8418e5e12b1fa773af1fcec",
+      "source": "accepted-source output-retention replay",
+      "step": 4995
+    },
+    {
+      "checkpoint_prefix_verified": true,
+      "exact_geometry": true,
+      "exact_inventory_sums": {
+        "primary": 2867.0387241157496,
+        "secondary": 202.4787162487362
+      },
+      "format": "checkpoint_v1",
+      "metadata_location": "embedded_checkpoint",
+      "model_time": 10.408482332385368,
+      "paper_time": 208.16964664770737,
+      "permeability_ratio": 2.9411903730685895,
+      "raw": {
+        "path": "/mnt/ceph/users/sholden/dedalus-network-pdes/runs/mineral-replacement-jgr2025-v1/jobs/distributed-session-04/updated-dedalus-snapshot-01.snapshot.npz",
+        "sha256": "1d80647ab36840f08bd04756d44f4e93ff1b8a6db526e076b12e6214abda3eb0"
+      },
+      "raw_reference_comparison_reused": false,
+      "step": 9000
+    },
+    {
+      "checkpoint_prefix_verified": true,
+      "exact_geometry": true,
+      "exact_inventory_sums": {
+        "primary": 2622.270533760049,
+        "secondary": 274.8865984674603
+      },
+      "format": "checkpoint_v1",
+      "metadata_location": "embedded_checkpoint",
+      "model_time": 14.211082445434743,
+      "paper_time": 284.2216489086948,
+      "permeability_ratio": 12.631610173121794,
+      "raw": {
+        "path": "/mnt/ceph/users/sholden/dedalus-network-pdes/runs/mineral-replacement-jgr2025-v1/jobs/distributed-session-04/gamma03-normalization-history-01-dedalus.checkpoint.slot1.npz",
+        "sha256": "689dbae9e1ccbc70cd828cd8a9552955c3eed4ee143afb0155916ec7256cf97c"
+      },
+      "raw_reference_comparison_reused": false,
+      "step": 12300
+    }
+  ],
+  "interpolation": false
+}

@@ -1,0 +1,70 @@
+{
+  "scope": "Review reference only; full production configurations and data are tracked in the release inventory.",
+  "methods": {
+    "beam": "Three-edge static beam; continuous displacement, clamped outer ends, zero sum of outward central slopes."
+  },
+  "rods": {
+    "vertices": 16,
+    "edges": 24,
+    "total_length": 24,
+    "figure_mean_coefficients_per_edge": 32,
+    "spatial_study_max_coefficients": 64,
+    "transient_dt": 0.0078125,
+    "transient_end_time": 1,
+    "transient_geometry_seed": 7304,
+    "transient_boundary": "u(0,t)=1-exp(-4*t*t)",
+    "review_default": "Steady N16; transient mean N8 and three steps at the paper timestep."
+  },
+  "scaling": {
+    "fields": 2,
+    "linear_coupling": 0.2,
+    "cubic_coefficient": 0.1,
+    "scheme": "RK222",
+    "dt": 0.001,
+    "warmup_steps": 10,
+    "measured_steps": 1000,
+    "selected_configurations": 180,
+    "review_default": "24-edge spatial fixture, one warmup and three measured steps. No performance conclusion."
+  },
+  "photonic": {
+    "reference_edges": 131,
+    "reference_vertices": 96,
+    "reference_modes": 454,
+    "numerical_representation": "Exact fixed-carrier A/B amplitudes; k=carrier+delta.",
+    "figure_case": "Separate supplemental interior-mode query; retain its saved graph and shift.",
+    "review_default": "Five-edge open loop, 16 coefficients, four eigenvalues near 10.68-0.05j."
+  },
+  "mineral": {
+    "pores": 29996,
+    "gamma": 0.3,
+    "kappa": 1,
+    "da": 0.5,
+    "figure_lineage": "Two accepted-source early replay snapshots plus two retained later states.",
+    "review_default": "44-pore reconstructed graph, three finite-grain steps with max_dt=1e-4; exact uniform-pore transport.",
+    "da_convention": "The figure label is Da=0.5; recorded internal chemistry.da=0.627201506132748 is preserved in data/mineral/production.json."
+  },
+  "kdv": {
+    "grid_size": 16,
+    "edges": 512,
+    "coefficients_per_edge": 64,
+    "interval_basis": "Legendre",
+    "scheme": "RKGFY",
+    "nonlinear_beta": 1,
+    "dt": 0.000125,
+    "figure_times": [
+      0,
+      6,
+      20,
+      200
+    ],
+    "review_default": "3x3 periodic grid, 18 edges, N24, three steps at the paper timestep.",
+    "review_interface": "Native grad/div, continuous u, paired slope vertex constraints and physical-L2 adjoint tau reactions. Serial native assembly."
+  },
+  "production_records": {
+    "rods": "data/rods/cases-*.json and original result reports",
+    "scaling": "data/scaling/production.json",
+    "photonic": "data/photonic/coarse-status.json and fine-status.json",
+    "mineral": "data/mineral/production.json",
+    "kdv": "data/kdv/production.json"
+  }
+}

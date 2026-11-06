@@ -200,18 +200,18 @@ def _resolve_network_separator_options(problem, *options):
     return normalized
 
 
-def _resolve_network_interior_elimination(problem, method):
+def _resolve_network_interior_elimination(
+        problem, method, name="network_interior_elimination",
+        choices=("coupled", "two_stage")):
     """Agree on the interior algorithm before entering collective setup."""
     comm = getattr(problem.dist, "network_comm", None)
     collective = comm is not None and comm.size > 1
     option_error = None
     try:
         if not isinstance(method, str):
-            raise TypeError("network_interior_elimination must be a string.")
-        if method not in ("coupled", "two_stage"):
-            raise ValueError(
-                "network_interior_elimination must be 'coupled' or 'two_stage'."
-            )
+            raise TypeError(f"{name} must be a string.")
+        if method not in choices:
+            raise ValueError(f"{name} must be one of {choices}.")
     except Exception as error:
         if not collective:
             raise
@@ -220,7 +220,7 @@ def _resolve_network_interior_elimination(problem, method):
         from .network import _raise_collective_error, _validate_collective_signature
 
         _raise_collective_error(comm, option_error, "Network interior option validation")
-        _validate_collective_signature(comm, method, "Network interior option agreement")
+        _validate_collective_signature(comm, (name, method), "Network interior option agreement")
     return method
 
 
@@ -441,6 +441,14 @@ class SolverBase:
         Solver for the partition-separator system in a distributed Network
         DtN solve.  ``"auto"`` uses replicated direct factorization for small
         separators and collective restarted GMRES for larger ones.
+    network_subgraph_reconstruction : {"response", "solve", "auto"}, optional
+        Reconstruct subgraph interiors with a stored response (``"response"``),
+        or apply the existing interior factors (``"solve"``). The latter also
+        assembles the Schur contribution in chunks without storing the full
+        response. The default, ``"auto"``, retains responses only while their
+        entry count stays below three times the number of stored factor entries
+        (matrix entries if unavailable), with a 256 MiB bound on retained
+        chunks using COO sizes.
     network_separator_direct_max_size : int, optional
         Largest separator solved with replicated direct factorization in
         ``"auto"`` mode (default: 256).  Set to zero to always select GMRES
@@ -471,13 +479,17 @@ class SolverBase:
                  network_separator_direct_max_size=256, network_separator_restart=40,
                  network_separator_maxiter=None, network_separator_rtol=1e-10,
                  network_separator_atol=0.0, network_separator_preconditioner="jacobi",
-                 network_interior_elimination="coupled"):
+                 network_interior_elimination="coupled",
+                 network_subgraph_reconstruction="auto"):
         # Take attributes from problem
         self.problem = problem
         self.dist = problem.dist
         self.network_interior_elimination = _resolve_network_interior_elimination(
             problem, network_interior_elimination
         )
+        self.network_subgraph_reconstruction = _resolve_network_interior_elimination(
+            problem, network_subgraph_reconstruction,
+            name="network_subgraph_reconstruction", choices=("response", "solve", "auto"))
         separator_options = _resolve_network_separator_options(
             problem,
             network_separator_method,

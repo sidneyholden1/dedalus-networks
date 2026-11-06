@@ -599,22 +599,32 @@ class Distributor:
         )[0]
         return take_elements(basis._network_elements, logical_elements)
 
+    def exchange_network_vertex_data(self, data, domain, *, axis=0, add=False):
+        """Exchange a full or selected vertex domain through the resident halo."""
+        canonical = self.network_vertex_canonical_elements(domain)
+        plan = self.network_vertex_exchange_plan
+        exchange = plan.reduce_add if add else plan.forward
+        if np.array_equal(canonical, plan.resident):
+            exchange(data, axis=axis)
+            return data
+        positions = np.searchsorted(plan.resident, canonical)
+        if (np.any(positions >= plan.resident.size)
+                or not np.array_equal(plan.resident[positions], canonical)):
+            raise ValueError('Selected vertex data must lie in the resident halo.')
+        view = np.moveaxis(data, axis, 0)
+        packed = np.zeros((plan.resident.size,) + view.shape[1:], dtype=view.dtype)
+        packed[positions] = view
+        exchange(packed, axis=0)
+        view[...] = packed[positions]
+        return data
+
     def synchronize_network_vertex_ghosts(self, field):
         """Refresh the ghost values of one resident vertex field in place."""
         if not self.network_axis_uses_owned_ghost(field.domain):
             return field
-        canonical = self.network_vertex_canonical_elements(field.domain)
-        if not np.array_equal(
-            canonical,
-            self.network_vertex_exchange_plan.resident,
-        ):
-            raise NotImplementedError(
-                "Owned/ghost exchange currently requires the canonical full "
-                "Network vertex basis."
-            )
         data_axis = len(field.tensorsig)
-        self.network_vertex_exchange_plan.forward(
-            field.data,
+        self.exchange_network_vertex_data(
+            field.data, field.domain,
             axis=data_axis,
         )
         return field

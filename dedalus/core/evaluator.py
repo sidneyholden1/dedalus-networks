@@ -17,6 +17,7 @@ from .field import (
     LockedField,
     _network_basis_metadata,
     _network_basis_metadata_group_errors,
+    _network_field_semantics,
     synchronize_network_vertex_inputs,
 )
 from .network import _encode_network_ids
@@ -752,6 +753,8 @@ class H5FileHandlerBase(Handler):
             network_roles = _network_axis_roles(self.dist, op.domain)
             if network_roles is not None:
                 dset.attrs['network_metadata'] = '/network'
+                for key, value in _network_field_semantics(op).items():
+                    dset.attrs[key] = value
                 _write_string_attribute(
                     dset.attrs,
                     'network_axis_roles',

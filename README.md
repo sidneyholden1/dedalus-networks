@@ -9,6 +9,21 @@ Dirichlet-to-Neumann solvers.
 This is an experimental extension, maintained separately from upstream Dedalus.
 The Python package remains `dedalus`; install this fork in its own environment.
 
+## Paper examples and reproduction
+
+The paper companion for *A scalable computational framework for PDEs on
+physical networks* is included under `paper/`:
+
+- [Seven readable example scripts and their equations](paper/README.md)
+- [Redraw the five paper figures from the included data](paper/REPRODUCING.md)
+- [Install the solver source or plotting dependencies](INSTALL.md)
+- [Validation records and production settings](paper/release-checks.json)
+
+The network-calculus interface adds continuous fields, graph differential
+operators and automatic tau assembly. Existing explicit edge/vertex equations
+remain supported. The examples and installation links below retain their
+existing paths. The manuscript is distributed separately.
+
 ## Start here
 
 1. Follow [installation and development instructions](NETWORK_DEVELOPMENT.md).
@@ -64,15 +79,15 @@ This public branch consolidates the network implementation onto upstream commit
 examples, and scaling harness matched development snapshot
 `e6050873e952678d0d879764e12a4bd510835fc8`.
 Research archives, cluster administration, and full simulation data are maintained
-separately; the example figures above are included here. This publication is for
-use and architectural feedback; it does not claim upstream acceptance or a new
-performance validation.
+separately; the example figures above are included here. The paper companion adds the retained measurements, source settings and figure
+reproduction alongside these existing examples.
 
 ## Attribution and license
 
 Dedalus is developed by the Dedalus collaboration, whose original project
-information follows below. The existing [license](LICENSE.txt) and
-[citation metadata](CITATION.cff) are retained.
+information follows below. The existing [license](LICENSE.txt) is retained. See the
+[companion citation](CITATION.cff) and the original
+[Dedalus citation](CITATION_UPSTREAM.cff).
 
 ---
 
