@@ -20,6 +20,10 @@ jobs:
             label: osx-64
     name: Test ${{ github.ref_name }} via conda-forge on ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
+    env:
+      # Hosted runners use local TCP; no UCX/RDMA hardware is required.
+      OMPI_MCA_pml: ob1
+      OMPI_MCA_btl: self,tcp
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -40,6 +44,7 @@ jobs:
           conda install -y -c conda-forge dedalus c-compiler cython pip setuptools wheel "h5py=*=mpi*"
           conda uninstall -y --force dedalus
       - name: Install Dedalus from repository
+        id: install_dedalus
         shell: bash -l {0}
         run: |
           conda activate dedalus
@@ -48,6 +53,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash -l {0}
         run: |
+          set -euo pipefail
           cd "$HOME"
           conda activate dedalus
           mpi_args=(-n 4)
@@ -58,6 +64,7 @@ jobs:
           mpiexec "${mpi_args[@]}" python -m pytest -q \
             --pyargs dedalus.tests_parallel -o 'python_files=test_network_*.py'
       - name: Test Dedalus
+        if: ${{ !cancelled() && steps.install_dedalus.outcome == 'success' }}
         shell: bash -l {0}
         run: |
           # Move out of repository to run tests
